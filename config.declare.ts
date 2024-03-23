@@ -1,3 +1,5 @@
+import { Connection } from "mysql2";
+
 export type Config = {
   port: number;
   static: {
@@ -5,9 +7,7 @@ export type Config = {
     route: string;
   }[];
   apiRoute: string;
-  database: {
-    host: string;
-  };
+  dbconnection: Connection;
 };
 
 export default Config;

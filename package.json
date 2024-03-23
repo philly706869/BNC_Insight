@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "dev": "nodemon --watch src/**/*.ts --exec ts-node src/index.ts"
+    "dev": "nodemon --watch src/**/*.ts --exec ts-node server/index.ts"
   },
+  "type": "module",
   "author": "",
   "license": "ISC",
   "devDependencies": {
