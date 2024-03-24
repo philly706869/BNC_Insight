@@ -8,6 +8,7 @@ export type Config = {
   };
   apiRoute: string;
   dbconnection: Connection;
+  jwtsecret: string;
 };
 
 export default Config;
