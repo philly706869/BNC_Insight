@@ -5,7 +5,7 @@ export type Config = {
   static: {
     dir: string;
     route: string;
-  }[];
+  };
   apiRoute: string;
   dbconnection: Connection;
 };

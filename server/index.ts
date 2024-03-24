@@ -1,18 +1,14 @@
 import express from "express";
-import config from "../config.js";
-import path from "path";
-import apiRouter from "./api/apiRouter.js";
+import config from "../config";
+import apiRouter from "./api/apiRouter";
+import mainRouter from "./mainRouter";
 
 const app = express();
 
-config.static.forEach((item) => app.use(item.route, express.static(item.dir))); // add static middleware
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(config.__dirname, "/public/home.html"));
-});
-
+app.use(config.static.route, express.static(config.static.dir)); // add static middleware
 app.use(config.apiRoute, apiRouter); // use apiRouter for api
+app.use("/", mainRouter);
 
 app.listen(config.port, () => {
-  console.log(`server started on port: ${config.port}`);
+  console.log(`https server started on port: ${config.port}`);
 });
