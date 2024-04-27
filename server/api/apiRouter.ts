@@ -1,18 +1,22 @@
 import express from "express";
-import config from "../../config";
+import config from "../configs/serverConfig";
 import jwt from "jsonwebtoken";
+import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 
 export const apiRouter = express.Router();
 
-apiRouter.get("/users", (req, res) => {
-  const connection = config.dbconnection;
+apiRouter.use(cookieParser(config.cookieSecret));
 
-  connection.connect();
-  connection.query("select * from users", (error, results, fields) => {
-    if (error) res.status(400).send(error);
-    res.send(results);
+apiRouter.get("/users", (req, res) => {
+  config.dbPool.getConnection((error, connection) => {
+    if (error) throw error;
+    connection.query("select * from user", (error, results, fields) => {
+      if (error) res.status(400).send(error);
+      res.send(results);
+    });
+    connection.release();
   });
-  connection.end();
 });
 
 apiRouter.post("/", (req, res) => {});

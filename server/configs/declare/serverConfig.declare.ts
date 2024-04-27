@@ -1,4 +1,4 @@
-import { Connection } from "mysql2";
+import { Pool } from "mysql2";
 
 export type Config = {
   port: number;
@@ -7,8 +7,10 @@ export type Config = {
     route: string;
   };
   apiRoute: string;
-  dbconnection: Connection;
-  jwtsecret: string;
+  dbPool: Pool;
+  logDir: string;
+  cookieSecret: string;
+  jwtSecret: string;
 };
 
 export default Config;
