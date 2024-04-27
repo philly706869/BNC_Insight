@@ -1,5 +1,5 @@
 import mysql from "mysql2/promise";
-import { dbConfigPath } from "../../../server/configs/declare/dbConfig.declare.js";
+import { dbConfigPath } from "../../../configs/declare/dbConfig.declare.js";
 import fs from "fs";
 import { exit } from "process";
 import { input, confirm, password as password_ } from "@inquirer/prompts";
