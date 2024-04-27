@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npx tsx server/index.ts",
     "dev": "nodemon --watch ./**/*.ts --exec npx tsx server/index.ts",
-    "initdb": "npx tsx dbInitialize.ts"
+    "dbconfig": "npx tsx tool/dbconfigManager/index.ts"
   },
   "author": "",
   "license": "ISC",
@@ -16,19 +16,19 @@
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20.11.30",
-    "@types/readline-sync": "^1.4.8",
     "nodemon": "^3.1.0",
     "typescript": "^5.4.3"
   },
   "dependencies": {
+    "@inquirer/prompts": "^5.0.2",
     "app-root-path": "^3.1.0",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
+    "chalk": "^5.3.0",
     "cookie-parser": "^1.4.6",
     "express": "^4.19.1",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.9.2",
-    "readline-sync": "^1.4.10",
     "winston": "^3.13.0",
     "winston-daily-rotate-file": "^5.0.0"
   }
