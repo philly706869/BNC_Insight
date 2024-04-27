@@ -1,10 +1,9 @@
 import path from "path";
-import Config from "./declare/serverConfig.declare";
+import Config from "./declare/serverConfig.declare.js";
 import mysql from "mysql2";
-import fs from "fs";
 import crypto from "crypto";
-import { path as approot } from "app-root-path";
-import dbConfig from "./dbConfig";
+import dbConfig from "./dbConfig.js";
+import { path as approot } from "../util/appRootPath.js";
 
 export const config: Config = {
   port: 3000,

@@ -1,7 +1,7 @@
 import express from "express";
-import config from "./configs/serverConfig";
-import apiRouter from "./api/apiRouter";
-import mainRouter from "./mainRouter";
+import config from "./configs/serverConfig.js";
+import apiRouter from "./api/apiRouter.js";
+import mainRouter from "./mainRouter.js";
 import bodyParser from "body-parser";
 
 const app = express();

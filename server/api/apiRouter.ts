@@ -1,5 +1,5 @@
 import express from "express";
-import config from "../configs/serverConfig";
+import config from "../configs/serverConfig.js";
 import jwt from "jsonwebtoken";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";

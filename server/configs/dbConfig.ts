@@ -1,10 +1,5 @@
-import { PoolOptions } from "mysql2";
-import path from "path";
-import { path as approot } from "app-root-path";
 import fs from "fs";
-import DBConfig from "./declare/dbConfig.declare";
-
-const dbConfigPath = path.join(approot, "internal/dbconfig.json");
+import DBConfig, { dbConfigPath } from "./declare/dbConfig.declare.js";
 
 const dbConfigMetadata = fs.lstatSync(dbConfigPath);
 

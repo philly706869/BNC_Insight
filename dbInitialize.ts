@@ -1,40 +1,75 @@
 import mysql from "mysql2";
-import readline from "readline/promises";
+import readline from "readline-sync";
+import { dbConfigPath } from "./server/configs/declare/dbConfig.declare.js";
+import fs from "fs";
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
+if (fs.existsSync(dbConfigPath)) {
+  const metadata = fs.lstatSync(dbConfigPath);
+  if (metadata.isFile()) {
+    const answer = readline.question(
+      `Database config file already exists: ${dbConfigPath}. Will you override config file? [y/n] > `,
+      {
+        limit: ["y", "yes", "n", "no"],
+      }
+    );
+  } else if (metadata.isDirectory()) {
+  } else {
+    throw Error("unknown error");
+  }
+}
+
+const initializerUser = readline.question(
+  "enter user for initialize  (default: root) > "
+);
+const initializerPassword = readline.question(
+  "enter password for initialize > ",
+  {
+    mask: "●",
+    hideEchoBack: true,
+    min: 1,
+  }
+);
+const host = readline.question("enter host for server access > ", { min: 1 });
+const user = readline.question("enter user for server access > ", { min: 1 });
+const database = readline.question("enter database for server access > ", {
+  min: 1,
 });
 
-rl.question("enter host > ");
-rl.question("enter user > ");
-rl.question("enter password > ", {
-  mask: "●",
-  hideEchoBack: true,
+const connection = mysql.createConnection({
+  user: initializerUser.length == 0 ? "root" : initializerUser,
+  password: initializerPassword,
 });
 
-console.log(host);
-console.log(user);
-console.log(password);
+connection.connect();
 
-// const connection = mysql.createConnection({
-//   host: "",
-//   user: "",
-//   password: "",
-// });
+try {
+  let isDBExists: boolean;
 
-// connection.connect();
+  connection.query(
+    "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?",
+    [database],
+    (error, results, fields) => {
+      if (error) throw error;
+      isDBExists = (results as any[]).length == 0;
+    }
+  );
+  if (isDBExists) {
+    readline.questionInt(
+      `Database named ${database} is already exists. To initialize `
+    );
+  }
 
-// connection.query(
-//   "create database if not exists test",
-//   (error, results, fields) => {
-//     if (error) console.log(error);
-//   }
-// );
+  connection.query(
+    "CREATE DATABASE " + connection.escapeId(database),
+    (error, results, fields) => {
+      if (error) throw error;
+    }
+  );
 
-// connection.query("show databases", (error, results, fields) => {
-//   if (error) console.log(error);
-//   console.log(results);
-// });
-
-// connection.end();
+  connection.query("show databases", (error, results, fields) => {
+    if (error) throw error;
+    console.log(results);
+  });
+} finally {
+  connection.end();
+}

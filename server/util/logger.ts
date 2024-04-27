@@ -1,7 +1,6 @@
 import winston from "winston";
 import winston_drf from "winston-daily-rotate-file";
-import { path as approot } from "app-root-path";
-import config from "./configs/serverConfig";
+import config from "../configs/serverConfig.js";
 import path from "path";
 
 const { combine, timestamp, label, printf } = winston.format;

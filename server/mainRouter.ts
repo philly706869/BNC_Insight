@@ -1,6 +1,6 @@
 import express from "express";
 import path from "path";
-import { path as approot } from "app-root-path";
+import { path as approot } from "./util/appRootPath.js";
 
 export const mainRouter = express.Router();
 
