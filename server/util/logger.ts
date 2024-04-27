@@ -1,36 +1,41 @@
-import winston from "winston";
-import winston_drf from "winston-daily-rotate-file";
-import config from "../configs/serverConfig.js";
+import winston, { transports } from "winston";
+import winstonDRF from "winston-daily-rotate-file";
+import config from "../../configs/serverConfig.js";
 import path from "path";
 
-const { combine, timestamp, label, printf } = winston.format;
+const { combine, timestamp, label, printf, colorize } = winston.format;
 
-const logFormat = printf(({ level, message, label, timestamp }) => {
-  return `[${timestamp}]-[${label}]-[${level}]: ${message}`;
-});
-
-const logger = winston.createLogger({
+export const logger = winston.createLogger({
   format: combine(
     timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-    label({ label: "Local Server" }),
-    logFormat
+    label({ label: "Http Server" }),
+    printf(
+      ({ timestamp, label, level, message }) =>
+        `[${timestamp}]-[${label}]-[${level}]: ${message}`
+    )
   ),
   transports: [
-    new winston_drf({
-      level: "info",
+    new transports.Console({
+      level: "silly",
+      format: colorize({ all: true }),
+    }),
+    new winstonDRF({
+      level: "silly",
       datePattern: "YYYY-MM-DD",
       dirname: config.logDir,
       filename: `%DATE%.log`,
-      maxFiles: 30,
+      maxFiles: 365,
       zippedArchive: true,
     }),
-    new winston_drf({
+    new winstonDRF({
       level: "error",
       datePattern: "YYYY-MM-DD",
       dirname: path.join(config.logDir, "error"),
       filename: `%DATE%.error.log`,
-      maxFiles: 30,
+      maxFiles: 365,
       zippedArchive: true,
     }),
   ],
 });
+
+export default logger;

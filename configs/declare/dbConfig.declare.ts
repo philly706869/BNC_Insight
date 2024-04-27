@@ -1,6 +1,6 @@
 import { PoolOptions } from "mysql2";
 import path from "path";
-import { path as approot } from "../../util/appRootPath.js";
+import { path as approot } from "../../server/util/appRootPath.js";
 
 export const dbConfigPath = path.join(approot, "internal/dbconfig.json");
 

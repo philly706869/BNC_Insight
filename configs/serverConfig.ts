@@ -3,7 +3,7 @@ import Config from "./declare/serverConfig.declare.js";
 import mysql from "mysql2";
 import crypto from "crypto";
 import dbConfig from "./dbConfig.js";
-import { path as approot } from "../util/appRootPath.js";
+import { path as approot } from "../server/util/appRootPath.js";
 
 export const config: Config = {
   port: 3000,
