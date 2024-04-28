@@ -1,9 +1,9 @@
 import mysql from "mysql2/promise";
-import { dbConfigPath } from "../../../configs/declare/dbConfig.declare.js";
 import fs from "fs";
 import { exit } from "process";
 import { input, confirm, password as password_ } from "@inquirer/prompts";
 import chalk from "chalk";
+import { configPath } from "../../../config/config.declare.js";
 
 export default async function () {
   type Validate = (
@@ -76,16 +76,16 @@ export default async function () {
     })
   );
 
-  if (fs.existsSync(dbConfigPath)) {
-    if (!fs.lstatSync(dbConfigPath).isFile()) {
+  if (fs.existsSync(configPath)) {
+    if (!fs.lstatSync(configPath).isFile()) {
       console.log(
-        `Error: Config file path is duplicated with directory: \`${dbConfigPath}\``
+        `Error: Config file path is duplicated with directory: \`${configPath}\``
       );
       exit();
     }
 
     const willOverwrite = await confirm({
-      message: `Database config file already exists: \`${dbConfigPath}\`. Would you overwrite config?`,
+      message: `Database config file already exists: \`${configPath}\`. Would you overwrite config?`,
       default: false,
     });
 
@@ -142,7 +142,7 @@ export default async function () {
     await connection.query("CREATE DATABASE " + connection.escapeId(database));
 
     fs.writeFileSync(
-      dbConfigPath,
+      configPath,
       JSON.stringify({
         user: user,
         password: password,

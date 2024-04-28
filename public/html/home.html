@@ -6,7 +6,33 @@
     <title>The News</title>
   </head>
   <body>
-    <button onclick="window.location.replace('/login')">LogIn</button>
-    <button onclick="window.location.replace('/signin')">SignIn</button>
+    <form method="post" action="/api/login">
+      <fieldset>
+        <legend>Log In</legend>
+        <label for="id-input">ID: </label>
+        <input
+          id="id-input"
+          type="text"
+          name="id"
+          pattern="\S{3,32}"
+          title="ID must not contain white spaces and must be at least 3 characters but not more than 32 characters."
+          autocomplete="off"
+          required
+          autofocus
+        />
+        <br />
+        <label for="pw-input">PW: </label>
+        <input
+          id="pw-input"
+          type="password"
+          name="password"
+          pattern="\S{10,64}"
+          title="PW must not contain white spaces and must be at least 10 characters but not more than 64 characters."
+          required
+        />
+        <br />
+        <input type="submit" />
+      </fieldset>
+    </form>
   </body>
 </html>

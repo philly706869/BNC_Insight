@@ -1,15 +1,15 @@
 import express from "express";
-import config from "../../../configs/serverConfig.js";
+import config from "../../../config/config.js";
 import jwt from "jsonwebtoken";
-import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
+import defaultPool from "../../defaultPool.js";
 
 export const apiRouter = express.Router();
 
 apiRouter.use(cookieParser(config.cookieSecret));
 
 apiRouter.get("/users", (req, res) => {
-  config.dbPool.getConnection((error, connection) => {
+  defaultPool.getConnection((error, connection) => {
     if (error) throw error;
     connection.query("select * from user", (error, results, fields) => {
       if (error) res.status(400).send(error);
@@ -19,6 +19,9 @@ apiRouter.get("/users", (req, res) => {
   });
 });
 
-apiRouter.post("/", (req, res) => {});
+apiRouter.post("/login", express.urlencoded({ extended: true }), (req, res) => {
+  //res.cookie()
+  res.redirect("/");
+});
 
 export default apiRouter;
