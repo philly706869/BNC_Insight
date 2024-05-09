@@ -15,7 +15,7 @@ export type Config = {
   };
   logDir: string;
   cookieSecret: string;
-  jwtSecret: string;
+  sessionSecret: string;
 };
 
 export default Config;

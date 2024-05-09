@@ -1,16 +1,33 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import path from "path";
 import { path as approot } from "../../util/appRootPath.js";
+import cookieParser from "cookie-parser";
+import config from "../../../config/config.js";
+import expressSession from "express-session";
+import login from "./login.js";
+import logout from "./logout.js";
 
 export const siteRouter = express.Router();
 
-const fileSenderGenerator =
-  (relativePath: string) => (req: Request, res: Response) => {
-    res.sendFile(path.join(approot, relativePath));
-  };
+siteRouter.use(
+  "/",
+  express.static(path.join(approot, "/public/page"), {
+    extensions: ["html", "htm"],
+  })
+);
+siteRouter.use("/static", express.static(path.join(approot, "/public/static")));
 
-siteRouter.get("/", fileSenderGenerator("./public/html/home.html"));
-siteRouter.get("/login", fileSenderGenerator("./public/html/login.html"));
-siteRouter.get("/signin", fileSenderGenerator("./public/html/signin.html"));
+siteRouter.use(express.urlencoded({ extended: true }));
+siteRouter.use(cookieParser(config.cookieSecret));
+siteRouter.use(
+  expressSession({
+    secret: config.sessionSecret,
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+
+siteRouter.post("/login", login);
+siteRouter.delete("/logout", logout);
 
 export default siteRouter;

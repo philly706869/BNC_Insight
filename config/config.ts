@@ -2,6 +2,7 @@ import { Config, configPath } from "./config.declare.js";
 import fs from "fs";
 import { exit } from "process";
 import joi from "joi";
+import path from "path";
 
 const configMetadata = fs.lstatSync(configPath);
 
@@ -17,16 +18,16 @@ const schema = joi.object({
   port: joi.number().min(0).max(65535).required(),
   database: joi
     .object({
-      user: joi.string().min(1).max(32).pattern(/temp/).required(),
+      user: joi.string().min(1).max(32).required(),
       password: joi.string().required(),
       database: joi.string().min(1).required(),
-      host: joi.string().pattern(/temp/).required(),
+      host: joi.string().required(),
       connectionLimit: joi.number().min(1).required(),
     })
     .required(),
-  logDir: joi.string().pattern(/temp/).required(),
+  logDir: joi.string().required(),
   cookieSecret: joi.string().required(),
-  jwtSecret: joi.string().required(),
+  sessionSecret: joi.string().required(),
 });
 
 const data = await schema.validateAsync(rawData);
@@ -42,7 +43,7 @@ export const config: Config = {
   },
   logDir: data.logDir,
   cookieSecret: data.cookieSecret,
-  jwtSecret: data.jwtSecret,
+  sessionSecret: data.sessionSecret,
 };
 
 export default config;

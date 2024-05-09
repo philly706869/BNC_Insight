@@ -3,10 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The News</title>
+    <title>The News - Log In</title>
   </head>
   <body>
-    <form method="post" action="/api/login">
+    <a href="/">Home</a>
+    <form method="post" action="/login">
       <fieldset>
         <legend>Log In</legend>
         <label for="id-input">ID: </label>
@@ -28,6 +29,16 @@
           name="password"
           pattern="\S{10,64}"
           title="PW must not contain white spaces and must be at least 10 characters but not more than 64 characters."
+          required
+        />
+        <br />
+        <label for="name-input">Name: </label>
+        <input
+          id="name-input"
+          type="text"
+          name="name"
+          pattern="[^\n]+"
+          title="Name must not contain line break."
           required
         />
         <br />

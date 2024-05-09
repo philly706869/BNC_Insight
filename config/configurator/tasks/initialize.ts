@@ -6,6 +6,8 @@ import chalk from "chalk";
 import { configPath } from "../../../config/config.declare.js";
 
 export default async function () {
+  console.log(chalk.bold("> Initialize Database Configuration"));
+
   type Validate = (
     value: string
   ) => boolean | string | Promise<string | boolean>;
@@ -108,6 +110,8 @@ export default async function () {
     console.log("Info: Canceled to initialize database configuration");
     exit();
   }
+
+  console.log(chalk.bold("> Initialize Server Configuration"));
 
   const connection = await mysql.createConnection({
     user: adminUser,

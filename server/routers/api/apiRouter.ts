@@ -1,12 +1,7 @@
 import express from "express";
-import config from "../../../config/config.js";
-import jwt from "jsonwebtoken";
-import cookieParser from "cookie-parser";
 import defaultPool from "../../defaultPool.js";
 
 export const apiRouter = express.Router();
-
-apiRouter.use(cookieParser(config.cookieSecret));
 
 apiRouter.get("/users", (req, res) => {
   defaultPool.getConnection((error, connection) => {
@@ -17,11 +12,6 @@ apiRouter.get("/users", (req, res) => {
     });
     connection.release();
   });
-});
-
-apiRouter.post("/login", express.urlencoded({ extended: true }), (req, res) => {
-  //res.cookie()
-  res.redirect("/");
 });
 
 export default apiRouter;
