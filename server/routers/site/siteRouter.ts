@@ -6,6 +6,8 @@ import config from "../../../config/config.js";
 import expressSession from "express-session";
 import login from "./login.js";
 import logout from "./logout.js";
+import testupload from "./testupload.js";
+import multer from "multer"
 
 export const siteRouter = express.Router();
 
@@ -29,5 +31,21 @@ siteRouter.use(
 
 siteRouter.post("/login", login);
 siteRouter.delete("/logout", logout);
+
+const upload = multer({
+  storage: multer.diskStorage({
+    filename(req, file, done) {
+      done(null, file.originalname);
+    },
+    destination(req, file, done) {
+      done(null, path.join(__dirname, "public"));
+    },
+  }),
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10mb
+  }
+});
+
+siteRouter.post("/testupload", upload.single("profileImage"), testupload);
 
 export default siteRouter;
