@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The News - Sign Up</title>
+    <link href="/static/css/default.css" rel="stylesheet" />
+    <link href="/static/css/signup.css" rel="stylesheet" />
+  </head>
+  <body>
+    <form class="form">
+      <header>
+        <a class="logo" href="/"><img src="/static/img/logo.svg" /></a>
+        <h1>Sign Up</h1>
+      </header>
+      <ul class="list">
+        <li>
+          <input
+            class="input"
+            id="id-input"
+            type="text"
+            autocomplete="off"
+            required
+            autofocus
+          />
+          <label class="placeholder" for="id-input">ID</label>
+          <label class="error-message" for="id-input" hidden></label>
+        </li>
+        <li>
+          <input class="input" id="password-input" type="password" required />
+          <label class="placeholder" for="password-input">Password</label>
+          <label class="error-message" for="password-input" hidden></label>
+        </li>
+        <li>
+          <input
+            class="input"
+            id="password-confirm-input"
+            type="password"
+            required
+          />
+          <label class="placeholder" for="password-confirm-input"
+            >Password Confirm</label
+          >
+          <label
+            class="error-message"
+            for="password-confirm-input"
+            hidden
+          ></label>
+        </li>
+        <li>
+          <input
+            class="input"
+            id="name-input"
+            type="text"
+            autocomplete="off"
+            required
+          />
+          <label class="placeholder" for="name-input">Name</label>
+          <label class="error-message" for="name-input" hidden></label>
+        </li>
+        <li>
+          <input
+            class="input"
+            id="auth-token-input"
+            type="text"
+            autocomplete="off"
+            required
+          />
+          <label class="placeholder" for="auth-token-input"
+            >Authentication Token</label
+          >
+          <label class="error-message" for="auth-token-input" hidden></label>
+        </li>
+        <li>
+          <button class="signup-button">Sign Up</button>
+        </li>
+      </ul>
+    </form>
+    <script src="/static/js/signup.js"></script>
+  </body>
+</html>

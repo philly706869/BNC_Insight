@@ -7,7 +7,7 @@ import expressSession from "express-session";
 import login from "./login.js";
 import logout from "./logout.js";
 import testupload from "./testupload.js";
-import multer from "multer"
+import multer from "multer";
 
 export const siteRouter = express.Router();
 
@@ -17,7 +17,6 @@ siteRouter.use(
     extensions: ["html", "htm"],
   })
 );
-siteRouter.use("/static", express.static(path.join(approot, "/public/static")));
 
 siteRouter.use(express.urlencoded({ extended: true }));
 siteRouter.use(cookieParser(config.cookieSecret));
@@ -42,8 +41,8 @@ const upload = multer({
     },
   }),
   limits: {
-    fileSize: 10 * 1024 * 1024 // 10mb
-  }
+    fileSize: 10 * 1024 * 1024, // 10mb
+  },
 });
 
 siteRouter.post("/testupload", upload.single("profileImage"), testupload);
