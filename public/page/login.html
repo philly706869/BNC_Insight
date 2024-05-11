@@ -4,46 +4,40 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The News - Log In</title>
+    <link href="/static/css/default.css" rel="stylesheet" />
+    <link href="/static/css/account.css" rel="stylesheet" />
+    <link href="/static/css/login.css" rel="stylesheet" />
   </head>
   <body>
-    <a href="/">Home</a>
-    <form method="post" action="/login">
-      <fieldset>
-        <legend>Log In</legend>
-        <label for="id-input">ID: </label>
-        <input
-          id="id-input"
-          type="text"
-          name="id"
-          pattern="\S{3,32}"
-          title="ID must not contain white spaces and must be at least 3 characters but not more than 32 characters."
-          autocomplete="off"
-          required
-          autofocus
-        />
-        <br />
-        <label for="pw-input">PW: </label>
-        <input
-          id="pw-input"
-          type="password"
-          name="password"
-          pattern="\S{10,64}"
-          title="PW must not contain white spaces and must be at least 10 characters but not more than 64 characters."
-          required
-        />
-        <br />
-        <label for="name-input">Name: </label>
-        <input
-          id="name-input"
-          type="text"
-          name="name"
-          pattern="[^\n]+"
-          title="Name must not contain line break."
-          required
-        />
-        <br />
-        <input type="submit" />
-      </fieldset>
+    <form class="form">
+      <header>
+        <a class="logo" href="/"><img src="/static/img/logo.svg" /></a>
+        <h1>Log In</h1>
+      </header>
+      <ul class="list">
+        <li>
+          <input
+            class="input"
+            id="id-input"
+            type="text"
+            autocomplete="off"
+            required
+            autofocus
+          />
+          <label class="placeholder" for="id-input">ID</label>
+          <label class="error-message" for="id-input" hidden></label>
+        </li>
+        <li>
+          <input class="input" id="password-input" type="password" required />
+          <label class="placeholder" for="password-input">Password</label>
+          <label class="error-message" for="password-input" hidden></label>
+        </li>
+        <li>
+          <button class="signup-button">Log In</button>
+        </li>
+      </ul>
     </form>
+    <script src="/static/js/getInputFunction.js"></script>
+    <script src="/static/js/login.js"></script>
   </body>
 </html>
