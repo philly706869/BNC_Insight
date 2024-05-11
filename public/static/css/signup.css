@@ -96,15 +96,14 @@ h1 {
   justify-content: center;
   pointer-events: none;
   transition: 0.2s;
-  transition-timing-function: ease;
-  transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+  transition-timing-function: ease cubic-bezier(0.25, 0.1, 0.25, 1);
   background-color: white;
   color: rgba(0, 0, 0, 0.5);
   font-size: large;
 }
 
 .input:focus + .placeholder,
-.input:not(:focus):valid + .placeholder {
+.input:valid + .placeholder {
   top: 0px;
   font-size: small;
   color: rgba(0, 0, 0, 0.9);
