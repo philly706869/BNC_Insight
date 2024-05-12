@@ -4,6 +4,7 @@ import { path as approot } from "../../util/appRootPath.js";
 import cookieParser from "cookie-parser";
 import config from "../../../config/config.js";
 import expressSession from "express-session";
+import signup from "./signup.js";
 import login from "./login.js";
 import logout from "./logout.js";
 import testupload from "./testupload.js";
@@ -18,7 +19,7 @@ siteRouter.use(
   })
 );
 
-siteRouter.use(express.urlencoded({ extended: true }));
+siteRouter.use(express.json());
 siteRouter.use(cookieParser(config.cookieSecret));
 siteRouter.use(
   expressSession({
@@ -28,6 +29,7 @@ siteRouter.use(
   })
 );
 
+siteRouter.post("/signup", signup);
 siteRouter.post("/login", login);
 siteRouter.delete("/logout", logout);
 

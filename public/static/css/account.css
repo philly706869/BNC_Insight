@@ -1,11 +1,4 @@
-:root {
-  --blue-1: #5755fe;
-  --blue-2: #7473ff;
-  --red: #ef4040;
-}
-
 body {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -110,6 +103,7 @@ h1 {
   color: var(--red);
   display: flex;
   align-items: center;
+  font-size: small;
 }
 
 .error-message::before {

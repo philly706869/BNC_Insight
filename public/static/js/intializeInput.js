@@ -33,7 +33,7 @@ export const intializeInput = (id) => {
 
   // input 값 업데이트 시 오류 지우는 이벤트 등록
   input.addEventListener("input", () => {
-    clearError();
+    input.clearError();
   });
 
   return input;
