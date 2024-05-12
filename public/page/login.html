@@ -21,6 +21,7 @@
             id="id-input"
             type="text"
             autocomplete="off"
+            title="Please enter ID."
             required
             autofocus
           />
@@ -28,16 +29,21 @@
           <label class="error-message" for="id-input" hidden></label>
         </li>
         <li>
-          <input class="input" id="password-input" type="password" required />
+          <input
+            class="input"
+            id="password-input"
+            type="password"
+            title="Please enter password."
+            required
+          />
           <label class="placeholder" for="password-input">Password</label>
           <label class="error-message" for="password-input" hidden></label>
         </li>
         <li>
-          <button class="signup-button">Log In</button>
+          <button class="submit-button">Log In</button>
         </li>
       </ul>
     </form>
-    <script src="/static/js/getInputFunction.js"></script>
-    <script src="/static/js/login.js"></script>
+    <script type="module" src="/static/js/login.js"></script>
   </body>
 </html>

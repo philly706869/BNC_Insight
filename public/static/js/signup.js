@@ -1,33 +1,36 @@
-const [getID, throwIDError, clearIDError] = getInputFunction("id-input");
-const [getPW, throwPWError, clearPWError] = getInputFunction("password-input");
-const [getPWC, throwPWCError, clearPWCError] = getInputFunction(
-  "password-confirm-input"
-);
-const [getName, throwNameError, clearNameError] =
-  getInputFunction("name-input");
-const [getAuthToken, throwAuthTokenError, clearAuthTokenError] =
-  getInputFunction("auth-token-input");
+import intializeInput from "./intializeInput.js";
 
-const signupButton = document.querySelector(".signup-button");
+// input 초기화 하기
+const idInput = intializeInput("id-input");
+const pwInput = intializeInput("password-input");
+const pwcInput = intializeInput("password-confirm-input");
+const nameInput = intializeInput("name-input");
+const authTokenInput = intializeInput("auth-token-input");
 
+const signupButton = document.querySelector(".submit-button");
+
+// sign up 버튼 클릭시 이벤트 처리
 signupButton.addEventListener("click", (event) => {
+  // 기존 이벤트 막기
   event.preventDefault();
 
-  clearIDError();
-  clearPWError();
-  clearPWCError();
-  clearNameError();
-  clearAuthTokenError();
+  // 오류 메세지 지우기
+  idInput.clearError();
+  pwInput.clearError();
+  pwcInput.clearError();
+  nameInput.clearError();
+  authTokenInput.clearError();
 
-  const id = getID();
-  const pw = getPW();
-  const pwc = getPWC();
-  const name = getName();
-  const authToken = getAuthToken();
+  // input에서 값 불러오기
+  const id = idInput.value;
+  const pw = pwInput.value;
+  const pwc = pwcInput.value;
+  const name = nameInput.value;
+  const authToken = authTokenInput.value;
 
-  throwIDError("test error");
-  throwPWError("test error");
-  throwPWCError("test error");
-  throwNameError("test error");
-  throwAuthTokenError("test error");
+  idInput.throwError("test error");
+  pwInput.throwError("test error");
+  pwcInput.throwError("test error");
+  nameInput.throwError("test error");
+  authTokenInput.throwError("test error");
 });

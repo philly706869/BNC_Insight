@@ -21,6 +21,7 @@
             id="id-input"
             type="text"
             autocomplete="off"
+            title="Please enter your account ID."
             required
             autofocus
           />
@@ -28,7 +29,13 @@
           <label class="error-message" for="id-input" hidden></label>
         </li>
         <li>
-          <input class="input" id="password-input" type="password" required />
+          <input
+            class="input"
+            id="password-input"
+            type="password"
+            title="Please enter your account password."
+            required
+          />
           <label class="placeholder" for="password-input">Password</label>
           <label class="error-message" for="password-input" hidden></label>
         </li>
@@ -37,6 +44,7 @@
             class="input"
             id="password-confirm-input"
             type="password"
+            title="Please confirm your account password."
             required
           />
           <label class="placeholder" for="password-confirm-input"
@@ -54,6 +62,7 @@
             id="name-input"
             type="text"
             autocomplete="off"
+            title="Please enter a name to be displayed."
             required
           />
           <label class="placeholder" for="name-input">Name</label>
@@ -65,6 +74,7 @@
             id="auth-token-input"
             type="text"
             autocomplete="off"
+            title="Please enter the authentication token provided by the administrator."
             required
           />
           <label class="placeholder" for="auth-token-input"
@@ -73,11 +83,10 @@
           <label class="error-message" for="auth-token-input" hidden></label>
         </li>
         <li>
-          <button class="signup-button">Sign Up</button>
+          <button class="submit-button">Sign Up</button>
         </li>
       </ul>
     </form>
-    <script src="/static/js/getInputFunction.js"></script>
-    <script src="/static/js/signup.js"></script>
+    <script type="module" src="/static/js/signup.js"></script>
   </body>
 </html>

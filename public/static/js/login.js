@@ -1,17 +1,24 @@
-const [getID, throwIDError, clearIDError] = getInputFunction("id-input");
-const [getPW, throwPWError, clearPWError] = getInputFunction("password-input");
+import intializeInput from "./intializeInput.js";
 
-const signupButton = document.querySelector(".signup-button");
+// input 제어 함수 불러오기
+const idInput = intializeInput("id-input");
+const pwInput = intializeInput("password-input");
 
-signupButton.addEventListener("click", (event) => {
+const loginButton = document.querySelector(".submit-button");
+
+// login 버튼 클릭시 이벤트 처리
+loginButton.addEventListener("click", (event) => {
+  // 기존 이벤트 막기
   event.preventDefault();
 
-  clearIDError();
-  clearPWError();
+  // 오류 메세지 지우기
+  idInput.clearError();
+  pwInput.clearError();
 
-  const id = getID();
-  const pw = getPW();
+  // input에서 값 불러오기
+  const id = idInput.value;
+  const pw = pwInput.value;
 
-  throwIDError("test error");
-  throwPWError("test error");
+  idInput.throwError("test error");
+  pwInput.throwError("test error");
 });
