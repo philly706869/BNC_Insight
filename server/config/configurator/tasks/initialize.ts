@@ -5,7 +5,7 @@ import { input, confirm, password as password_ } from "@inquirer/prompts";
 import chalk from "chalk";
 import { configPath } from "../../../config/config.declare.js";
 
-export default async function () {
+export default async () => {
   console.log(chalk.bold("> Initialize Database Configuration"));
 
   type Validate = (
@@ -160,4 +160,4 @@ export default async function () {
   } finally {
     connection.end();
   }
-}
+};

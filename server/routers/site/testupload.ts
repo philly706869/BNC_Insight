@@ -1,5 +1,3 @@
 import { Request, Response } from "express";
 
-export default function (req: Request, res: Response) {
-
-}
+export default (req: Request, res: Response) => {};

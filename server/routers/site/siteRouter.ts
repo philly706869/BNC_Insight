@@ -2,7 +2,7 @@ import express from "express";
 import path from "path";
 import { path as approot } from "../../util/appRootPath.js";
 import cookieParser from "cookie-parser";
-import config from "../../../config/config.js";
+import config from "../../config/server.config.js";
 import expressSession from "express-session";
 import signup from "./signup.js";
 import login from "./login.js";

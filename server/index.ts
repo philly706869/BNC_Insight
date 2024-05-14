@@ -1,5 +1,5 @@
 import express from "express";
-import config from "../config/config.js";
+import config from "./config/server.config.js";
 import apiRouter from "./routers/api/apiRouter.js";
 import siteRouter from "./routers/site/siteRouter.js";
 import logger from "./util/logger.js";

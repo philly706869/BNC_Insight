@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import url from "url";
 
-export default function (req: Request, res: Response) {
+export default (req: Request, res: Response) => {
   res.redirect(
     url.format({
       pathname: "/",
@@ -11,4 +11,4 @@ export default function (req: Request, res: Response) {
       },
     })
   );
-}
+};

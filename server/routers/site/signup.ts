@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-export default function (req: Request, res: Response) {
+export default (req: Request, res: Response) => {
   console.log(req.body);
   const { id, password, name, authToken } = req.body;
 
@@ -25,4 +25,4 @@ export default function (req: Request, res: Response) {
   }
 
   res.status(201).end();
-}
+};
