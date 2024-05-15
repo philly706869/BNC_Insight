@@ -1,8 +1,8 @@
 import intializeInput from "./intializeInput.js";
 
 // input 제어 함수 불러오기
-const idInput = intializeInput("id-input");
-const pwInput = intializeInput("password-input");
+const emailInput = intializeInput("email-input");
+const passwordInput = intializeInput("password-input");
 
 const loginButton = document.querySelector(".submit-button");
 
@@ -12,13 +12,13 @@ loginButton.addEventListener("click", (event) => {
   event.preventDefault();
 
   // 오류 메세지 지우기
-  idInput.clearError();
-  pwInput.clearError();
+  emailInput.clearError();
+  passwordInput.clearError();
 
   // input에서 값 불러오기
-  const id = idInput.value;
-  const pw = pwInput.value;
+  const email = emailInput.value;
+  const password = passwordInput.value;
 
-  idInput.throwError("test error");
-  pwInput.throwError("test error");
+  emailInput.throwError("test error");
+  passwordInput.throwError("test error");
 });

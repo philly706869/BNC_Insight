@@ -1,8 +1,7 @@
 import express from "express";
 import path from "path";
-import { path as approot } from "../../util/appRootPath.js";
 import cookieParser from "cookie-parser";
-import config from "../../config/server.config.js";
+import config from "../config/server.config.js";
 import expressSession from "express-session";
 import signup from "./signup.js";
 import login from "./login.js";
@@ -10,18 +9,11 @@ import logout from "./logout.js";
 import testupload from "./testupload.js";
 import multer from "multer";
 
-export const siteRouter = express.Router();
+export const api = express.Router();
 
-siteRouter.use(
-  "/",
-  express.static(path.join(approot, "/public/page"), {
-    extensions: ["html", "htm"],
-  })
-);
-
-siteRouter.use(express.json());
-siteRouter.use(cookieParser(config.cookieSecret));
-siteRouter.use(
+api.use(express.json());
+api.use(cookieParser(config.cookieSecret));
+api.use(
   expressSession({
     secret: config.sessionSecret,
     resave: true,
@@ -29,9 +21,9 @@ siteRouter.use(
   })
 );
 
-siteRouter.post("/signup", signup);
-siteRouter.post("/login", login);
-siteRouter.delete("/logout", logout);
+api.post("/signup", signup);
+api.post("/login", login);
+api.delete("/logout", logout);
 
 const upload = multer({
   storage: multer.diskStorage({
@@ -47,6 +39,6 @@ const upload = multer({
   },
 });
 
-siteRouter.post("/testupload", upload.single("profileImage"), testupload);
+api.post("/testupload", upload.single("profileImage"), testupload);
 
-export default siteRouter;
+export default api;

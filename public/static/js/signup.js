@@ -1,9 +1,9 @@
 import intializeInput from "./intializeInput.js";
 
 // input 초기화 하기
-const idInput = intializeInput("id-input");
-const pwInput = intializeInput("password-input");
-const pwcInput = intializeInput("password-confirm-input");
+const emailInput = intializeInput("email-input");
+const passwordInput = intializeInput("password-input");
+const passwordConfirmInput = intializeInput("password-confirm-input");
 const nameInput = intializeInput("name-input");
 const authTokenInput = intializeInput("auth-token-input");
 
@@ -15,16 +15,16 @@ signupButton.addEventListener("click", async (event) => {
   event.preventDefault();
 
   // 오류 메세지 지우기
-  idInput.clearError();
-  pwInput.clearError();
-  pwcInput.clearError();
+  emailInput.clearError();
+  passwordInput.clearError();
+  passwordConfirmInput.clearError();
   nameInput.clearError();
   authTokenInput.clearError();
 
   // input에서 값 불러오기
-  const id = idInput.value.trim() || "";
-  const pw = pwInput.value || "";
-  const pwc = pwcInput.value || "";
+  const email = emailInput.value.trim() || "";
+  const password = passwordInput.value || "";
+  const passwordConfirm = passwordConfirmInput.value || "";
   const name = nameInput.value.trim() || "";
   const authToken = authTokenInput.value.trim() || "";
 
@@ -36,31 +36,23 @@ signupButton.addEventListener("click", async (event) => {
     input.throwError(message);
   };
 
-  // ID 유효성 검사
+  // Email 유효성 검사
   switch (true) {
-    case id.length < 1:
-      fail(idInput, "ID cannot be empty");
-      break;
-    case id.length > 32:
-      fail(idInput, "ID cannot be greater than 32 characters.");
-      break;
-    case !/^\w+$/.test(id):
-      fail(idInput, "ID can only contain A-Z, a-z, 0-9, _.");
-      break;
   }
 
-  // PW 유효성 검사
+  // Password 유효성 검사
   switch (true) {
-    case pw.length < 12:
-      fail(pwInput, "Password cannot be shoter than 12 characters.");
+    case password.length < 12:
+      fail(passwordInput, "Password cannot be shoter than 12 characters.");
       break;
-    case id.length > 32:
+    case email.length > 32:
       fail("Password cannot be greater than 32 characters.");
       break;
   }
 
-  // PWC 유효성 검사
-  if (pwc !== pw) fail(pwcInput, "Password does not match.");
+  // Password Confirm 유효성 검사
+  if (passwordConfirm !== password)
+    fail(passwordConfirmInput, "Password does not match.");
 
   // Name 유효성 검사
   switch (true) {
@@ -74,14 +66,14 @@ signupButton.addEventListener("click", async (event) => {
 
   if (!success) return;
 
-  const res = await fetch("/signup", {
+  const res = await fetch("/api/signup", {
     method: "post",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      id: id,
-      password: pw,
+      id: email,
+      password: password,
       name: name,
       authToken: authToken,
     }),
