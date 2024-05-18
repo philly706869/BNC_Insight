@@ -1,4 +1,5 @@
 import intializeInput from "./intializeInput.js";
+import byteSizeOf from "./byteSizeOf.js";
 
 // input 초기화 하기
 const emailInput = intializeInput("email-input");
@@ -45,8 +46,8 @@ signupButton.addEventListener("click", async (event) => {
     case password.length < 12:
       fail(passwordInput, "Password cannot be shoter than 12 characters.");
       break;
-    case email.length > 32:
-      fail("Password cannot be greater than 32 characters.");
+    case byteSizeOf(password) > 72:
+      fail("Password cannot be greater than 72 bytes.");
       break;
   }
 
@@ -72,14 +73,24 @@ signupButton.addEventListener("click", async (event) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      id: email,
+      email: email,
       password: password,
       name: name,
       authToken: authToken,
     }),
   });
 
-  if (res.ok) {
-    window.location.replace("/");
-  }
+  if (res.ok) window.location.replace("/");
+
+  const {
+    email: emailError,
+    password: passwordError,
+    name: nameError,
+    authToken: authTokenError,
+  } = (await res.json()).error;
+
+  if (emailError) emailInput.throwError(emailError);
+  if (passwordError) passwordInput.throwError(passwordError);
+  if (nameError) nameInput.throwError(nameError);
+  if (authTokenError) authTokenInput.throwError(authTokenError);
 });

@@ -12,10 +12,10 @@ export const schema = joi.object({
 });
 
 export type ServerConfig = {
-  port: number;
-  logDir: string;
-  cookieSecret: string;
-  sessionSecret: string;
+  readonly port: number;
+  readonly logDir: string;
+  readonly cookieSecret: string;
+  readonly sessionSecret: string;
 };
 
 export default ServerConfig;

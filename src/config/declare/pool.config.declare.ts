@@ -10,7 +10,7 @@ export const schema = joi.object({
 });
 
 export type PoolConfig = PoolOptions & {
-  connectionLimit: number;
+  readonly connectionLimit: number;
 };
 
 export default PoolConfig;

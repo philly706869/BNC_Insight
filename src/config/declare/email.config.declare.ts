@@ -16,10 +16,10 @@ export const schema = joi.object({
 });
 
 export type EmailConfig = SMTPTransport.Options & {
-  service: string;
-  auth: {
-    user: string;
-    pass: string;
+  readonly service: string;
+  readonly auth: {
+    readonly user: string;
+    readonly pass: string;
   };
 };
 
