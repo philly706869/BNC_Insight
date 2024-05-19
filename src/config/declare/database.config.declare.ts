@@ -12,11 +12,13 @@ export const schema = joi.object({
   host: joi.string().required(),
 });
 
-export type DatabaseConfig = ConnectionOptions & {
-  readonly user: string;
-  readonly password: string;
-  readonly database: string;
-  readonly host: string;
-};
+export type DatabaseConfig = Readonly<
+  ConnectionOptions & {
+    readonly user: string;
+    readonly password: string;
+    readonly database: string;
+    readonly host: string;
+  }
+>;
 
 export default DatabaseConfig;

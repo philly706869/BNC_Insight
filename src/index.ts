@@ -1,7 +1,7 @@
 import express from "express";
 import http from "http";
 import config from "./config/server.config.js";
-import api from "./api/routes/api.js";
+import api from "./api/api.js";
 import logger from "./util/logger.js";
 import path from "path";
 import { path as approot } from "./util/appRootPath.js";

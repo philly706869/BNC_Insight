@@ -1,7 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import expressSession from "express-session";
-import config from "../../config/server.config.js";
+import config from "../config/server.config.js";
 
 const user = express.Router();
 

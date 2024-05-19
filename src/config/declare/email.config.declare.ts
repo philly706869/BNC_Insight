@@ -15,12 +15,14 @@ export const schema = joi.object({
     .required(),
 });
 
-export type EmailConfig = SMTPTransport.Options & {
-  readonly service: string;
-  readonly auth: {
-    readonly user: string;
-    readonly pass: string;
-  };
-};
+export type EmailConfig = Readonly<
+  SMTPTransport.Options & {
+    readonly service: string;
+    readonly auth: {
+      readonly user: string;
+      readonly pass: string;
+    };
+  }
+>;
 
 export default EmailConfig;

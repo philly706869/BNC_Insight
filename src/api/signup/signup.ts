@@ -1,16 +1,18 @@
-import { Request, Response } from "express";
+import express from "express";
 import { FieldValidationError, validationResult } from "express-validator";
-import validators from "../util/validators.js";
 
-export default [
-  validators.newEmail,
-  validators.password,
-  validators.name,
-  validators.authToken
-    .bail()
-    .custom((input) => {})
-    .withMessage("Authentication token is not valid."),
-  (req: Request, res: Response) => {
+const router = express.Router();
+
+router.post(
+  "/",
+  // validators.newEmail,
+  // validators.password,
+  // validators.name,
+  // validators.authToken
+  //   .bail()
+  //   .custom((input) => {})
+  //   .withMessage("Authentication token is not valid."),
+  (req, res) => {
     const validation = validationResult(req);
 
     if (!validation.isEmpty()) {
@@ -36,5 +38,7 @@ export default [
     } = req.body;
 
     res.status(201).end();
-  },
-];
+  }
+);
+
+export default router;

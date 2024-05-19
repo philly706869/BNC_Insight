@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { validationResult } from "express-validator";
-import validators from "../util/validators.js";
+import validators from "./signup/validation/validators.js";
 
 export default [
   validators.email.bail().custom((input) => {}),

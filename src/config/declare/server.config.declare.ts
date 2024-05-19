@@ -11,11 +11,11 @@ export const schema = joi.object({
   sessionSecret: joi.string().required(),
 });
 
-export type ServerConfig = {
+export type ServerConfig = Readonly<{
   readonly port: number;
   readonly logDir: string;
   readonly cookieSecret: string;
   readonly sessionSecret: string;
-};
+}>;
 
 export default ServerConfig;

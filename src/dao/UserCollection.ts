@@ -1,0 +1,1 @@
+const UserCollection = Object.freeze({});
