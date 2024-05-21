@@ -8,7 +8,7 @@ const passwordConfirmInput = intializeInput("password-confirm-input");
 const nameInput = intializeInput("name-input");
 const authTokenInput = intializeInput("auth-token-input");
 
-const signupButton = document.querySelector(".submit-button");
+const signupButton = document.querySelector(".continue-button");
 
 // sign up 버튼 클릭시 이벤트 처리
 signupButton.addEventListener("click", async (event) => {
@@ -21,6 +21,8 @@ signupButton.addEventListener("click", async (event) => {
   passwordConfirmInput.clearError();
   nameInput.clearError();
   authTokenInput.clearError();
+
+  emailInput.throwError("test\ntest");
 
   // input에서 값 불러오기
   const email = emailInput.value.trim() || "";
