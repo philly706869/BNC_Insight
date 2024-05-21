@@ -6,7 +6,6 @@
     <title>The News - Sign Up</title>
     <link href="/static/css/default.css" rel="stylesheet" />
     <link href="/static/css/account.css" rel="stylesheet" />
-    <link href="/static/css/signup.css" rel="stylesheet" />
   </head>
   <body>
     <form class="form">
@@ -14,78 +13,88 @@
         <a class="logo" href="/"><img src="/static/img/logo.svg" /></a>
         <h1>Sign Up</h1>
       </header>
-      <ul class="list">
-        <li>
-          <input
-            class="input"
-            id="email-input"
-            type="text"
-            autocomplete="off"
-            title="Please enter your Email."
-            required
-            autofocus
-          />
-          <label class="placeholder" for="email-input">Email</label>
-          <label class="error-message" for="email-input" hidden></label>
-        </li>
-        <li>
-          <input
-            class="input"
-            id="password-input"
-            type="password"
-            title="Please enter your password."
-            required
-          />
-          <label class="placeholder" for="password-input">Password</label>
-          <label class="error-message" for="password-input" hidden></label>
-        </li>
-        <li>
-          <input
-            class="input"
-            id="password-confirm-input"
-            type="password"
-            title="Please confirm your password."
-            required
-          />
-          <label class="placeholder" for="password-confirm-input"
-            >Password Confirm</label
-          >
-          <label
-            class="error-message"
-            for="password-confirm-input"
-            hidden
-          ></label>
-        </li>
-        <li>
-          <input
-            class="input"
-            id="name-input"
-            type="text"
-            autocomplete="off"
-            title="Please enter a name to be displayed."
-            required
-          />
-          <label class="placeholder" for="name-input">Name</label>
-          <label class="error-message" for="name-input" hidden></label>
-        </li>
-        <li>
-          <input
-            class="input"
-            id="auth-token-input"
-            type="text"
-            autocomplete="off"
-            title="Please enter the authentication token provided by the administrator."
-            required
-          />
-          <label class="placeholder" for="auth-token-input"
-            >Authentication Token</label
-          >
-          <label class="error-message" for="auth-token-input" hidden></label>
-        </li>
-        <li>
-          <button class="submit-button">Sign Up</button>
-        </li>
-      </ul>
+      <main>
+        <ul class="slider">
+          <li class="slide">
+            <div class="input-wrapper">
+              <input
+                class="input"
+                id="email-input"
+                type="text"
+                autocomplete="off"
+                title="Please enter your Email."
+                required
+                autofocus
+              />
+              <label class="placeholder" for="email-input">Email</label>
+            </div>
+            <label class="error-message" for="email-input" hidden></label>
+          </li>
+          <li class="slide">
+            <div class="input-wrapper">
+              <input
+                class="input"
+                id="password-input"
+                type="password"
+                title="Please enter your password."
+                required
+              />
+              <label class="placeholder" for="password-input">Password</label>
+            </div>
+            <label class="error-message" for="password-input" hidden></label>
+          </li>
+          <li class="slide">
+            <div class="input-wrapper">
+              <input
+                class="input"
+                id="password-confirm-input"
+                type="password"
+                title="Please confirm your password."
+                required
+              />
+              <label class="placeholder" for="password-confirm-input"
+                >Password Confirm</label
+              >
+            </div>
+            <label
+              class="error-message"
+              for="password-confirm-input"
+              hidden
+            ></label>
+          </li>
+          <li class="slide">
+            <div class="input-wrapper">
+              <input
+                class="input"
+                id="name-input"
+                type="text"
+                autocomplete="off"
+                title="Please enter a name to be displayed."
+                required
+              />
+              <label class="placeholder" for="name-input">Name</label>
+            </div>
+            <label class="error-message" for="name-input" hidden></label>
+          </li>
+          <li class="slide">
+            <div class="input-wrapper">
+              <input
+                class="input"
+                id="auth-token-input"
+                type="text"
+                autocomplete="off"
+                title="Please enter the authentication token provided by the administrator."
+                required
+              />
+              <label class="placeholder" for="auth-token-input"
+                >Authentication Token</label
+              >
+            </div>
+            <label class="error-message" for="auth-token-input" hidden></label>
+          </li>
+        </ul>
+        <button class="submit-button">Sign Up</button>
+      </main>
     </form>
     <script type="module" src="/static/js/signup.js"></script>
   </body>
