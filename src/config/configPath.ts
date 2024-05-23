@@ -1,4 +1,4 @@
 import path from "path";
-import { path as approot } from "../../src/util/appRootPath.js";
+import __dirname from "../resource/__dirname.js";
 
-export default path.join(approot, "config");
+export default path.join(__dirname, "config");
