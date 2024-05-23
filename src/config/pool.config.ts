@@ -1,10 +1,18 @@
-import { PoolConfig, path, schema } from "./declare/pool.config.declare.js";
+import { join } from "path";
+import configPath from "./configPath.js";
+import ajv from "./ajv.js";
 import getConfig from "./configReader.js";
 
-const object = await getConfig(path, schema);
+const path = join(configPath, "pool.json");
 
-export const config: PoolConfig = Object.freeze({
-  connectionLimit: object.connectionLimit,
+interface PoolConfig {
+  readonly connectionLimit: number;
+}
+
+const parse = ajv.compileParser<PoolConfig>({
+  properties: {
+    connectionLimit: { type: "uint32" },
+  },
 });
 
-export default config;
+export default getConfig(path, parse);

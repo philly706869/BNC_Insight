@@ -22,3 +22,6 @@ const server = http.createServer(app);
 server.listen(config.port, () => {
   logger.info(`http server started listening on port ${config.port}`);
 });
+
+import conf from "./config/database.config.js";
+console.log(conf);

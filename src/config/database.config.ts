@@ -1,17 +1,24 @@
-import {
-  DatabaseConfig,
-  path,
-  schema,
-} from "./declare/database.config.declare.js";
+import { join } from "path";
+import configPath from "./configPath.js";
+import ajv from "./ajv.js";
 import getConfig from "./configReader.js";
 
-const object = await getConfig(path, schema);
+const path = join(configPath, "database.json");
 
-export const config: DatabaseConfig = Object.freeze({
-  user: object.user,
-  password: object.password,
-  database: object.database,
-  host: object.host,
+interface DatabaseConfig {
+  readonly user: string;
+  readonly password: string;
+  readonly database: string;
+  readonly host: string;
+}
+
+const parse = ajv.compileParser<DatabaseConfig>({
+  properties: {
+    user: { type: "string" },
+    password: { type: "string" },
+    database: { type: "string" },
+    host: { type: "string" },
+  },
 });
 
-export default config;
+export default getConfig(path, parse);

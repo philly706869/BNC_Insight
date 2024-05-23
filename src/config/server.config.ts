@@ -1,13 +1,24 @@
-import { ServerConfig, path, schema } from "./declare/server.config.declare.js";
+import { join } from "path";
+import configPath from "./configPath.js";
+import ajv from "./ajv.js";
 import getConfig from "./configReader.js";
 
-const object = await getConfig(path, schema);
+const path = join(configPath, "server.json");
 
-export const config: ServerConfig = Object.freeze({
-  port: object.port,
-  logDir: object.logDir,
-  cookieSecret: object.cookieSecret,
-  sessionSecret: object.sessionSecret,
+interface ServerConfig {
+  readonly port: number;
+  readonly logDir: string;
+  readonly cookieSecret: string;
+  readonly sessionSecret: string;
+}
+
+const parse = ajv.compileParser<ServerConfig>({
+  properties: {
+    port: { type: "uint32" },
+    logDir: { type: "string" },
+    cookieSecret: { type: "string" },
+    sessionSecret: { type: "string" },
+  },
 });
 
-export default config;
+export default getConfig(path, parse);
