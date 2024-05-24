@@ -8,31 +8,37 @@ import {
   Table,
 } from "sequelize-typescript";
 
-@Table({})
-class User extends Model {
+@Table({ modelName: "users" })
+export class User extends Model {
   @PrimaryKey
   @AutoIncrement
   @AllowNull(false)
   @Column(DataType.SMALLINT.UNSIGNED)
-  public uid!: number;
+  declare uid: number;
 
   @AllowNull(false)
-  @Column(DataType.UUIDV4)
-  public uuid!: string;
+  @Column(DataType.UUID)
+  declare uuid: string;
 
   @AllowNull(false)
-  @Column(DataType.STRING(320))
-  public email!: string;
+  @Column(DataType.SMALLINT.UNSIGNED)
+  declare tokenUid: number;
+
+  @AllowNull(false)
+  @Column(DataType.STRING(64))
+  declare id: string;
 
   @AllowNull(false)
   @Column(DataType.STRING(60).BINARY)
-  public password!: string;
+  declare password: string;
 
   @AllowNull(false)
   @Column(DataType.STRING(32))
-  public name!: string;
+  declare name: string;
 
   @AllowNull(false)
-  @Column(DataType.DATE)
-  public creationDate!: Date;
+  @Column(DataType.BOOLEAN)
+  declare isAdmin: boolean;
 }
+
+export default User;

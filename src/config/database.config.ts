@@ -2,14 +2,16 @@ import { join } from "path";
 import configPath from "./configPath.js";
 import ajv from "./ajv.js";
 import getConfig from "./configReader.js";
+import { Dialect } from "sequelize";
 
 const path = join(configPath, "database.json");
 
 interface DatabaseConfig {
-  readonly user: string;
+  readonly username: string;
   readonly password: string;
   readonly database: string;
   readonly host: string;
+  readonly dialect: Dialect;
   readonly pool: {
     readonly max: number;
     readonly min: number;
@@ -18,7 +20,7 @@ interface DatabaseConfig {
 
 const parse = ajv.compileParser<DatabaseConfig>({
   properties: {
-    user: { type: "string" },
+    username: { type: "string" },
     password: { type: "string" },
     database: { type: "string" },
     host: { type: "string" },

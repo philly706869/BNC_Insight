@@ -24,8 +24,8 @@ server.listen(config.port, async () => {
   logger.info(`http server started listening on port ${config.port}`);
 
   try {
-    await sequelize.authenticate();
-    logger.info("database connect succeed");
+    await sequelize.sync({ logging: false });
+    logger.info("database sync succeed");
   } catch (error) {
     logger.error(error);
   }
