@@ -2,9 +2,10 @@ import express from "express";
 import http from "http";
 import config from "./config/server.config.js";
 import api from "./api/api.js";
-import logger from "./resource/logger.js";
+import logger from "./util/logger.js";
 import path from "path";
-import __dirname from "./resource/__dirname.js";
+import __dirname from "./util/__dirname.js";
+import sequelize from "./model/sequelize.js";
 
 const app = express();
 
@@ -19,6 +20,13 @@ app.use(
 
 const server = http.createServer(app);
 
-server.listen(config.port, () => {
+server.listen(config.port, async () => {
   logger.info(`http server started listening on port ${config.port}`);
+
+  try {
+    await sequelize.authenticate();
+    logger.info("database connect succeed");
+  } catch (error) {
+    logger.error(error);
+  }
 });

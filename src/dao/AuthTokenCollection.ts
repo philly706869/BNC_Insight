@@ -1,4 +1,4 @@
-import pool from "../resource/connectionPool.js";
+import pool from "../util/connectionPool.js";
 
 export const AuthTokenCollection = Object.freeze({
   async validate(token: string) {

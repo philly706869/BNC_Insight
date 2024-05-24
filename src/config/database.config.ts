@@ -10,6 +10,10 @@ interface DatabaseConfig {
   readonly password: string;
   readonly database: string;
   readonly host: string;
+  readonly pool: {
+    readonly max: number;
+    readonly min: number;
+  };
 }
 
 const parse = ajv.compileParser<DatabaseConfig>({
@@ -18,6 +22,13 @@ const parse = ajv.compileParser<DatabaseConfig>({
     password: { type: "string" },
     database: { type: "string" },
     host: { type: "string" },
+    dialect: { type: "string" },
+    pool: {
+      properties: {
+        max: { type: "uint32" },
+        min: { type: "uint32" },
+      },
+    },
   },
 });
 
