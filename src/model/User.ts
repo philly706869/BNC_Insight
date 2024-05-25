@@ -6,6 +6,7 @@ import {
   Model,
   PrimaryKey,
   Table,
+  Unique,
 } from "sequelize-typescript";
 
 @Table({ modelName: "users" })
@@ -16,14 +17,17 @@ export class User extends Model {
   @Column(DataType.SMALLINT.UNSIGNED)
   declare uid: number;
 
+  @Unique
   @AllowNull(false)
   @Column(DataType.UUID)
   declare uuid: string;
 
+  @Unique
   @AllowNull(false)
   @Column(DataType.SMALLINT.UNSIGNED)
   declare tokenUid: number;
 
+  @Unique
   @AllowNull(false)
   @Column(DataType.STRING(64))
   declare id: string;

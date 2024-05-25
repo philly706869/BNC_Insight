@@ -6,6 +6,7 @@ import {
   Model,
   PrimaryKey,
   Table,
+  Unique,
 } from "sequelize-typescript";
 
 @Table({ modelName: "auth_tokens" })
@@ -16,10 +17,12 @@ export class AuthToken extends Model {
   @Column(DataType.SMALLINT.UNSIGNED)
   declare uid: number;
 
+  @Unique
   @AllowNull(false)
   @Column(DataType.STRING(128))
   declare token: string;
 
+  @Unique
   @AllowNull(true)
   @Column(DataType.SMALLINT.UNSIGNED)
   declare allocedUserUid: number | null;
