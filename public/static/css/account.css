@@ -6,32 +6,30 @@ body {
 }
 
 header {
-  height: 100px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* box-shadow: 0 0 5px gray; */
-  border-bottom: 3px solid var(--scarlet);
+  padding: 10px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 0.125em 0.1875em;
 }
 
 .logo {
-  width: 70px;
-  height: 70px;
   display: block;
-  margin: 10px;
-}
-
-.logo > img {
-  width: 100%;
-  height: 100%;
+  font-size: 35px;
+  color: var(--regular-scarlet);
 }
 
 main {
-  flex: 1 1 auto;
+  flex: 1 1;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
+}
+
+form {
+  height: 500px;
 }
 
 h1 {
@@ -77,18 +75,18 @@ h1 {
   height: 100%;
   box-sizing: border-box;
   border: 1px solid gray;
-  border-radius: 5px;
+  border-radius: 3px;
   padding: 0 10px;
   font-size: large;
 }
 
 .input:focus {
   outline: none;
-  border: 2px solid var(--blue-2);
+  border-color: black;
 }
 
 .input-error {
-  border: 2px solid var(--red);
+  border: 2px solid var(--scarlet);
 }
 
 .placeholder {
@@ -144,26 +142,12 @@ h1 {
   width: 100%;
   height: 50px;
   border: none;
-  background-color: var(--scarlet);
+  border-radius: 3px;
+  background-color: var(--regular-scarlet);
   color: white;
   font-size: large;
 }
 
 .continue-button:hover {
   background-color: var(--deep-scarlet);
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.test {
-  -webkit-animation: fadeOut 500ms;
-  -moz-animation: fadeOut 500ms;
-  animation: fadeOut 500ms;
 }
