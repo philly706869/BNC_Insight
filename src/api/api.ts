@@ -1,27 +1,35 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import config from "../config/server.config.js";
 import expressSession from "express-session";
-import signup from "./signup/signup.js";
-import login from "./login.js";
-import logout from "./logout.js";
-import user from "./user.js";
+import { config } from "../config/server.config.js";
+import { signup } from "./signup.js";
+import { login } from "./login.js";
+import { logout } from "./logout.js";
+import { user } from "./user.js";
 
-const api = express.Router();
+export const api = express.Router();
 
 api.use(express.json());
 api.use(cookieParser(config.cookieSecret));
 api.use(
   expressSession({
     secret: config.sessionSecret,
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      signed: true,
+      maxAge: 1000 * 60 * 60 * 24 * 31,
+    },
   })
 );
+
+declare module "express-session" {
+  export interface SessionData {
+    userUid: number;
+  }
+}
 
 api.use("/signup", signup);
 api.post("/login", login);
 api.post("/logout", logout);
 api.use("/user", user);
-
-export default api;

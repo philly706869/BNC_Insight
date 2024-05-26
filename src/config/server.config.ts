@@ -1,7 +1,7 @@
 import { join } from "path";
-import configPath from "./configPath.js";
-import ajv from "./ajv.js";
-import getConfig from "./configReader.js";
+import { configPath } from "./configPath.js";
+import { ajv } from "./ajv.js";
+import { readConfig } from "./configReader.js";
 
 const path = join(configPath, "server.json");
 
@@ -21,4 +21,4 @@ const parse = ajv.compileParser<ServerConfig>({
   },
 });
 
-export default getConfig(path, parse);
+export const config = readConfig(path, parse);

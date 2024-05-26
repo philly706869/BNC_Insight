@@ -1,5 +1,4 @@
-import { AuthToken } from "../src/model/AuthToken.js";
-import sequelize from "../src/model/sequelize.js";
+import { sequelize, AuthToken } from "../src/model/sequelize.js";
 
 await sequelize.sync();
 const newToken = new AuthToken({

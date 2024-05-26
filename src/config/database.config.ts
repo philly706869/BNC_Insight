@@ -1,7 +1,7 @@
 import { join } from "path";
-import configPath from "./configPath.js";
-import ajv from "./ajv.js";
-import getConfig from "./configReader.js";
+import { configPath } from "./configPath.js";
+import { ajv } from "./ajv.js";
+import { readConfig } from "./configReader.js";
 import { Dialect } from "sequelize";
 
 const path = join(configPath, "database.json");
@@ -34,4 +34,4 @@ const parse = ajv.compileParser<DatabaseConfig>({
   },
 });
 
-export default getConfig(path, parse);
+export const config = readConfig(path, parse);

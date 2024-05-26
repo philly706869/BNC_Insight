@@ -1,11 +1,11 @@
 import express from "express";
 import http from "http";
-import config from "./config/server.config.js";
-import api from "./api/api.js";
-import logger from "./util/logger.js";
+import { config } from "./config/server.config.js";
+import { api } from "./api/api.js";
+import { logger } from "./util/logger.js";
 import path from "path";
-import __dirname from "./util/__dirname.js";
-import sequelize from "./model/sequelize.js";
+import { __dirname } from "./util/__dirname.js";
+import { sequelize } from "./model/sequelize.js";
 
 const app = express();
 
@@ -24,7 +24,7 @@ server.listen(config.port, async () => {
   logger.info(`http server started listening on port ${config.port}`);
 
   try {
-    await sequelize.sync();
+    await sequelize.sync({ force: true });
     logger.info("database sync succeed");
   } catch (error) {
     logger.error(error);

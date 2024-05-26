@@ -1,6 +1,6 @@
 import winston, { transports } from "winston";
 import winstonDRF from "winston-daily-rotate-file";
-import config from "../config/server.config.js";
+import { config } from "../config/server.config.js";
 import path from "path";
 
 const { combine, timestamp, label, printf, colorize } = winston.format;
@@ -37,5 +37,3 @@ export const logger = winston.createLogger({
     }),
   ],
 });
-
-export default logger;

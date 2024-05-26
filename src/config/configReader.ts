@@ -15,5 +15,3 @@ export const readConfig = <T>(path: string, parse: JTDParser<T>): T => {
 
   return config;
 };
-
-export default readConfig;
