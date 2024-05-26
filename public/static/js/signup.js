@@ -1,5 +1,8 @@
 import intializeInput from "./intializeInput.js";
 import byteSizeOf from "./byteSizeOf.js";
+import { App } from "./app.js";
+
+const app = new App(document.querySelector("#app"));
 
 // input 초기화 하기
 const emailInput = intializeInput("email-input");
