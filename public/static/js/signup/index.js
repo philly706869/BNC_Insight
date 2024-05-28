@@ -1,5 +1,6 @@
-import intializeInput from "./intializeInput.js";
-import byteSizeOf from "./byteSizeOf.js";
+import {} from "./components/loader.js";
+import intializeInput from "../intializeInput.js";
+import byteSizeOf from "../byteSizeOf.js";
 
 $(document).ready(() => {
   $(".input-box");

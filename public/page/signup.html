@@ -6,12 +6,7 @@
     <title>BNC_Insight Sign Up</title>
     <link href="/static/css/account.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" defer></script>
-    <script
-      type="module"
-      src="/static/js/signup/components/loadComponents.js"
-      defer
-    ></script>
-    <script type="module" src="/static/js/signup.js" defer></script>
+    <script type="module" src="/static/js/signup/index.js" defer></script>
   </head>
   <body>
     <header>
@@ -22,12 +17,12 @@
         <h1 class="font-1">Sign Up</h1>
         <ul class="slider">
           <li class="slide">
-            <x-input
+            <wcpnt-input
               id="id-input"
               title="Please enter your ID."
               autofocus
               placeholder="ID"
-            ></x-input>
+            ></wcpnt-input>
             <div class="input-box">
               <div class="input-wrapper">
                 <input
