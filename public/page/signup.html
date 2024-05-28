@@ -5,9 +5,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BNC_Insight Sign Up</title>
     <link href="/static/css/account.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" defer></script>
+    <script
+      type="module"
+      src="/static/js/signup/components/loadComponents.js"
+      defer
+    ></script>
+    <script type="module" src="/static/js/signup.js" defer></script>
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/static/js/signup.js"></script>
+    <header>
+      <a class="logo font-cg-bold" href="/">BNC_Insight</a>
+    </header>
+    <main>
+      <form>
+        <h1 class="font-1">Sign Up</h1>
+        <ul class="slider">
+          <li class="slide">
+            <x-input
+              id="id-input"
+              title="Please enter your ID."
+              autofocus
+              placeholder="ID"
+            ></x-input>
+            <div class="input-box">
+              <div class="input-wrapper">
+                <input
+                  class="input"
+                  id="id-input"
+                  type="text"
+                  autocomplete="off"
+                  title="Please enter your ID."
+                  required
+                  autofocus
+                />
+                <label class="placeholder" for="id-input">ID</label>
+              </div>
+              <label class="error-message" for="id-input" hidden></label>
+            </div>
+            <button class="continue-button">Continue</button>
+          </li>
+          <li class="slide">
+            <div class="input-box">
+              <div class="input-wrapper">
+                <input
+                  class="input"
+                  id="password-input"
+                  type="password"
+                  title="Please enter your password."
+                  required
+                />
+                <label class="placeholder" for="password-input">Password</label>
+              </div>
+              <label class="error-message" for="password-input" hidden></label>
+            </div>
+          </li>
+          <li class="slide">
+            <div class="input-box">
+              <div class="input-wrapper">
+                <input
+                  class="input"
+                  id="password-confirm-input"
+                  type="password"
+                  title="Please confirm your password."
+                  required
+                />
+                <label class="placeholder" for="password-confirm-input"
+                  >Password Confirm</label
+                >
+              </div>
+              <label
+                class="error-message"
+                for="password-confirm-input"
+                hidden
+              ></label>
+            </div>
+          </li>
+          <li class="slide">
+            <div class="input-box">
+              <div class="input-wrapper">
+                <input
+                  class="input"
+                  id="name-input"
+                  type="text"
+                  autocomplete="off"
+                  title="Please enter a name to be displayed."
+                  required
+                />
+                <label class="placeholder" for="name-input">Name</label>
+              </div>
+              <label class="error-message" for="name-input" hidden></label>
+            </div>
+          </li>
+          <li class="slide">
+            <div class="input-box">
+              <div class="input-wrapper">
+                <input
+                  class="input"
+                  id="auth-token-input"
+                  type="text"
+                  autocomplete="off"
+                  title="Please enter the authentication token provided by the administrator."
+                  required
+                />
+                <label class="placeholder" for="auth-token-input"
+                  >Authentication Token</label
+                >
+              </div>
+              <label
+                class="error-message"
+                for="auth-token-input"
+                hidden
+              ></label>
+            </div>
+          </li>
+        </ul>
+      </form>
+    </main>
   </body>
 </html>
