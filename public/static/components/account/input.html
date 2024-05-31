@@ -1,0 +1,54 @@
+<style>
+  @import "/static/css/default/default.css";
+
+  :host {
+    position: relative;
+    height: 50px;
+    display: block;
+  }
+
+  #input {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    border: 1px solid gray;
+    border-radius: 3px;
+    padding: 0 10px;
+    font-size: large;
+  }
+
+  #input:focus {
+    outline: none;
+    border-color: black;
+  }
+
+  #input[error] {
+    border: 2px solid var(--scarlet);
+  }
+
+  #placeholder {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    transition: 0.2s;
+    transition-timing-function: ease cubic-bezier(0.25, 0.1, 0.25, 1);
+    background-color: white;
+    color: rgba(0, 0, 0, 0.5);
+    font-size: large;
+  }
+
+  #input:focus + #placeholder,
+  #input:valid + #placeholder {
+    top: 0px;
+    font-size: small;
+    color: rgba(0, 0, 0, 0.9);
+  }
+</style>
+<input id="input" type="text" autocomplete="off" required />
+<label id="placeholder" for="input"></label>

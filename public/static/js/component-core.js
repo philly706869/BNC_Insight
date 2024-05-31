@@ -9,11 +9,10 @@ export class Component extends HTMLElement {
   onAdopted() {}
   onUpdate() {}
 
-  constructor(template) {
+  constructor(html) {
     super();
-
     this.#shadowRoot = this.attachShadow({ mode: "closed" });
-    this.#shadowRoot.innerHTML = template;
+    this.#shadowRoot.innerHTML = html;
   }
 
   connectedCallback() {
@@ -32,3 +31,10 @@ export class Component extends HTMLElement {
     this.onUpdate();
   }
 }
+
+export const fetchHTML = async (url) => {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`status not ok GET ${url}`);
+  const html = await res.text();
+  return html;
+};

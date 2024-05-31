@@ -4,46 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BNC_Insight Log In</title>
-    <link href="/static/css/default.css" rel="stylesheet" />
-    <link href="/static/css/palette.css" rel="stylesheet" />
-    <link href="/static/css/account.css" rel="stylesheet" />
+    <script
+      type="module"
+      src="/static/js/component-dependency/login.js"
+      defer
+    ></script>
   </head>
   <body>
-    <form class="form">
-      <header>
-        <a class="logo" href="/"><img src="/static/img/logo.svg" /></a>
-        <h1>Log In</h1>
-      </header>
-      <ul class="list">
-        <li>
-          <input
-            class="input"
-            id="id-input"
-            type="text"
-            autocomplete="off"
-            title="Please enter ID."
-            required
-            autofocus
-          />
-          <label class="placeholder" for="id-input">ID</label>
-          <label class="error-message" for="id-input" hidden></label>
-        </li>
-        <li>
-          <input
-            class="input"
-            id="password-input"
-            type="password"
-            title="Please enter password."
-            required
-          />
-          <label class="placeholder" for="password-input">Password</label>
-          <label class="error-message" for="password-input" hidden></label>
-        </li>
-        <li>
-          <button class="submit-button">Log In</button>
-        </li>
-      </ul>
-    </form>
-    <script type="module" src="/static/js/login.js"></script>
+    <wcpnt-account-app title="Log In">
+      <wcpnt-login-panel slot="panel"></wcpnt-login-panel>
+    </wcpnt-account-app>
   </body>
 </html>
