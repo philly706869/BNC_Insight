@@ -15,7 +15,7 @@ authTokenSlide.addEventListener("input", (event) => {
 
 const seconds = 5;
 
-for (let i = 0; i < 5; i++) {
+for (let i = 0; i < seconds; i++) {
   setTimeout(() => {
     authTokenSlide.setAttribute(
       "error",
