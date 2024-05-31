@@ -27,8 +27,8 @@ export class Component extends HTMLElement {
     this.onAdopted();
   }
 
-  attributeChangedCallback() {
-    this.onUpdate();
+  attributeChangedCallback(name, oldValue, newValue) {
+    this.onUpdate(name, oldValue, newValue);
   }
 }
 

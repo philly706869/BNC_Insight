@@ -4,15 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BNC_Insight Log In</title>
-    <script
-      type="module"
-      src="/static/js/component-dependency/login.js"
-      defer
-    ></script>
+    <script type="module" src="/static/js/login.js" defer></script>
   </head>
-  <body>
+  <body style="margin: 0">
     <wcpnt-account-app title="Log In">
-      <wcpnt-login-panel slot="panel"></wcpnt-login-panel>
+      <wcpnt-slide
+        id="id-slide"
+        title="Please enter your ID."
+        placeholder="ID"
+        autofocus
+        button-text="Continue"
+      ></wcpnt-slide>
+      <wcpnt-slide
+        id="password-slide"
+        title="Please enter your password."
+        placeholder="Password"
+        password-mode
+        button-text="Continue"
+      ></wcpnt-slide>
     </wcpnt-account-app>
   </body>
 </html>
