@@ -15,7 +15,12 @@ customElements.define(
       this.#placeholder = this.shadowRoot.getElementById("placeholder");
     }
 
-    static observedAttributes = ["password-mode", "autofocus", "placeholder"];
+    static observedAttributes = [
+      "password-mode",
+      "autofocus",
+      "placeholder",
+      "error",
+    ];
 
     onUpdate(name, oldValue, newValue) {
       switch (name) {
@@ -30,6 +35,9 @@ customElements.define(
           break;
         case "placeholder":
           this.#placeholder.textContent = newValue;
+          break;
+        case "error":
+          this.#input.toggleAttribute("error", this.hasAttribute("error"));
           break;
       }
     }
