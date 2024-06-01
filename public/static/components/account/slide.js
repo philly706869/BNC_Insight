@@ -1,32 +1,42 @@
-import { Component, fetchHTML } from "../../js/component-core.js";
+import { fetchHTML } from "../../js/fetchHTML.js";
 
 const html = await fetchHTML("/static/components/account/slide.html");
 
 customElements.define(
   "wcpnt-slide",
-  class extends Component {
+  class extends HTMLElement {
     #input;
     #error;
-    #submitButton;
+    #submit;
 
     constructor() {
-      super(html);
+      super();
+      const shadowRoot = this.attachShadow({ mode: "closed" });
+      shadowRoot.innerHTML = html;
 
-      this.#input = this.shadowRoot.getElementById("input");
-      this.#error = this.shadowRoot.getElementById("error");
-      this.#submitButton = this.shadowRoot.getElementById("submit-button");
+      this.#input = shadowRoot.getElementById("input");
+      this.#error = shadowRoot.getElementById("error");
+      this.#submit = shadowRoot.getElementById("submit");
+
+      const handler = (event) => {
+        this.dispatchEvent(new Event("submit", event));
+      };
+
+      this.#input.addEventListener("enter", handler);
+      this.#submit.addEventListener("click", handler);
+
+      this.dispatchEvent(new CustomEvent("load"));
     }
 
     static observedAttributes = [
       "title",
       "placeholder",
       "password-mode",
-      "autofocus",
       "button-text",
       "error",
     ];
 
-    onUpdate(name, oldValue, newValue) {
+    attributeChangedCallback(name, oldValue, newValue) {
       switch (name) {
         case "title":
           this.#input.setAttribute("title", newValue);
@@ -37,11 +47,8 @@ customElements.define(
         case "password-mode":
           this.#input.setAttribute("password-mode", newValue);
           break;
-        case "autofocus":
-          this.#input.setAttribute("autofocus", newValue);
-          break;
         case "button-text":
-          this.#submitButton.textContent = newValue;
+          this.#submit.textContent = newValue;
           break;
         case "error":
           this.#input.toggleAttribute("error", newValue);
@@ -49,6 +56,14 @@ customElements.define(
           this.#error.textContent = newValue;
           break;
       }
+    }
+
+    get value() {
+      return this.#input.value;
+    }
+
+    focusInput() {
+      this.#input.focus();
     }
   }
 );

@@ -1,12 +1,14 @@
-import { Component, fetchHTML } from "../js/component-core.js";
+import { fetchHTML } from "../js/fetchHTML.js";
 
 const html = await fetchHTML("/static/components/header.html");
 
 customElements.define(
   "wcpnt-header",
-  class extends Component {
+  class extends HTMLElement {
     constructor() {
-      super(html);
+      super();
+      const shadowRoot = this.attachShadow({ mode: "closed" });
+      shadowRoot.innerHTML = html;
     }
   }
 );

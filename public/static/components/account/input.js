@@ -1,37 +1,39 @@
-import { Component, fetchHTML } from "../../js/component-core.js";
+import { fetchHTML } from "../../js/fetchHTML.js";
 
 const html = await fetchHTML("/static/components/account/input.html");
 
 customElements.define(
   "wcpnt-input",
-  class extends Component {
+  class extends HTMLElement {
     #input;
     #placeholder;
 
-    constructor() {
-      super(html);
+    static formAssociated = true;
 
-      this.#input = this.shadowRoot.getElementById("input");
-      this.#placeholder = this.shadowRoot.getElementById("placeholder");
+    constructor() {
+      super();
+      const shadowRoot = this.attachShadow({ mode: "closed" });
+      shadowRoot.innerHTML = html;
+
+      this.#input = shadowRoot.getElementById("input");
+      this.#placeholder = shadowRoot.getElementById("placeholder");
+
+      this.#input.addEventListener("keypress", (event) => {
+        if (event.key === "Enter") {
+          this.dispatchEvent(new CustomEvent("enter", event));
+        }
+      });
     }
 
-    static observedAttributes = [
-      "password-mode",
-      "autofocus",
-      "placeholder",
-      "error",
-    ];
+    static observedAttributes = ["password-mode", "placeholder", "error"];
 
-    onUpdate(name, oldValue, newValue) {
+    attributeChangedCallback(name, oldValue, newValue) {
       switch (name) {
         case "password-mode":
           this.#input.setAttribute(
             "type",
             this.hasAttribute("password-mode") ? "password" : "text"
           );
-          break;
-        case "autofocus":
-          this.#input.setAttribute("autofocus", newValue);
           break;
         case "placeholder":
           this.#placeholder.textContent = newValue;
@@ -40,6 +42,14 @@ customElements.define(
           this.#input.toggleAttribute("error", this.hasAttribute("error"));
           break;
       }
+    }
+
+    get value() {
+      return this.#input.value;
+    }
+
+    focus() {
+      this.#input.focus();
     }
   }
 );

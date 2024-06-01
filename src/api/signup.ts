@@ -18,22 +18,26 @@ import bcrypt from "bcrypt";
 
 export const signup = express.Router();
 
-signup.get("/auth/token", body("token").isString(), async (req, res) => {
-  if (!validationResult(req).isEmpty()) {
+signup.get("/auth/token", async (req, res) => {
+  if (!req.query.value) {
     res.status(400).json({ error: "token must be string" });
     return;
   }
 
-  res.status(200).json({ valid: await isAllocableToken(req.body.token) });
+  res
+    .status(200)
+    .json({ valid: await isAllocableToken(req.query.value as string) });
 });
 
-signup.get("/auth/id", body("id").isString(), async (req, res) => {
-  if (!validationResult(req).isEmpty()) {
+signup.get("/auth/id", async (req, res) => {
+  if (!req.query.value) {
     res.status(400).json({ error: "id must be string" });
     return;
   }
 
-  res.status(200).json({ valid: await checkUserById(req.body.id, true) });
+  res
+    .status(200)
+    .json({ valid: await checkUserById(req.query.value as string, true) });
 });
 
 signup.post(

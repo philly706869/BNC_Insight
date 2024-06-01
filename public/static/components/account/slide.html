@@ -35,7 +35,7 @@
     visibility: hidden;
   }
 
-  #submit-button {
+  #submit {
     width: 100%;
     height: 50px;
     border: none;
@@ -45,12 +45,16 @@
     font-size: large;
   }
 
-  #submit-button:hover {
+  #submit:hover {
     background-color: var(--deep-scarlet);
+  }
+
+  :host([hidden]) {
+    display: none;
   }
 </style>
 <div>
   <wcpnt-input id="input"></wcpnt-input>
   <label id="error" for="input" hidden></label>
 </div>
-<button id="submit-button"></button>
+<button id="submit"></button>
