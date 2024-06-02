@@ -57,6 +57,5 @@ export const isValidUserPassword = (password: string) =>
 export const isValidUserName = (name: string) => nameRegex.test(name);
 
 export const checkUserById = async (id: string, checkValid: boolean) =>
-  checkValid &&
-  isValidUserId(id) &&
+  (!checkValid || isValidUserId(id)) &&
   (await User.findOne({ where: { id: id.toLowerCase() } })) !== null;

@@ -3,6 +3,7 @@ import {
   AutoIncrement,
   Column,
   DataType,
+  Default,
   Model,
   PrimaryKey,
   Table,
@@ -24,10 +25,12 @@ export class AuthToken extends Model {
 
   @Unique
   @AllowNull(true)
+  @Default(null)
   @Column(DataType.SMALLINT.UNSIGNED)
   declare allocedUserUid: number | null;
 
   @AllowNull(false)
+  @Default(false)
   @Column(DataType.BOOLEAN)
   declare isAdminToken: boolean;
 }

@@ -37,7 +37,7 @@ signup.get("/auth/id", async (req, res) => {
 
   res
     .status(200)
-    .json({ valid: await checkUserById(req.query.value as string, true) });
+    .json({ valid: !(await checkUserById(req.query.value as string, true)) });
 });
 
 signup.post(

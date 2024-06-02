@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "npx tsx src/index.ts",
-    "dev": "nodemon --watch ./src/**/*.ts --exec npx tsx src/index.ts"
+    "dev": "nodemon --watch ./src/**/*.ts --exec npx tsx src/index.ts",
+    "newAdmin": "npx tsx test/newAdminToken.ts"
   },
   "author": "",
   "license": "ISC",

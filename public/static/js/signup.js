@@ -42,24 +42,11 @@ const throttle2 = (callback) => {
   };
 };
 
-const authTokenSlideCallback = throttle2(async (interrupt) => {
-  const reject = () => {
-    interrupt(1000, 3, (time, left) => {
-      if (left === 0) {
-        authTokenSlide.removeAttribute("error");
-        return;
-      }
-      authTokenSlide.setAttribute(
-        "error",
-        `Invalid token. Please wait for ${left} senconds.`
-      );
-    });
-  };
-
+authTokenSlide.addEventListener("submit", async () => {
   const value = authTokenSlide.value;
 
   if (!value) {
-    reject();
+    authTokenSlide.setAttribute("error", "invalid token");
     return;
   }
 
@@ -69,15 +56,13 @@ const authTokenSlideCallback = throttle2(async (interrupt) => {
   const json = await res.json();
 
   if (!res.ok || !json.valid) {
-    reject();
+    authTokenSlide.setAttribute("error", json.error || "invalid token");
     return;
   }
 
   authToken = value;
   app.nextSlide();
 });
-
-authTokenSlide.addEventListener("submit", authTokenSlideCallback);
 
 idSlide.addEventListener("submit", async (event) => {
   const value = idSlide.value;
