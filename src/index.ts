@@ -5,7 +5,7 @@ import { api } from "./api/api.js";
 import { logger } from "./util/logger.js";
 import path from "path";
 import { __dirname } from "./util/__dirname.js";
-import { sequelize } from "./model-/sequelize.js";
+import { sequelize } from "./model/sequelize.js";
 
 const app = express();
 

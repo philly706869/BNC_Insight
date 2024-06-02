@@ -12,7 +12,7 @@ import {
   isValidUserName,
   User,
   AuthToken,
-} from "../model-/sequelize.js";
+} from "../model/sequelize.js";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
 

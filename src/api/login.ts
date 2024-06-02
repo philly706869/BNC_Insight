@@ -4,7 +4,7 @@ import {
   checkUserById,
   isValidUserPassword,
   User,
-} from "../model-/sequelize.js";
+} from "../model/sequelize.js";
 import bcrypt from "bcrypt";
 
 export const login = [
