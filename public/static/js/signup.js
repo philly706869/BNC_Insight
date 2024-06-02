@@ -13,41 +13,71 @@ const passwordSlide = app.querySelector("#password-slide");
 const passwordConfirmSlide = app.querySelector("#password-confirm-slide");
 const nameSlide = app.querySelector("#name-slide");
 
-for (const slide of slides) {
-  slide.addEventListener("input", () => {
-    slide.removeAttribute("error");
-  });
-}
-
 let authToken;
 let id;
 let password;
 let name;
 
-authTokenSlide.addEventListener(
-  "submit",
-  throttle(200, async () => {
-    const value = authTokenSlide.value;
+const throttle2 = (callback) => {
+  let timer = null;
+  const interrupt = (unit, times, callback, ...args) => {
+    let time = 0;
+    const setUnitTimeout = () => {
+      time += 1;
+      if (time > times) {
+        timer = null;
+        return;
+      }
+      return setTimeout(() => {
+        if (callback) callback(time, times - time, ...args);
+        setUnitTimeout();
+      }, unit);
+    };
+    callback(0, times);
+    timer = setUnitTimeout();
+  };
+  return (...args) => {
+    if (timer) return;
+    callback(interrupt, ...args);
+  };
+};
 
-    if (!value) {
-      authTokenSlide.setAttribute("error", "invalid token");
-      return;
-    }
+const authTokenSlideCallback = throttle2(async (interrupt) => {
+  const reject = () => {
+    interrupt(1000, 3, (time, left) => {
+      if (left === 0) {
+        authTokenSlide.removeAttribute("error");
+        return;
+      }
+      authTokenSlide.setAttribute(
+        "error",
+        `Invalid token. Please wait for ${left} senconds.`
+      );
+    });
+  };
 
-    const res = await fetch(
-      "/api/signup/auth/token?" + new URLSearchParams({ value })
-    );
-    const json = await res.json();
+  const value = authTokenSlide.value;
 
-    if (!res.ok || !json.valid) {
-      authTokenSlide.setAttribute("error", json.error || "invalid token");
-      return;
-    }
+  if (!value) {
+    reject();
+    return;
+  }
 
-    authToken = value;
-    app.nextSlide();
-  })
-);
+  const res = await fetch(
+    "/api/signup/auth/token?" + new URLSearchParams({ value })
+  );
+  const json = await res.json();
+
+  if (!res.ok || !json.valid) {
+    reject();
+    return;
+  }
+
+  authToken = value;
+  app.nextSlide();
+});
+
+authTokenSlide.addEventListener("submit", authTokenSlideCallback);
 
 idSlide.addEventListener("submit", async (event) => {
   const value = idSlide.value;
