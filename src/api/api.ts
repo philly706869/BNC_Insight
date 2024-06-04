@@ -30,6 +30,6 @@ declare module "express-session" {
 }
 
 api.use("/signup", signup);
-api.post("/login", login);
-api.post("/logout", logout);
+api.use("/login", login);
+api.use("/logout", logout);
 api.use("/user", user);

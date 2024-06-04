@@ -18,7 +18,8 @@ import bcrypt from "bcrypt";
 
 export const signup = express.Router();
 
-signup.get("/auth/token", async (req, res) => {
+signup.post("/auth/token", async (req, res) => {
+  console.log(req.body);
   if (!req.query.value) {
     res.status(400).json({ error: "token must be string" });
     return;
@@ -29,7 +30,7 @@ signup.get("/auth/token", async (req, res) => {
     .json({ valid: await isAllocableToken(req.query.value as string) });
 });
 
-signup.get("/auth/id", async (req, res) => {
+signup.post("/auth/id", async (req, res) => {
   if (!req.query.value) {
     res.status(400).json({ error: "id must be string" });
     return;
