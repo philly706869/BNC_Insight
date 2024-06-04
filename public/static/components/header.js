@@ -1,6 +1,6 @@
-import { fetchHTML } from "../js/fetchHTML.js";
-
-const html = await fetchHTML("/static/components/header.html");
+const html = await fetch("/static/components/header.html").then((data) =>
+  data.text()
+);
 
 customElements.define(
   "wcpnt-header",

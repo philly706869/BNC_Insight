@@ -29,13 +29,11 @@ export class User extends Model {
 
   @Unique
   @AllowNull(false)
-  @Column(DataType.STRING(32) + " CHARACTER SET ascii COLLATE ascii_general_ci")
+  @Column(DataType.STRING(32))
   declare id: string;
 
   @AllowNull(false)
-  @Column(
-    DataType.STRING(60).BINARY + " CHARACTER SET ascii COLLATE ascii_general_ci"
-  )
+  @Column(DataType.STRING(60).BINARY)
   declare password: string;
 
   @AllowNull(false)
@@ -47,15 +45,62 @@ export class User extends Model {
   declare isAdmin: boolean;
 }
 
-const idRegex = /^\w{1,32}?$/;
-const passwordRegex = /^[!"#$%&'()*+,\-./0-9:;<=>?@A-Z[\\\]^_`a-z{|}~]{8,72}?$/;
-const nameRegex = /^\S([^\n]{0,62}?\S)?$/;
+export const validateUserId = (id: string) => {
+  const errors = [];
 
-export const isValidUserId = (id: string) => idRegex.test(id);
-export const isValidUserPassword = (password: string) =>
-  passwordRegex.test(password);
-export const isValidUserName = (name: string) => nameRegex.test(name);
+  if (!/^\w*?$/.test(id))
+    errors.push("ID can only contain letters, numbers, and underline.");
+
+  switch (true) {
+    case id.length < 1:
+      errors.push("ID cannot be empty.");
+      break;
+    case id.length > 32:
+      errors.push("ID cannot be greater than 32 characters.");
+      break;
+  }
+
+  return errors.length !== 0 ? errors : null;
+};
+export const validateUserPassword = (password: string) => {
+  const errors = [];
+
+  if (!/^[!"#$%&'()*+,\-./0-9:;<=>?@A-Z[\\\]^_`a-z{|}~]*?$/.test(password))
+    errors.push(
+      "Passwords can only contain letters, numbers, and common punctuation characters."
+    );
+
+  switch (true) {
+    case password.length < 8:
+      errors.push("Password cannot be shorter than 8 charaters.");
+      break;
+    case password.length > 72:
+      errors.push("Password cannot be greater than 72 charaters.");
+      break;
+  }
+
+  return errors.length !== 0 ? errors : null;
+};
+export const validateUserName = (name: string) => {
+  const errors = [];
+
+  if (name.trim() !== name)
+    errors.push("Name cannot start or end with a space.");
+
+  if (name.includes("\n")) errors.push("Name cannot contain line breaks.");
+
+  switch (true) {
+    case name.length < 1:
+      errors.push("Name cannot be empty");
+      break;
+    case name.length > 64:
+      errors.push("Name cannot be greater than 64 characters.");
+      break;
+  }
+
+  return errors.length !== 0 ? errors : null;
+};
 
 export const checkUserById = async (id: string, checkValid: boolean) =>
-  (!checkValid || isValidUserId(id)) &&
+  (!checkValid || validateUserId(id) !== null) &&
   (await User.findOne({ where: { id: id.toLowerCase() } })) !== null;

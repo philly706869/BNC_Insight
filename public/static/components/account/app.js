@@ -1,6 +1,6 @@
-import { fetchHTML } from "../../js/fetchHTML.js";
-
-const html = await fetchHTML("/static/components/account/app.html");
+const html = await fetch("/static/components/account/app.html").then((data) =>
+  data.text()
+);
 
 customElements.define(
   "wcpnt-account-app",

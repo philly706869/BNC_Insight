@@ -1,6 +1,6 @@
-import { fetchHTML } from "../../js/fetchHTML.js";
-
-const html = await fetchHTML("/static/components/account/slide.html");
+const html = await fetch("/static/components/account/slide.html").then((data) =>
+  data.text()
+);
 
 customElements.define(
   "wcpnt-slide",
@@ -59,7 +59,7 @@ customElements.define(
     }
 
     get value() {
-      return this.#input.value;
+      return this.#input.value || "";
     }
 
     focusInput() {

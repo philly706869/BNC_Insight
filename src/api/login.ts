@@ -2,12 +2,16 @@ import { Request, Response } from "express";
 import { body, validationResult } from "express-validator";
 import {
   checkUserById,
-  isValidUserPassword,
+  validateUserPassword,
   User,
 } from "../model/sequelize.js";
+import express from "express";
 import bcrypt from "bcrypt";
 
-export const login = [
+export const login = express.Router();
+
+login.post(
+  "/",
   body("id")
     .isString()
     .bail()
@@ -17,7 +21,7 @@ export const login = [
   body("password")
     .isString()
     .bail()
-    .custom((password: string) => isValidUserPassword(password)),
+    .custom((password: string) => validateUserPassword(password) === null),
   async (req: Request, res: Response) => {
     const validation = validationResult(req);
 
@@ -44,5 +48,5 @@ export const login = [
     req.session.userUid = user.uid;
 
     res.status(201).redirect("/");
-  },
-];
+  }
+);

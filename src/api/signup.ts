@@ -7,39 +7,21 @@ import {
 import {
   isAllocableToken,
   checkUserById,
-  isValidUserPassword,
-  isValidUserId,
-  isValidUserName,
+  validateUserPassword,
+  validateUserId,
+  validateUserName,
   User,
   AuthToken,
 } from "../model/sequelize.js";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
+import { authToken } from "./signup/auth/token.js";
+import { authId } from "./signup/auth/id.js";
 
 export const signup = express.Router();
 
-signup.post("/auth/token", async (req, res) => {
-  console.log(req.body);
-  if (!req.query.value) {
-    res.status(400).json({ error: "token must be string" });
-    return;
-  }
-
-  res
-    .status(200)
-    .json({ valid: await isAllocableToken(req.query.value as string) });
-});
-
-signup.post("/auth/id", async (req, res) => {
-  if (!req.query.value) {
-    res.status(400).json({ error: "id must be string" });
-    return;
-  }
-
-  res
-    .status(200)
-    .json({ valid: !(await checkUserById(req.query.value as string, true)) });
-});
+signup.use("/auth/token", authToken);
+signup.use("/auth/id", authId);
 
 signup.post(
   "/",
@@ -55,7 +37,7 @@ signup.post(
     .isString()
     .withMessage("id must be string")
     .bail()
-    .custom((id: string) => isValidUserId(id))
+    .custom((id: string) => validateUserId(id) !== null)
     .withMessage("invalid id")
     .bail()
     .custom(async (id: string) =>
@@ -65,12 +47,12 @@ signup.post(
   body("password")
     .isString()
     .withMessage("password must be string")
-    .custom((password: string) => isValidUserPassword(password))
+    .custom((password: string) => validateUserPassword(password) === null)
     .withMessage("invalid password"),
   body("name")
     .isString()
     .withMessage("name must be string")
-    .custom((name: string, { req }) => isValidUserName(name))
+    .custom((name: string, { req }) => validateUserName(name) !== null)
     .withMessage("invalid name"),
   async (req, res) => {
     const validation = validationResult(req);

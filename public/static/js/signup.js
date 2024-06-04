@@ -20,14 +20,13 @@ let name;
 authTokenSlide.addEventListener("submit", async () => {
   const value = authTokenSlide.value;
 
-  if (!value) {
-    authTokenSlide.setAttribute("error", "invalid token");
-    return;
-  }
-
-  const res = await fetch(
-    "/api/signup/auth/token?" + new URLSearchParams({ value })
-  );
+  const res = await fetch("/api/signup/auth/token", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ value }),
+  });
   const json = await res.json();
 
   if (!res.ok || !json.valid) {
@@ -39,17 +38,16 @@ authTokenSlide.addEventListener("submit", async () => {
   app.nextSlide();
 });
 
-idSlide.addEventListener("submit", async (event) => {
+idSlide.addEventListener("submit", async () => {
   const value = idSlide.value;
 
-  if (!value) {
-    idSlide.setAttribute("error", "invalid id");
-    return;
-  }
-
-  const res = await fetch(
-    "/api/signup/auth/id?" + new URLSearchParams({ value })
-  );
+  const res = await fetch("/api/signup/auth/id", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ value }),
+  });
   const json = await res.json();
 
   if (!res.ok || !json.valid) {
@@ -59,4 +57,8 @@ idSlide.addEventListener("submit", async (event) => {
 
   id = value;
   app.nextSlide();
+});
+
+passwordSlide.addEventListener("submit", () => {
+  const value = passwordSlide.value;
 });
