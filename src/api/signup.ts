@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import express from "express";
-import { AuthToken, isAllocableToken, User } from "../model/sequelize.js";
+import { AuthToken, User } from "../model/sequelize.js";
 import { v4 as uuidv4 } from "uuid";
 import {
   FieldValidationError,
@@ -17,7 +17,9 @@ signup.post(
     .withMessage("authToken must be string")
     .bail()
     .custom(async (token: string) =>
-      (await isAllocableToken(token)) ? Promise.resolve() : Promise.reject()
+      (await AuthToken.isAllocable(token))
+        ? Promise.resolve()
+        : Promise.reject()
     )
     .withMessage("invalid token"),
   body("id")
