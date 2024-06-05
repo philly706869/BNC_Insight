@@ -1,27 +1,14 @@
+import bcrypt from "bcrypt";
 import express from "express";
+import { AuthToken, isAllocableToken, User } from "../model/sequelize.js";
+import { v4 as uuidv4 } from "uuid";
 import {
-  body,
   FieldValidationError,
+  body,
   validationResult,
 } from "express-validator";
-import {
-  isAllocableToken,
-  checkUserById,
-  validateUserPassword,
-  validateUserId,
-  validateUserName,
-  User,
-  AuthToken,
-} from "../model/sequelize.js";
-import { v4 as uuidv4 } from "uuid";
-import bcrypt from "bcrypt";
-import { authToken } from "./signup/auth/token.js";
-import { authId } from "./signup/auth/id.js";
 
 export const signup = express.Router();
-
-signup.use("/auth/token", authToken);
-signup.use("/auth/id", authId);
 
 signup.post(
   "/",
@@ -37,22 +24,24 @@ signup.post(
     .isString()
     .withMessage("id must be string")
     .bail()
-    .custom((id: string) => validateUserId(id) !== null)
+    .custom((id: string) => User.validateId(id) !== null)
     .withMessage("invalid id")
     .bail()
     .custom(async (id: string) =>
-      (await checkUserById(id, false)) ? Promise.reject() : Promise.resolve()
+      User.validateId(id) === null && (await User.findUserById(id)) === null
+        ? Promise.resolve()
+        : Promise.reject()
     )
     .withMessage("id is already used"),
   body("password")
     .isString()
     .withMessage("password must be string")
-    .custom((password: string) => validateUserPassword(password) === null)
+    .custom((password: string) => User.validatePassword(password) === null)
     .withMessage("invalid password"),
   body("name")
     .isString()
     .withMessage("name must be string")
-    .custom((name: string, { req }) => validateUserName(name) !== null)
+    .custom((name: string, { req }) => User.validateName(name) !== null)
     .withMessage("invalid name"),
   async (req, res) => {
     const validation = validationResult(req);

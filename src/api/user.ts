@@ -1,5 +1,5 @@
-import express from "express";
 import cookieParser from "cookie-parser";
+import express from "express";
 import expressSession from "express-session";
 import { config } from "../config/server.config.js";
 

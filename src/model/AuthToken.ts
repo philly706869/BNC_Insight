@@ -36,6 +36,7 @@ export class AuthToken extends Model {
 }
 
 export const isAllocableToken = async (token: string) => {
+  if (token.length < 1 || token.length > 128) return false;
   const authToken = await AuthToken.findOne({ where: { token } });
   return authToken !== null && authToken.allocedUserUid === null;
 };

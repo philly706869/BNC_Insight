@@ -1,8 +1,8 @@
+import { Article } from "./Article.js";
+import { AuthToken } from "./AuthToken.js";
 import { config } from "../config/database.config.js";
 import { Sequelize } from "sequelize-typescript";
 import { User } from "./User.js";
-import { AuthToken } from "./AuthToken.js";
-import { Article } from "./Article.js";
 
 export const sequelize = new Sequelize({
   ...config,

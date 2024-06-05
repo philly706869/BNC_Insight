@@ -1,8 +1,8 @@
-import { join } from "path";
-import { configPath } from "./configPath.js";
 import { ajv } from "./ajv.js";
-import { readConfig } from "./configReader.js";
+import { configPath } from "./configPath.js";
 import { Dialect } from "sequelize";
+import { join } from "path";
+import { readConfig } from "./configReader.js";
 
 const path = join(configPath, "database.json");
 
