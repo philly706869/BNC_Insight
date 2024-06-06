@@ -1,6 +1,6 @@
+import { join } from "path";
 import { ajv } from "./ajv.js";
 import { configPath } from "./configPath.js";
-import { join } from "path";
 import { readConfig } from "./configReader.js";
 
 const path = join(configPath, "server.json");

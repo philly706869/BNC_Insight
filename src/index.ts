@@ -1,11 +1,11 @@
 import express from "express";
 import http from "http";
 import path from "path";
-import { __dirname } from "./util/__dirname.js";
 import { api } from "./api/api.js";
 import { config } from "./config/server.config.js";
-import { logger } from "./util/logger.js";
 import { sequelize } from "./model/sequelize.js";
+import { __dirname } from "./util/__dirname.js";
+import { logger } from "./util/logger.js";
 
 const app = express();
 

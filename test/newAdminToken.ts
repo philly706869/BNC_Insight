@@ -1,6 +1,7 @@
-import { AuthToken, sequelize } from "../src/model/sequelize.js";
-import { exit } from "process";
 import { input } from "@inquirer/prompts";
+import { exit } from "process";
+import { AuthToken } from "../src/model/AuthToken.js";
+import { sequelize } from "../src/model/sequelize.js";
 
 await sequelize.sync();
 

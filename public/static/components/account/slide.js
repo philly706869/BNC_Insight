@@ -18,6 +18,10 @@ customElements.define(
       this.#error = shadowRoot.getElementById("error");
       this.#submit = shadowRoot.getElementById("submit");
 
+      this.#input.addEventListener("input", () => {
+        this.resolveError();
+      });
+
       const handler = (event) => {
         this.dispatchEvent(new Event("submit", event));
       };
@@ -50,16 +54,31 @@ customElements.define(
         case "button-text":
           this.#submit.textContent = newValue;
           break;
-        case "error":
-          this.#input.toggleAttribute("error", newValue);
-          this.#error.toggleAttribute("hidden", !newValue);
-          this.#error.textContent = newValue;
-          break;
       }
     }
 
     get value() {
       return this.#input.value || "";
+    }
+
+    #setErrorState(state) {
+      this.#input.toggleAttribute("error", state);
+      this.#error.toggleAttribute("hidden", !state);
+    }
+
+    throwError(error) {
+      this.#setErrorState(true);
+      this.#error.textContent = error;
+    }
+
+    throwErrors(errors) {
+      this.#setErrorState(true);
+      this.#error.textContent = errors.join("\n");
+    }
+
+    resolveError() {
+      this.#setErrorState(false);
+      this.#error.textContent = "";
     }
 
     focusInput() {

@@ -1,12 +1,12 @@
 import cookieParser from "cookie-parser";
 import express from "express";
 import expressSession from "express-session";
-import { auth } from "./auth/auth.js";
 import { config } from "../config/server.config.js";
 import { login } from "./login.js";
 import { logout } from "./logout.js";
 import { signup } from "./signup.js";
 import { user } from "./user.js";
+import { validate } from "./validate.js";
 
 export const api = express.Router();
 
@@ -33,5 +33,5 @@ declare module "express-session" {
 api.use("/signup", signup);
 api.use("/login", login);
 api.use("/logout", logout);
-api.use("/auth", auth);
+api.use("/validate", validate);
 api.use("/user", user);

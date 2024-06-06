@@ -37,7 +37,7 @@ customElements.define(
     }
 
     nextSlide() {
-      if (this.#index >= this.#slides.length) return;
+      if (this.#index >= this.#slides.length - 1) return;
       this.#slides[this.#index].toggleAttribute("hidden", true);
       this.#index += 1;
       const currentSlide = this.#slides[this.#index];

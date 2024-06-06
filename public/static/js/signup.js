@@ -4,7 +4,6 @@ import {} from "../components/account/slide.js";
 import {} from "../components/header.js";
 
 const app = document.querySelector("#app");
-const slides = app.querySelectorAll(".slide");
 
 const authTokenSlide = app.querySelector("#auth-token-slide");
 const idSlide = app.querySelector("#id-slide");
@@ -20,17 +19,16 @@ let name;
 authTokenSlide.addEventListener("submit", async () => {
   const value = authTokenSlide.value;
 
-  const res = await fetch("/api/signup/auth/token", {
+  const validation = await fetch("/api/validate/token", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ value }),
-  });
-  const json = await res.json();
+    body: JSON.stringify({ token: value }),
+  }).then((res) => res.json());
 
-  if (!res.ok || !json.valid) {
-    authTokenSlide.setAttribute("error", json.error || "invalid token");
+  if (!validation.valid) {
+    authTokenSlide.throwError("Invalid token.");
     return;
   }
 
@@ -41,17 +39,21 @@ authTokenSlide.addEventListener("submit", async () => {
 idSlide.addEventListener("submit", async () => {
   const value = idSlide.value;
 
-  const res = await fetch("/api/signup/auth/id", {
+  const validation = await fetch("/api/validate/id", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ value }),
-  });
-  const json = await res.json();
+    body: JSON.stringify({ id: value }),
+  }).then((res) => res.json());
 
-  if (!res.ok || !json.valid) {
-    idSlide.setAttribute("error", json.error || "invalid id");
+  if (!validation.valid) {
+    idSlide.throwErrors(validation.messages);
+    return;
+  }
+
+  if (validation.exists) {
+    idSlide.throwError("ID already exists.");
     return;
   }
 
@@ -59,6 +61,72 @@ idSlide.addEventListener("submit", async () => {
   app.nextSlide();
 });
 
-passwordSlide.addEventListener("submit", () => {
+passwordSlide.addEventListener("submit", async () => {
   const value = passwordSlide.value;
+
+  const validation = await fetch("/api/validate/password", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ password: value }),
+  }).then((res) => res.json());
+
+  if (!validation.valid) {
+    passwordSlide.throwErrors(validation.messages);
+    return;
+  }
+
+  password = value;
+  app.nextSlide();
+});
+
+passwordConfirmSlide.addEventListener("submit", () => {
+  const passwordConfirm = passwordConfirmSlide.value;
+
+  if (password !== passwordConfirm) {
+    passwordConfirmSlide.throwError("Password does not match.");
+    return;
+  }
+
+  app.nextSlide();
+});
+
+nameSlide.addEventListener("submit", async () => {
+  const value = nameSlide.value;
+
+  const validation = await fetch("/api/validate/name", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ name: value }),
+  }).then((res) => res.json());
+
+  if (!validation.valid) {
+    nameSlide.throwErrors(validation.messages);
+    return;
+  }
+
+  name = value;
+
+  const res = await fetch("/api/signup", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      authToken,
+      id,
+      password,
+      name,
+    }),
+  });
+
+  if (!res.ok) {
+    alert("Unknown Error. Sign up failed.");
+    return;
+  }
+
+  window.location.replace("/");
 });

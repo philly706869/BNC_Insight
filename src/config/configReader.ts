@@ -1,5 +1,5 @@
-import fs from "fs";
 import { JTDParser } from "ajv/dist/jtd.js";
+import fs from "fs";
 
 export const readConfig = <T>(path: string, parse: JTDParser<T>): T => {
   if (!fs.existsSync(path) || !fs.lstatSync(path).isFile())
