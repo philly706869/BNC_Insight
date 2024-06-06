@@ -1,9 +1,9 @@
-const html = await fetch("/static/components/account/input.html").then((data) =>
-  data.text()
+const html = await fetch("/static/page/components/account/input.html").then(
+  (data) => data.text()
 );
 
 customElements.define(
-  "wcpnt-input",
+  "x-input",
   class extends HTMLElement {
     #input;
     #placeholder;

@@ -1,9 +1,9 @@
-const html = await fetch("/static/components/header.html").then((data) =>
-  data.text()
-);
+import {} from "./components/app.js";
+
+const html = await fetch("/static/page/index.html").then((data) => data.text());
 
 customElements.define(
-  "wcpnt-header",
+  "x-index",
   class extends HTMLElement {
     constructor() {
       super();

@@ -13,7 +13,7 @@ app.use("/static", express.static(path.join(__dirname, "./public/static")));
 app.use("/api", api);
 app.use(
   "/",
-  express.static(path.join(__dirname, "./public/page"), {
+  express.static(path.join(__dirname, "./public/entry"), {
     extensions: ["html", "htm"],
   })
 );

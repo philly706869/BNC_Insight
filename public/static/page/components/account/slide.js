@@ -1,9 +1,9 @@
-const html = await fetch("/static/components/account/slide.html").then((data) =>
-  data.text()
+const html = await fetch("/static/page/components/account/slide.html").then(
+  (data) => data.text()
 );
 
 customElements.define(
-  "wcpnt-slide",
+  "x-slide",
   class extends HTMLElement {
     #input;
     #error;

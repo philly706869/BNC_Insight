@@ -1,9 +1,9 @@
-const html = await fetch("/static/components/account/app.html").then((data) =>
-  data.text()
+const html = await fetch("/static/page/components/account/app.html").then(
+  (data) => data.text()
 );
 
 customElements.define(
-  "wcpnt-account-app",
+  "x-account-app",
   class extends HTMLElement {
     #title;
     #slides;
