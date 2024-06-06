@@ -1,2 +1,35 @@
-<style></style>
-<x-app></x-app>
+<style>
+  main {
+    display: grid;
+    gap: 3px;
+    grid-template-areas:
+      " main main sub  sub  "
+      " main main add1 add2 ";
+    grid-template-columns: repeat(4, 200px);
+    grid-template-rows: repeat();
+  }
+
+  #main {
+    grid-area: main;
+  }
+
+  #sub {
+    grid-area: sub;
+  }
+
+  #addtional2 {
+    grid-area: add1;
+  }
+
+  #addtional1 {
+    grid-area: add2;
+  }
+</style>
+<x-app>
+  <main>
+    <article id="main"></article>
+    <article id="sub"></article>
+    <article id="additional1"></article>
+    <article id="additional2"></article>
+  </main>
+</x-app>
