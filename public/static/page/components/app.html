@@ -1,2 +1,41 @@
+<style>
+  :host {
+    min-height: 100vh;
+    height: max-content;
+    box-sizing: border-box;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .decoline {
+    flex: 0 0 auto;
+    height: 10px;
+    background: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 1) 0%,
+      rgba(0, 0, 0, 1) calc(100% / 3),
+      rgba(209, 30, 0, 1) calc(100% / 3),
+      rgba(209, 30, 0, 1) calc(100% / 3 * 2),
+      rgba(220, 220, 220, 1) calc(100% / 3 * 2),
+      rgba(220, 220, 220, 1) 100%
+    );
+  }
+
+  x-header {
+    flex: 0 0 auto;
+  }
+
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+</style>
+<div class="decoline"></div>
 <x-header></x-header>
-<slot></slot>
+<main>
+  <slot></slot>
+</main>
+<div class="decoline"></div>

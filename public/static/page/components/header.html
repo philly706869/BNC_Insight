@@ -2,23 +2,136 @@
   @import "/static/css/default.css";
 
   :host {
+    height: 130px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    /* box-shadow: rgba(0, 0, 0, 0.1) 0px 0.125em 0.1875em; */
+  }
+
+  #head {
+    width: 100%;
+  }
+
+  #panels {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  #time-panel {
+    font-size: large;
+  }
+
+  #user-panel {
+    width: max-content;
+    height: 30px;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-between;
+    list-style: none;
+  }
+
+  #user-panel > li {
+    width: max-content;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  #user-panel > li:not(:last-child)::after {
+    content: "";
+    width: 1px;
+    height: 70%;
+    display: inline-block;
+    background-color: gray;
+  }
+
+  #user-panel > li > a {
+    width: max-content;
+    height: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+    display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 0.125em 0.1875em;
+    border: none;
+    background-color: transparent;
+    color: black;
+    font-size: large;
+    text-decoration: none;
+  }
+
+  #center {
+    width: 100%;
+    display: flex;
+    justify-content: center;
   }
 
   #logo {
-    display: block;
     color: var(--regular-scarlet);
     font-size: 50px;
     text-decoration: none;
   }
+
+  #category {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  #category > ul {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    list-style: none;
+  }
+
+  #category > ul > li {
+    display: flex;
+    align-items: center;
+  }
+
+  #category > ul > li:not(:last-child)::after {
+    content: "";
+    width: 1px;
+    height: 70%;
+    display: block;
+    background-color: black;
+    opacity: 0.3;
+  }
+
+  #category > ul > li > a {
+    width: max-content;
+    padding: 0 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    text-decoration: none;
+  }
 </style>
-<a id="logo" class="font-cg-bold" href="/">BNC_Insight</a>
-<ul id="user-panel">
-  <li><button>Log In</button></li>
-  <li><button>Sign Up</button></li>
-</ul>
+<div id="head">
+  <nav id="panels">
+    <span id="time-panel"></span>
+    <ul id="user-panel">
+      <li><a href="/login">Log In</a></li>
+      <li><a href="/signup">Sign Up</a></li>
+    </ul>
+  </nav>
+  <div id="center">
+    <a id="logo" class="font-cg-bold" href="/">BNC_Insight</a>
+  </div>
+</div>
+<nav id="category">
+  <ul>
+    <li><a href="">Financial</a></li>
+    <li><a href="">Economy</a></li>
+    <li><a href="">Social</a></li>
+    <li><a href="">IT</a></li>
+    <li><a href="">Science</a></li>
+  </ul>
+</nav>

@@ -1,6 +1,7 @@
-import {} from "./components/account/app.js";
 import {} from "./components/account/input.js";
+import {} from "./components/account/panel.js";
 import {} from "./components/account/slide.js";
+import {} from "./components/app.js";
 import {} from "./components/header.js";
 
 const html = await fetch("/static/page/login.html").then((data) => data.text());
@@ -13,10 +14,10 @@ customElements.define(
       const shadowRoot = this.attachShadow({ mode: "closed" });
       shadowRoot.innerHTML = html;
 
-      const app = shadowRoot.querySelector("#app");
+      const panel = shadowRoot.querySelector("#panel");
 
-      const idSlide = app.querySelector("#id-slide");
-      const passwordSlide = app.querySelector("#password-slide");
+      const idSlide = panel.querySelector("#id-slide");
+      const passwordSlide = panel.querySelector("#password-slide");
 
       let id;
 
@@ -37,7 +38,7 @@ customElements.define(
         }
 
         id = value;
-        app.nextSlide();
+        panel.nextSlide();
       });
 
       passwordSlide.addEventListener("submit", async () => {

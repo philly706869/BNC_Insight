@@ -1,6 +1,7 @@
-import {} from "./components/account/app.js";
 import {} from "./components/account/input.js";
+import {} from "./components/account/panel.js";
 import {} from "./components/account/slide.js";
+import {} from "./components/app.js";
 import {} from "./components/header.js";
 
 const html = await fetch("/static/page/signup.html").then((data) =>
@@ -15,13 +16,15 @@ customElements.define(
       const shadowRoot = this.attachShadow({ mode: "closed" });
       shadowRoot.innerHTML = html;
 
-      const app = shadowRoot.querySelector("#app");
+      const panel = shadowRoot.querySelector("#panel");
 
-      const authTokenSlide = app.querySelector("#auth-token-slide");
-      const idSlide = app.querySelector("#id-slide");
-      const passwordSlide = app.querySelector("#password-slide");
-      const passwordConfirmSlide = app.querySelector("#password-confirm-slide");
-      const nameSlide = app.querySelector("#name-slide");
+      const authTokenSlide = panel.querySelector("#auth-token-slide");
+      const idSlide = panel.querySelector("#id-slide");
+      const passwordSlide = panel.querySelector("#password-slide");
+      const passwordConfirmSlide = panel.querySelector(
+        "#password-confirm-slide"
+      );
+      const nameSlide = panel.querySelector("#name-slide");
 
       let authToken;
       let id;
@@ -45,7 +48,7 @@ customElements.define(
         }
 
         authToken = value;
-        app.nextSlide();
+        panel.nextSlide();
       });
 
       idSlide.addEventListener("submit", async () => {
@@ -70,7 +73,7 @@ customElements.define(
         }
 
         id = value;
-        app.nextSlide();
+        panel.nextSlide();
       });
 
       passwordSlide.addEventListener("submit", async () => {
@@ -90,7 +93,7 @@ customElements.define(
         }
 
         password = value;
-        app.nextSlide();
+        panel.nextSlide();
       });
 
       passwordConfirmSlide.addEventListener("submit", () => {
@@ -101,7 +104,7 @@ customElements.define(
           return;
         }
 
-        app.nextSlide();
+        panel.nextSlide();
       });
 
       nameSlide.addEventListener("submit", async () => {

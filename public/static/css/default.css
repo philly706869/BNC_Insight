@@ -1,2 +1,7 @@
 @import "/static/css/palette.css";
 @import "/static/css/font.css";
+
+body {
+  min-height: 100vh;
+  height: max-content;
+}

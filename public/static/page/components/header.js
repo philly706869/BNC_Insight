@@ -16,31 +16,22 @@ customElements.define(
       const shadowRoot = this.attachShadow({ mode: "closed" });
       shadowRoot.innerHTML = html;
 
+      const timePanel = shadowRoot.querySelector("#time-panel");
+      timePanel.textContent = new Date().toDateString();
+
       const userPanel = shadowRoot.querySelector("#user-panel");
 
-      const [firstButton, secondButton] =
-        userPanel.querySelectorAll("li > button");
+      const [firstButton, secondButton] = userPanel.querySelectorAll("li > a");
 
       if (user) {
         firstButton.textContent = user.name;
-        firstButton.addEventListener("click", () => {
-          window.location.href = "/user";
-        });
+        firstButton.setAttribute("href", "/user");
 
         secondButton.textContent = "Log Out";
+        secondButton.removeAttribute("href");
         secondButton.addEventListener("click", async () => {
           await fetch("/api/logout", { method: "POST" });
           window.location.href = "/";
-        });
-      } else {
-        firstButton.textContent = "Log In";
-        firstButton.addEventListener("click", () => {
-          window.location.href = "/login";
-        });
-
-        secondButton.textContent = "Sign Up";
-        secondButton.addEventListener("click", () => {
-          window.location.href = "/signup";
         });
       }
     }

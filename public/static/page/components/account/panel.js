@@ -1,9 +1,9 @@
-const html = await fetch("/static/page/components/account/app.html").then(
+const html = await fetch("/static/page/components/account/panel.html").then(
   (data) => data.text()
 );
 
 customElements.define(
-  "x-account-app",
+  "x-account-panel",
   class extends HTMLElement {
     #title;
     #slides;
