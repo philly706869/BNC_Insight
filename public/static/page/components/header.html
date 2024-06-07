@@ -2,11 +2,9 @@
   @import "/static/css/default.css";
 
   :host {
-    height: 130px;
     padding: 10px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     align-items: center;
     /* box-shadow: rgba(0, 0, 0, 0.1) 0px 0.125em 0.1875em; */
   }
@@ -77,6 +75,14 @@
     text-decoration: none;
   }
 
+  #article-panel {
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row-reverse;
+  }
+
   #category {
     width: 100%;
     display: flex;
@@ -114,18 +120,17 @@
     text-decoration: none;
   }
 </style>
-<div id="head">
-  <nav id="panels">
-    <span id="time-panel"></span>
-    <ul id="user-panel">
-      <li><a href="/login">Log In</a></li>
-      <li><a href="/signup">Sign Up</a></li>
-    </ul>
-  </nav>
-  <div id="center">
-    <a id="logo" class="font-cg-bold" href="/">BNC_Insight</a>
-  </div>
+<nav id="panels">
+  <span id="time-panel"></span>
+  <ul id="user-panel">
+    <li><a href="/login">Log In</a></li>
+    <li><a href="/signup">Sign Up</a></li>
+  </ul>
+</nav>
+<div id="center">
+  <a id="logo" class="font-cg-bold" href="/">BNC_Insight</a>
 </div>
+<div id="article-panel"></div>
 <nav id="category">
   <ul>
     <li><a href="">Financial</a></li>

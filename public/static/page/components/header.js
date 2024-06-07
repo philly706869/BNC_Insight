@@ -19,11 +19,11 @@ customElements.define(
       const timePanel = shadowRoot.querySelector("#time-panel");
       timePanel.textContent = new Date().toDateString();
 
-      const userPanel = shadowRoot.querySelector("#user-panel");
-
-      const [firstButton, secondButton] = userPanel.querySelectorAll("li > a");
-
       if (user) {
+        const userPanel = shadowRoot.querySelector("#user-panel");
+        const [firstButton, secondButton] =
+          userPanel.querySelectorAll("li > a");
+
         firstButton.textContent = user.name;
         firstButton.setAttribute("href", "/user");
 
@@ -33,6 +33,9 @@ customElements.define(
           await fetch("/user/log", { method: "DELETE" });
           window.location.href = "/";
         });
+
+        const articlePanel = shadowRoot.querySelector("#article-panel");
+        articlePanel.innerHTML = '<a href="/article/upload">New Article</a>';
       }
     }
   }

@@ -7,6 +7,7 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
+import { categories, Category } from "./categories.js";
 
 @Table({ modelName: "articles" })
 export class Article extends Model {
@@ -21,8 +22,8 @@ export class Article extends Model {
   declare uploaderUid: number;
 
   @AllowNull(false)
-  @Column(DataType.ENUM("temp"))
-  declare category: string;
+  @Column(DataType.ENUM(...categories))
+  declare category: Category;
 
   @AllowNull(false)
   @Column(DataType.STRING(128))
