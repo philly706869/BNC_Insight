@@ -1,9 +1,9 @@
-import express, { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response, Router } from "express";
 import { body, validationResult } from "express-validator";
 import { AuthToken } from "../model/AuthToken.js";
 import { User } from "../model/User.js";
 
-export const validate = express.Router();
+export const validate = Router();
 
 const validator = (req: Request, res: Response, next: NextFunction) => {
   const validation = validationResult(req);

@@ -1,11 +1,11 @@
 import bcrypt from "bcrypt";
-import express, { Request, Response } from "express";
+import { Router } from "express";
 import { body, validationResult } from "express-validator";
 import { User } from "../model/User.js";
 
-export const login = express.Router();
+export const logRouter = Router();
 
-login.post(
+logRouter.put(
   "/",
   body("id")
     .isString()
@@ -19,7 +19,7 @@ login.post(
     .isString()
     .bail()
     .custom((password: string) => User.validatePassword(password) === null),
-  async (req: Request, res: Response) => {
+  async (req, res) => {
     const validation = validationResult(req);
     if (!validation.isEmpty()) {
       res.status(400).end();
@@ -29,7 +29,7 @@ login.post(
     const { id, password }: { [key: string]: string } = req.body;
 
     const user = (await User.findOne({
-      attributes: ["uid", "password"],
+      attributes: ["uid", "password", "isAdmin"],
       where: { id },
     }))!;
 
@@ -40,8 +40,19 @@ login.post(
       return;
     }
 
-    req.session.userUid = user.uid;
+    req.session.user = {
+      uid: user.uid,
+      isAdmin: user.isAdmin,
+    };
 
     res.status(201).end();
   }
 );
+
+logRouter.delete("/", (req, res) => {
+  req.session.destroy((error) => {
+    if (error) res.status(500).end();
+  });
+
+  res.status(201).end();
+});

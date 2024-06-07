@@ -1,13 +1,16 @@
 import bcrypt from "bcrypt";
-import express from "express";
+import { Router } from "express";
 import { body, validationResult } from "express-validator";
 import { v4 as uuidv4 } from "uuid";
 import { AuthToken } from "../model/AuthToken.js";
 import { User } from "../model/User.js";
+import { logRouter } from "./log.js";
 
-export const signup = express.Router();
+export const userRouter = Router();
 
-signup.post(
+userRouter.use("/log", logRouter);
+
+userRouter.post(
   "/",
   body("authToken")
     .isString()
@@ -60,8 +63,14 @@ signup.post(
 
     await token.save();
 
-    req.session.userUid = user.uid;
-
     res.status(201).end();
   }
 );
+
+userRouter.patch("/", (req, res) => {
+  res.end();
+});
+
+userRouter.delete("/", async (req, res) => {
+  res.end();
+});

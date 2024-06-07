@@ -125,7 +125,7 @@ customElements.define(
 
         name = value;
 
-        const res = await fetch("/api/signup", {
+        const res = await fetch("/user", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -142,6 +142,17 @@ customElements.define(
           alert("Unknown Error. Sign up failed.");
           return;
         }
+
+        await fetch("/user/log", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id,
+            password,
+          }),
+        });
 
         window.location.replace("/");
       });

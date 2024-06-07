@@ -1,10 +1,10 @@
-import express from "express";
+import { Router } from "express";
 import { query, validationResult } from "express-validator";
 import { User } from "../model/User.js";
 
-export const user = express.Router();
+export const userRouter = Router();
 
-user.get("/", query("uuid").isUUID().optional(), async (req, res) => {
+userRouter.get("/", query("uuid").isUUID().optional(), async (req, res) => {
   const validation = validationResult(req);
   if (!validation.isEmpty()) {
     res.status(400).json({ error: "Invalid uuid." });
@@ -12,7 +12,7 @@ user.get("/", query("uuid").isUUID().optional(), async (req, res) => {
   }
 
   const queryUUID: string | undefined = req.query!!.uuid;
-  const requestUID = req.session.userUid;
+  const requestUID = req.session.user?.uid;
 
   if (queryUUID) {
     const user = await User.findOne({ where: { uuid: queryUUID } });

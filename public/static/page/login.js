@@ -44,8 +44,8 @@ customElements.define(
       passwordSlide.addEventListener("submit", async () => {
         const password = passwordSlide.value;
 
-        const res = await fetch("/api/login", {
-          method: "POST",
+        const res = await fetch("/user/log", {
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },

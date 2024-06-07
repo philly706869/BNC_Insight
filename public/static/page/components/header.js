@@ -30,7 +30,7 @@ customElements.define(
         secondButton.textContent = "Log Out";
         secondButton.removeAttribute("href");
         secondButton.addEventListener("click", async () => {
-          await fetch("/api/logout", { method: "POST" });
+          await fetch("/user/log", { method: "DELETE" });
           window.location.href = "/";
         });
       }
