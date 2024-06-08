@@ -1,5 +1,5 @@
-const html = await fetch("/static/page/components/account/input.html").then(
-  (data) => data.text()
+const html = await fetch("/static/page/components/input.html").then((data) =>
+  data.text()
 );
 
 customElements.define(

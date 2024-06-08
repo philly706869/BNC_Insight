@@ -1,3 +1,5 @@
+import {} from "../input.js";
+
 const html = await fetch("/static/page/components/account/slide.html").then(
   (data) => data.text()
 );

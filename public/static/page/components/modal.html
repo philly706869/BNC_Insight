@@ -1,0 +1,45 @@
+<style>
+  @import "/static/css/default.css";
+
+  :host {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+
+  :host([state="opening"]) {
+    animation: appear 0.15s;
+  }
+
+  :host([state="closing"]) {
+    animation: disappear 0.15s;
+  }
+
+  @keyframes appear {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes disappear {
+    0% {
+      opacity: 1;
+    }
+
+    100% {
+      opacity: 0;
+    }
+  }
+</style>
+<div id="wrapper">
+  <slot></slot>
+</div>

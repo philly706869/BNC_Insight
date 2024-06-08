@@ -1,4 +1,6 @@
 <style>
+  @import "/static/css/default.css";
+
   :host {
     min-height: 100vh;
     height: max-content;
@@ -13,12 +15,12 @@
     height: 10px;
     background: linear-gradient(
       90deg,
-      rgba(0, 0, 0, 1) 0%,
-      rgba(0, 0, 0, 1) calc(100% / 3),
-      rgba(209, 30, 0, 1) calc(100% / 3),
-      rgba(209, 30, 0, 1) calc(100% / 3 * 2),
-      rgba(220, 220, 220, 1) calc(100% / 3 * 2),
-      rgba(220, 220, 220, 1) 100%
+      #000000 0%,
+      #000000 calc(100% / 3),
+      var(--light-scarlet) calc(100% / 3),
+      var(--light-scarlet) calc(100% / 3 * 2),
+      #dcdcdc calc(100% / 3 * 2),
+      #dcdcdc 100%
     );
   }
 

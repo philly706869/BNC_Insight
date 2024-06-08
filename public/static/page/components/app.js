@@ -1,4 +1,4 @@
-import {} from "../components/header.js";
+import {} from "./header.js";
 
 const html = await fetch("/static/page/components/app.html").then((data) =>
   data.text()

@@ -1,35 +1,46 @@
 <style>
+  @import "/static/css/default.css";
+
   main {
+    flex: 1 0 300px;
+    width: 70%;
+    margin: 30px;
     display: grid;
-    gap: 3px;
-    grid-template-areas:
-      " main main sub  sub  "
-      " main main add1 add2 ";
-    grid-template-columns: repeat(4, 200px);
-    grid-template-rows: repeat();
+    gap: 5px;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
   }
 
   #main {
-    grid-area: main;
+    grid-column: 1 / span 4;
+    grid-row: 1 / 11;
   }
 
-  #sub {
-    grid-area: sub;
+  #sub1 {
+    grid-column: 5 / span 6;
+    grid-row: 1 / span 5;
   }
 
-  #addtional2 {
-    grid-area: add1;
+  #sub2 {
+    grid-column: 5 / span 3;
+    grid-row: 6 / span 5;
   }
 
-  #addtional1 {
-    grid-area: add2;
+  #sub3 {
+    grid-column: 8 / span 3;
+    grid-row: 6 / span 5;
+  }
+
+  article {
+    border: 1px solid var(--light-scarlet);
   }
 </style>
 <x-app>
+  <button id="modal-button">Test Modal</button>
   <main>
     <article id="main"></article>
-    <article id="sub"></article>
-    <article id="additional1"></article>
-    <article id="additional2"></article>
+    <article id="sub1"></article>
+    <article id="sub2"></article>
+    <article id="sub3"></article>
   </main>
 </x-app>

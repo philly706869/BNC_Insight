@@ -1,8 +1,6 @@
-import {} from "./components/account/input.js";
 import {} from "./components/account/panel.js";
 import {} from "./components/account/slide.js";
 import {} from "./components/app.js";
-import {} from "./components/header.js";
 
 const html = await fetch("/static/page/signup.html").then((data) =>
   data.text()
