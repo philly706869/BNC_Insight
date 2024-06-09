@@ -1,10 +1,52 @@
 <style>
   @import "/static/css/default.css";
 
+  #content {
+    flex: 1 0 auto;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #category {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    list-style: none;
+  }
+
+  #category > li {
+    flex: 1 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #category > li > a {
+    padding: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    text-decoration: none;
+  }
+
+  #category > li > a:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  #category > li > a:active {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+
   main {
     flex: 1 0 300px;
-    width: 70%;
-    margin: 30px;
+    margin: 10px;
+    box-sizing: border-box;
     display: grid;
     gap: 5px;
     grid-template-columns: repeat(10, 1fr);
@@ -36,10 +78,19 @@
   }
 </style>
 <x-app>
-  <main>
-    <article id="main"></article>
-    <article id="sub1"></article>
-    <article id="sub2"></article>
-    <article id="sub3"></article>
-  </main>
+  <div id="content">
+    <ul id="category">
+      <li><a href="">Financial</a></li>
+      <li><a href="">Economy</a></li>
+      <li><a href="">Social</a></li>
+      <li><a href="">IT</a></li>
+      <li><a href="">Science</a></li>
+    </ul>
+    <main>
+      <article id="main"></article>
+      <article id="sub1"></article>
+      <article id="sub2"></article>
+      <article id="sub3"></article>
+    </main>
+  </div>
 </x-app>

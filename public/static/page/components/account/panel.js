@@ -16,11 +16,8 @@ customElements.define(
 
       this.#title = shadowRoot.getElementById("title");
       this.#slides = this.children;
-      for (const slide of this.#slides) {
-        slide.toggleAttribute("hidden", true);
-      }
       const firstSlide = this.#slides[this.#index];
-      firstSlide.toggleAttribute("hidden", false);
+      firstSlide.toggleAttribute("display", true);
     }
 
     static observedAttributes = ["title"];
@@ -35,11 +32,11 @@ customElements.define(
 
     nextSlide() {
       if (this.#index >= this.#slides.length - 1) return;
-      this.#slides[this.#index].toggleAttribute("hidden", true);
+      const oldSlide = this.#slides[this.#index];
       this.#index += 1;
-      const currentSlide = this.#slides[this.#index];
-      currentSlide.toggleAttribute("hidden", false);
-      currentSlide.focusInput();
+      const newSlide = this.#slides[this.#index];
+      oldSlide.disappear();
+      newSlide.appear();
     }
   }
 );

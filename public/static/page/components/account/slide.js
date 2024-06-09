@@ -30,6 +30,8 @@ customElements.define(
 
       this.#input.addEventListener("enter", handler);
       this.#submit.addEventListener("click", handler);
+
+      this.dispatchEvent(new CustomEvent("loaded"));
     }
 
     static observedAttributes = [
@@ -61,6 +63,27 @@ customElements.define(
       return this.#input.value || "";
     }
 
+    async appear() {
+      const handler = () => {
+        this.removeEventListener("animationend", handler);
+        this.toggleAttribute("move", false);
+        this.focus();
+      };
+      this.addEventListener("animationend", handler);
+      this.toggleAttribute("display", true);
+      this.toggleAttribute("move", true);
+    }
+
+    async disappear() {
+      const handler = () => {
+        this.removeEventListener("animationend", handler);
+        this.toggleAttribute("display", false);
+        this.toggleAttribute("move", false);
+      };
+      this.addEventListener("animationend", handler);
+      this.toggleAttribute("move", true);
+    }
+
     #setErrorState(state) {
       this.#input.toggleAttribute("error", state);
       this.#error.toggleAttribute("hidden", !state);
@@ -81,7 +104,7 @@ customElements.define(
       this.#error.textContent = "";
     }
 
-    focusInput() {
+    focus() {
       this.#input.focus();
     }
   }

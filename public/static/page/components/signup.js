@@ -158,7 +158,7 @@ customElements.define(
 
       this.replaceWith(...shadowRoot.childNodes);
 
-      authTokenSlide.focusInput();
+      authTokenSlide.focus();
     }
   }
 );

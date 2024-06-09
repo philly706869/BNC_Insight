@@ -1,5 +1,5 @@
-import {} from "../components/account/input.js";
 import {} from "../components/app.js";
+import {} from "../components/input.js";
 
 const html = await fetch("/static/page/article/upload.html").then((data) =>
   data.text()

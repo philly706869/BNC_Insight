@@ -63,7 +63,7 @@ customElements.define(
 
       this.replaceWith(...shadowRoot.childNodes);
 
-      idSlide.focusInput();
+      idSlide.focus();
     }
   }
 );

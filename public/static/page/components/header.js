@@ -26,7 +26,7 @@ customElements.define(
       timePanel.textContent = new Date().toDateString();
 
       this.#userPanel = shadowRoot.querySelector("#user-panel");
-      this.#articlePanel = shadowRoot.querySelector("#article-panel");
+      // this.#articlePanel = shadowRoot.querySelector("#article-panel");
 
       this.updateUser();
     }
@@ -47,15 +47,13 @@ customElements.define(
         });
 
         const logoutButton = this.#userPanel.querySelector("#logout-button");
-        logoutButton
-          .addEventListener("click", async () => {
-            await fetch("/user/log", { method: "DELETE" });
-            this.updateUser();
-          })
-          .bind(this);
+        logoutButton.addEventListener("click", async () => {
+          await fetch("/user/log", { method: "DELETE" });
+          this.updateUser();
+        });
 
-        this.#articlePanel.innerHTML =
-          '<a href="/article/upload">New Article</a>';
+        // this.#articlePanel.innerHTML =
+        // '<a href="/article/upload">New Article</a>';
       } else {
         this.#userPanel.innerHTML = `
         <li><button id="login-button">Log In</button></li>
@@ -63,28 +61,20 @@ customElements.define(
         `;
 
         const loginButton = this.#userPanel.querySelector("#login-button");
-        loginButton.addEventListener(
-          "click",
-          (async () => {
-            const succeed = await raiseModal("<x-login-panel></x-login-panel>");
-            if (!succeed) return;
-            this.updateUser();
-          }).bind(this)
-        );
+        loginButton.addEventListener("click", async () => {
+          const succeed = await raiseModal("<x-login-panel></x-login-panel>");
+          if (!succeed) return;
+          this.updateUser();
+        });
 
         const signupButton = this.#userPanel.querySelector("#signup-button");
-        signupButton.addEventListener(
-          "click",
-          (async () => {
-            const succeed = await raiseModal(
-              "<x-signup-panel></x-signup-panel>"
-            );
-            if (!succeed) return;
-            this.updateUser();
-          }).bind(this)
-        );
+        signupButton.addEventListener("click", async () => {
+          const succeed = await raiseModal("<x-signup-panel></x-signup-panel>");
+          if (!succeed) return;
+          this.updateUser();
+        });
 
-        this.#articlePanel.innerHTML = "";
+        // this.#articlePanel.innerHTML = "";
       }
     }
   }

@@ -2,29 +2,24 @@
   @import "/static/css/default.css";
 
   :host {
-    padding: 10px;
+    padding: 30px;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    /* box-shadow: rgba(0, 0, 0, 0.1) 0px 0.125em 0.1875em; */
-  }
-
-  #head {
-    width: 100%;
-  }
-
-  #panels {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
   }
 
   #time-panel {
     font-size: large;
+    cursor: default;
+  }
+
+  #logo {
+    color: var(--regular-scarlet);
+    font-size: 50px;
+    text-decoration: none;
   }
 
   #user-panel {
-    width: max-content;
     height: 30px;
     margin: 0;
     padding: 0;
@@ -59,18 +54,15 @@
     border: none;
     background-color: transparent;
     font-size: large;
+    cursor: pointer;
   }
 
-  #center {
-    width: 100%;
-    display: flex;
-    justify-content: center;
+  #user-panel > li > button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
   }
 
-  #logo {
-    color: var(--regular-scarlet);
-    font-size: 50px;
-    text-decoration: none;
+  #user-panel > li > button:active {
+    background-color: rgba(0, 0, 0, 0.1);
   }
 
   #article-panel {
@@ -80,58 +72,7 @@
     display: flex;
     flex-direction: row-reverse;
   }
-
-  #category {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-
-  #category > ul {
-    margin: 0;
-    padding: 0;
-    display: flex;
-    list-style: none;
-  }
-
-  #category > ul > li {
-    display: flex;
-    align-items: center;
-  }
-
-  #category > ul > li:not(:last-child)::after {
-    content: "";
-    width: 1px;
-    height: 70%;
-    display: block;
-    background-color: black;
-    opacity: 0.3;
-  }
-
-  #category > ul > li > a {
-    width: max-content;
-    padding: 0 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: black;
-    text-decoration: none;
-  }
 </style>
-<nav id="panels">
-  <span id="time-panel"></span>
-  <ul id="user-panel"></ul>
-</nav>
-<div id="center">
-  <a id="logo" class="font-cg-bold" href="/">BNC_Insight</a>
-</div>
-<div id="article-panel"></div>
-<nav id="category">
-  <ul>
-    <li><a href="">Financial</a></li>
-    <li><a href="">Economy</a></li>
-    <li><a href="">Social</a></li>
-    <li><a href="">IT</a></li>
-    <li><a href="">Science</a></li>
-  </ul>
-</nav>
+<span id="time-panel"></span>
+<a id="logo" class="font-cg-bold" href="/">BNC_Insight</a>
+<ul id="user-panel"></ul>

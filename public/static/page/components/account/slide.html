@@ -10,6 +10,24 @@
     justify-content: space-between;
   }
 
+  :host(:not([display])) {
+    display: none;
+  }
+
+  :host([move]) {
+    animation: rightToLeft 0.3s;
+  }
+
+  @keyframes rightToLeft {
+    0% {
+      transform: none;
+    }
+
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
   #error {
     display: flex;
     margin-top: 3px;
@@ -43,14 +61,11 @@
     background-color: var(--regular-scarlet);
     color: white;
     font-size: large;
+    cursor: pointer;
   }
 
   #submit:hover {
     background-color: var(--deep-scarlet);
-  }
-
-  :host([hidden]) {
-    display: none;
   }
 </style>
 <div>

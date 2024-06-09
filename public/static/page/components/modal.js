@@ -19,25 +19,25 @@ customElements.define(
 
     #open() {
       this.dispatchEvent(new CustomEvent("openingstart", { bubbles: false }));
-      const handler = ((event) => {
+      const handler = (event) => {
         if (event.target !== this) return;
         this.removeEventListener("animationend", handler);
         this.toggleAttribute("opening", false);
         this.dispatchEvent(new CustomEvent("openingend", { bubbles: false }));
-      }).bind(this);
+      };
       this.addEventListener("animationend", handler);
       this.toggleAttribute("opening", true);
     }
 
     close(detail) {
       this.dispatchEvent(new CustomEvent("closingstart", { detail }));
-      const handler = ((event) => {
+      const handler = (event) => {
         if (event.target !== this) return;
         this.removeEventListener("animationend", handler);
         this.toggleAttribute("closing", false);
         this.remove();
         this.dispatchEvent(new CustomEvent("closingend", { detail }));
-      }).bind(this);
+      };
       this.addEventListener("animationend", handler);
       this.toggleAttribute("closing", true);
     }
