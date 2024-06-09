@@ -21,9 +21,6 @@ customElements.define(
       }
       const firstSlide = this.#slides[this.#index];
       firstSlide.toggleAttribute("hidden", false);
-      firstSlide.addEventListener("load", () => {
-        firstSlide.focusInput();
-      });
     }
 
     static observedAttributes = ["title"];

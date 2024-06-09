@@ -10,24 +10,6 @@ customElements.define(
       super();
       const shadowRoot = this.attachShadow({ mode: "closed" });
       shadowRoot.innerHTML = html;
-
-      const modalButton = shadowRoot.querySelector("#modal-button");
-      modalButton.addEventListener("click", () => {
-        const modal = document.createElement("template");
-        modal.innerHTML = `
-        <x-modal>
-          <style>
-            div {
-              width: 100px;
-              height: 100px;
-              background-color: green;
-            }
-          </style>
-          <div></div>
-        </x-modal>
-        `;
-        document.querySelector("body").append(modal.content);
-      });
     }
   }
 );

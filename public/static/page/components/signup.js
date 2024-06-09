@@ -1,18 +1,19 @@
-import {} from "./components/account/panel.js";
-import {} from "./components/account/slide.js";
-import {} from "./components/app.js";
+import {} from "./account/panel.js";
+import {} from "./account/slide.js";
 
-const html = await fetch("/static/page/signup.html").then((data) =>
+const html = await fetch("/static/page/components/signup.html").then((data) =>
   data.text()
 );
 
 customElements.define(
-  "x-signup",
+  "x-signup-panel",
   class extends HTMLElement {
     constructor() {
       super();
       const shadowRoot = this.attachShadow({ mode: "closed" });
       shadowRoot.innerHTML = html;
+
+      const modal = this.closest("x-modal");
 
       const panel = shadowRoot.querySelector("#panel");
 
@@ -152,8 +153,12 @@ customElements.define(
           }),
         });
 
-        window.location.replace("/");
+        modal.close(true);
       });
+
+      this.replaceWith(...shadowRoot.childNodes);
+
+      authTokenSlide.focusInput();
     }
   }
 );

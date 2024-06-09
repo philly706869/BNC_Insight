@@ -3,6 +3,7 @@ import {
   AutoIncrement,
   Column,
   DataType,
+  Default,
   Model,
   PrimaryKey,
   Table,
@@ -32,4 +33,9 @@ export class Article extends Model {
   @AllowNull(false)
   @Column(DataType.TEXT)
   declare content: string;
+
+  @AllowNull(false)
+  @Default(0)
+  @Column(DataType.SMALLINT.UNSIGNED)
+  declare views: number;
 }

@@ -1,16 +1,22 @@
+import {} from "./login.js";
+import { raiseModal } from "./modal.js";
+import {} from "./signup.js";
+
 const html = await fetch("/static/page/components/header.html").then((data) =>
   data.text()
 );
 
-const user = await (async () => {
+const getUser = async () => {
   const res = await fetch("/api/user");
-  if (!res.ok) return null;
-  return await res.json();
-})();
+  return res.ok ? await res.json() : null;
+};
 
 customElements.define(
   "x-header",
   class extends HTMLElement {
+    #userPanel;
+    #articlePanel;
+
     constructor() {
       super();
       const shadowRoot = this.attachShadow({ mode: "closed" });
@@ -19,23 +25,66 @@ customElements.define(
       const timePanel = shadowRoot.querySelector("#time-panel");
       timePanel.textContent = new Date().toDateString();
 
+      this.#userPanel = shadowRoot.querySelector("#user-panel");
+      this.#articlePanel = shadowRoot.querySelector("#article-panel");
+
+      this.updateUser();
+    }
+
+    async updateUser() {
+      const user = await getUser();
+
       if (user) {
-        const userPanel = shadowRoot.querySelector("#user-panel");
-        const [firstButton, secondButton] =
-          userPanel.querySelectorAll("li > a");
+        this.#userPanel.innerHTML = `
+        <li><button id="user-button"></button></li>
+        <li><button id="logout-button">Log Out</button></li>
+        `;
 
-        firstButton.textContent = user.name;
-        firstButton.setAttribute("href", "/user");
-
-        secondButton.textContent = "Log Out";
-        secondButton.removeAttribute("href");
-        secondButton.addEventListener("click", async () => {
-          await fetch("/user/log", { method: "DELETE" });
-          window.location.href = "/";
+        const userButton = this.#userPanel.querySelector("#user-button");
+        userButton.textContent = user.name;
+        userButton.addEventListener("click", () => {
+          window.location.href = "/user";
         });
 
-        const articlePanel = shadowRoot.querySelector("#article-panel");
-        articlePanel.innerHTML = '<a href="/article/upload">New Article</a>';
+        const logoutButton = this.#userPanel.querySelector("#logout-button");
+        logoutButton
+          .addEventListener("click", async () => {
+            await fetch("/user/log", { method: "DELETE" });
+            this.updateUser();
+          })
+          .bind(this);
+
+        this.#articlePanel.innerHTML =
+          '<a href="/article/upload">New Article</a>';
+      } else {
+        this.#userPanel.innerHTML = `
+        <li><button id="login-button">Log In</button></li>
+        <li><button id="signup-button">Sign Up</button></li>
+        `;
+
+        const loginButton = this.#userPanel.querySelector("#login-button");
+        loginButton.addEventListener(
+          "click",
+          (async () => {
+            const succeed = await raiseModal("<x-login-panel></x-login-panel>");
+            if (!succeed) return;
+            this.updateUser();
+          }).bind(this)
+        );
+
+        const signupButton = this.#userPanel.querySelector("#signup-button");
+        signupButton.addEventListener(
+          "click",
+          (async () => {
+            const succeed = await raiseModal(
+              "<x-signup-panel></x-signup-panel>"
+            );
+            if (!succeed) return;
+            this.updateUser();
+          }).bind(this)
+        );
+
+        this.#articlePanel.innerHTML = "";
       }
     }
   }

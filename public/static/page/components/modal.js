@@ -13,28 +13,45 @@ customElements.define(
       this.#open();
 
       this.addEventListener("click", (event) => {
-        if (event.target === this) this.close();
+        if (event.target === this) this.close(null);
       });
     }
 
     #open() {
+      this.dispatchEvent(new CustomEvent("openingstart", { bubbles: false }));
       const handler = ((event) => {
         if (event.target !== this) return;
         this.removeEventListener("animationend", handler);
-        this.removeAttribute("state");
+        this.toggleAttribute("opening", false);
+        this.dispatchEvent(new CustomEvent("openingend", { bubbles: false }));
       }).bind(this);
       this.addEventListener("animationend", handler);
-      this.setAttribute("state", "opening");
+      this.toggleAttribute("opening", true);
     }
 
-    close() {
+    close(detail) {
+      this.dispatchEvent(new CustomEvent("closingstart", { detail }));
       const handler = ((event) => {
         if (event.target !== this) return;
         this.removeEventListener("animationend", handler);
-        this.parentElement.removeChild(this);
+        this.toggleAttribute("closing", false);
+        this.remove();
+        this.dispatchEvent(new CustomEvent("closingend", { detail }));
       }).bind(this);
       this.addEventListener("animationend", handler);
-      this.setAttribute("state", "closing");
+      this.toggleAttribute("closing", true);
     }
   }
 );
+
+export const raiseModal = async (innerHTML) => {
+  const template = document.createElement("template");
+  template.innerHTML = `<x-modal>${innerHTML}</x-modal>`;
+  const modal = template.content.querySelector("x-modal");
+  document.body.appendChild(modal);
+  return new Promise((resolve) => {
+    modal.addEventListener("closingend", (event) => {
+      resolve(event.detail);
+    });
+  });
+};

@@ -30,8 +30,6 @@ customElements.define(
 
       this.#input.addEventListener("enter", handler);
       this.#submit.addEventListener("click", handler);
-
-      this.dispatchEvent(new CustomEvent("load"));
     }
 
     static observedAttributes = [

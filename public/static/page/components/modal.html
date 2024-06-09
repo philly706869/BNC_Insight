@@ -9,37 +9,25 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.3);
   }
 
-  :host([state="opening"]) {
-    animation: appear 0.15s;
+  :host([opening]) {
+    animation: opacity0to1 0.15s;
   }
 
-  :host([state="closing"]) {
-    animation: disappear 0.15s;
+  :host([closing]) {
+    animation: opacity0to1 0.15s reverse;
   }
 
-  @keyframes appear {
+  @keyframes opacity0to1 {
     0% {
       opacity: 0;
     }
 
     100% {
       opacity: 1;
-    }
-  }
-
-  @keyframes disappear {
-    0% {
-      opacity: 1;
-    }
-
-    100% {
-      opacity: 0;
     }
   }
 </style>
-<div id="wrapper">
-  <slot></slot>
-</div>
+<slot></slot>
