@@ -23,7 +23,9 @@ customElements.define(
       shadowRoot.innerHTML = html;
 
       const timePanel = shadowRoot.querySelector("#time-panel");
-      timePanel.textContent = new Date().toDateString();
+      const date = new Date();
+      timePanel.textContent = date.toDateString();
+      timePanel.setAttribute("datetime", date.toISOString().split("T")[0]);
 
       this.#userPanel = shadowRoot.querySelector("#user-panel");
       // this.#articlePanel = shadowRoot.querySelector("#article-panel");

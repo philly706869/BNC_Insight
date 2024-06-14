@@ -11,10 +11,6 @@ customElements.define(
       shadowRoot.innerHTML = html;
 
       this.#open();
-
-      this.addEventListener("click", (event) => {
-        if (event.target === this) this.close(null);
-      });
     }
 
     #open() {

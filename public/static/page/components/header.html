@@ -25,8 +25,7 @@
   }
 
   #user-panel {
-    width: 200px;
-    height: 30px;
+    height: 100%;
     margin: 0;
     padding: 0;
     display: flex;
@@ -41,8 +40,9 @@
   }
 
   #user-panel > li > button {
-    width: 100%;
+    width: max-content;
     height: 100%;
+    padding: 0 15px;
     box-sizing: border-box;
     display: flex;
     justify-content: center;
@@ -70,7 +70,7 @@
   }
 </style>
 <div>
-  <span id="time-panel"></span>
+  <time id="time-panel"></time>
 </div>
 <div>
   <a id="logo" class="font-cg-bold" href="/">BNC_Insight</a>

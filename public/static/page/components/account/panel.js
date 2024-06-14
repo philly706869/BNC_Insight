@@ -14,6 +14,11 @@ customElements.define(
       const shadowRoot = this.attachShadow({ mode: "closed" });
       shadowRoot.innerHTML = html;
 
+      const closeButton = shadowRoot.querySelector("#close-button");
+      closeButton.addEventListener("click", () => {
+        this.closest("x-modal").close(false);
+      });
+
       this.#title = shadowRoot.getElementById("title");
       this.#slides = this.children;
       const firstSlide = this.#slides[this.#index];

@@ -1,6 +1,50 @@
 <style>
   @import "/static/css/default.css";
+
+  #content-area {
+    flex: 1 0;
+    width: 90%;
+    margin: 10px;
+    display: flex;
+  }
+
+  #content-area > section {
+    flex: 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #content-area > section > div {
+    flex: 1 0;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid gray;
+  }
+
+  #markdown-area > textarea {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    outline: none;
+    border: none;
+    resize: none;
+    font-size: 16px;
+  }
 </style>
 <x-app>
   <x-input placeholder="Title"></x-input>
+  <div id="content-area">
+    <section>
+      <h3>Markdown</h3>
+      <div id="markdown-area">
+        <textarea spellcheck="false"></textarea>
+      </div>
+    </section>
+    <section>
+      <h3>Preview</h3>
+      <div id="preview-area"></div>
+    </section>
+  </div>
 </x-app>
