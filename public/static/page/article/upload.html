@@ -1,102 +1,135 @@
 <style>
   @import "/static/css/default.css";
 
-  #wrapper {
+  #body {
     flex: 1 0;
-    width: 100%;
-    padding: 30px;
-    box-sizing: border-box;
+    width: 60%;
   }
 
-  main {
+  .content-wrapper {
     padding: 30px;
     border-width: 3px 2px;
     border-style: solid;
     border-color: var(--scarlet) var(--light-silver);
   }
 
-  header {
-    margin-bottom: 30px;
-  }
-
-  #display-area {
-    width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
-  }
-
-  #display-area th,
-  #display-area td {
-    padding: 10px;
-    border: 2px solid var(--light-silver);
-    text-align: left;
-  }
-
-  #display-area th {
-    border-color: var(--scarlet) var(--light-silver);
-    border-width: 5px 2px;
-    cursor: default;
-  }
-
-  #display-area td {
-    height: 500px;
-    vertical-align: top;
-  }
-
-  .content-area {
-    flex: 1 0;
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-  }
-
-  #markdown-area {
-    width: 100%;
-    min-height: 500px;
+  #content {
     padding: 0;
-    outline: none;
-    border: none;
-    resize: none;
-    font-size: 16px;
+  }
+
+  #content > section {
+    margin: 30px;
+    border: 2px dashed var(--light-silver);
+    border-left: 3px solid var(--scarlet);
+  }
+
+  #new-content-section {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+  }
+
+  #new-content-ul {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    list-style: none;
+  }
+
+  #new-content-ul > li {
+    margin: 10px;
+  }
+
+  .new-content-button {
+    width: 70px;
+    height: 70px;
+    border: 2px dashed silver;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+  }
+
+  .new-content-button-img {
+    width: 70%;
+    height: 70%;
+    background-color: silver;
+  }
+
+  #text-img {
+    mask: url(/static/img/text.svg) no-repeat center;
+  }
+
+  #photo-img {
+    mask: url(/static/img/photo.svg) no-repeat center;
+  }
+
+  .new-content-button > span {
+    font-weight: bold;
+    color: silver;
+  }
+
+  .new-content-button:hover {
+    border-color: gray;
+  }
+
+  .new-content-button:hover > .new-content-button-img {
+    background-color: gray;
+  }
+
+  .new-content-button:hover > span {
+    color: gray;
+  }
+
+  #new-content-section > span {
+    margin: 0 30px;
+    font-size: 16pt;
+    font-weight: bold;
+    color: silver;
+  }
+
+  #new-content-section:has(.new-content-button:hover) > span {
+    color: gray;
   }
 </style>
 <x-app>
-  <div id="wrapper">
+  <div id="body">
     <h1>New Article</h1>
-    <main>
+    <div class="content-wrapper">
       <select id="category-select">
-        <option>-- Please choose an category --</option>
+        <option value="">-- Please choose an category --</option>
         <option value="Financial">Financial</option>
         <option value="Economy">Economy</option>
         <option value="Social">Social</option>
         <option value="IT">IT</option>
         <option value="Science">Science</option>
       </select>
-      <button>Upload</button>
+      <button id="upload-button">Upload</button>
       <x-input id="title-input" placeholder="Title"></x-input>
-      <x-input id="subtitle-input" placeholder="Sub Title"></x-input>
-      <table id="display-area">
-        <thead>
-          <tr>
-            <th scope="col">Markdown</th>
-            <th scope="col">Preview</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <textarea
-                class="content-area"
-                id="markdown-area"
-                spellcheck="false"
-              ></textarea>
-            </td>
-            <td>
-              <div class="content-area" id="preview-area"></div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </main>
+      <x-input id="subtitle-input" placeholder="Subtitle"></x-input>
+      <div class="content-wrapper" id="content">
+        <section>Test</section>
+        <section id="new-content-section">
+          <nav>
+            <ul id="new-content-ul">
+              <li>
+                <button class="new-content-button">
+                  <div class="new-content-button-img" id="text-img"></div>
+                  <span>Text</span>
+                </button>
+              </li>
+              <li>
+                <button class="new-content-button">
+                  <div class="new-content-button-img" id="photo-img"></div>
+                  <span>Photo</span>
+                </button>
+              </li>
+            </ul>
+          </nav>
+          <span>New section</span>
+        </section>
+      </div>
+    </div>
   </div>
 </x-app>

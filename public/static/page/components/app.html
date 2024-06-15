@@ -2,11 +2,11 @@
   @import "/static/css/default.css";
 
   :host {
+    min-width: max-content;
     width: 100%;
     min-height: 100vh;
     height: max-content;
     box-sizing: border-box;
-    padding: 30px;
     display: flex;
     flex-direction: column;
   }
@@ -14,6 +14,7 @@
   .decoline {
     flex: 0 0 auto;
     height: 10px;
+    margin: 30px;
     background: linear-gradient(
       90deg,
       #000000 0%,

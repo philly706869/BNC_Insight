@@ -8,8 +8,6 @@ customElements.define(
     #input;
     #placeholder;
 
-    static formAssociated = true;
-
     constructor() {
       super();
       const shadowRoot = this.attachShadow({ mode: "closed" });

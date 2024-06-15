@@ -1,16 +1,17 @@
 <style>
   @import "/static/css/default.css";
 
-  #content {
-    flex: 1 0 auto;
-    width: 90%;
+  #body {
+    flex: 1 0;
+    width: 60%;
     display: flex;
     flex-direction: column;
   }
 
   #category {
-    flex: 0 0 auto;
+    flex: 0 0;
     margin: 0;
+    margin-bottom: 10px;
     padding: 0;
     width: 100%;
     display: flex;
@@ -18,7 +19,7 @@
   }
 
   #category > li {
-    flex: 1 0 auto;
+    flex: 1 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -43,9 +44,8 @@
     background-color: rgba(0, 0, 0, 0.1);
   }
 
-  main {
+  #articles {
     flex: 1 0 300px;
-    margin: 10px;
     box-sizing: border-box;
     display: grid;
     gap: 5px;
@@ -78,7 +78,7 @@
   }
 </style>
 <x-app>
-  <div id="content">
+  <div id="body">
     <ul id="category">
       <li><a href="">Financial</a></li>
       <li><a href="">Economy</a></li>
@@ -86,11 +86,11 @@
       <li><a href="">IT</a></li>
       <li><a href="">Science</a></li>
     </ul>
-    <main>
+    <div id="articles">
       <article id="main"></article>
       <article id="sub1"></article>
       <article id="sub2"></article>
       <article id="sub3"></article>
-    </main>
+    </div>
   </div>
 </x-app>
