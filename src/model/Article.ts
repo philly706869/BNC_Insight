@@ -27,8 +27,12 @@ export class Article extends Model {
   declare category: Category;
 
   @AllowNull(false)
-  @Column(DataType.STRING(128))
+  @Column(DataType.STRING(64))
   declare title: string;
+
+  @AllowNull(false)
+  @Column(DataType.STRING(128))
+  declare subtitle: string;
 
   @AllowNull(false)
   @Column(DataType.TEXT)

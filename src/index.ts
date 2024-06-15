@@ -3,7 +3,7 @@ import expressSession from "express-session";
 import http from "http";
 import path from "path";
 import { apiRouter } from "./api/api.js";
-import { config } from "./config/server.config.js";
+import { config as serverConfig } from "./config/server.config.js";
 import { sequelize } from "./model/sequelize.js";
 import { userRouter } from "./user/user.js";
 import { __dirname } from "./util/__dirname.js";
@@ -13,7 +13,7 @@ const app = express();
 
 app.use(
   expressSession({
-    secret: config.sessionSecret,
+    secret: serverConfig.sessionSecret,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -75,8 +75,8 @@ app.use((req, res) => {
 
 const server = http.createServer(app);
 
-server.listen(config.port, async () => {
-  logger.info(`http server started listening on port ${config.port}`);
+server.listen(serverConfig.port, async () => {
+  logger.info(`http server started listening on port ${serverConfig.port}`);
 
   try {
     await sequelize.sync();

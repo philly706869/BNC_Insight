@@ -1,4 +1,4 @@
-import { marked } from "../../js/external/marked.js";
+import { markdownToHTML } from "../../js/markdownToHTML.js";
 import {} from "../components/app.js";
 import {} from "../components/input.js";
 
@@ -14,14 +14,11 @@ customElements.define(
       const shadowRoot = this.attachShadow({ mode: "closed" });
       shadowRoot.innerHTML = html;
 
-      const markdownTextArea = shadowRoot.querySelector(
-        "#markdown-area > textarea"
-      );
+      const markdownArea = shadowRoot.querySelector("#markdown-area");
       const previewArea = shadowRoot.querySelector("#preview-area");
 
-      markdownTextArea.addEventListener("input", () => {
-        const markdown = markdownTextArea.value;
-        previewArea.innerHTML = marked.parse(markdown);
+      markdownArea.addEventListener("input", () => {
+        previewArea.innerHTML = markdownToHTML(markdownArea.value);
       });
     }
   }

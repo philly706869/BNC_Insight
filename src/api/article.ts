@@ -10,7 +10,8 @@ articleRouter.post(
     .isString()
     .bail()
     .custom((value) => categories.includes(value)),
-  body("title").isString().bail().isLength({ min: 1, max: 128 }),
+  body("title").isString().bail().isLength({ min: 1, max: 64 }),
+  body("subtitle").isString().bail().isLength({ min: 1, max: 128 }),
   body("content").isString().bail().isLength({ min: 1, max: 65535 }),
   (req, res) => {}
 );

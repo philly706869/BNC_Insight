@@ -1,7 +1,17 @@
 @import "/static/css/palette.css";
 @import "/static/css/font.css";
 
-body {
-  min-height: 100vh;
-  height: max-content;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+span,
+time {
+  cursor: default;
+}
+
+button {
+  cursor: pointer;
 }

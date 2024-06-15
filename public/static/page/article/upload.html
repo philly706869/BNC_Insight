@@ -1,31 +1,58 @@
 <style>
   @import "/static/css/default.css";
 
-  #content-area {
+  #wrapper {
     flex: 1 0;
-    width: 90%;
-    margin: 10px;
-    display: flex;
+    width: 100%;
+    padding: 30px;
+    box-sizing: border-box;
   }
 
-  #content-area > section {
-    flex: 1 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  main {
+    padding: 30px;
+    border-width: 3px 2px;
+    border-style: solid;
+    border-color: var(--scarlet) var(--light-silver);
   }
 
-  #content-area > section > div {
+  header {
+    margin-bottom: 30px;
+  }
+
+  #display-area {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+  }
+
+  #display-area th,
+  #display-area td {
+    padding: 10px;
+    border: 2px solid var(--light-silver);
+    text-align: left;
+  }
+
+  #display-area th {
+    border-color: var(--scarlet) var(--light-silver);
+    border-width: 5px 2px;
+    cursor: default;
+  }
+
+  #display-area td {
+    height: 500px;
+    vertical-align: top;
+  }
+
+  .content-area {
     flex: 1 0;
     width: 100%;
     padding: 10px;
     box-sizing: border-box;
-    border: 1px solid gray;
   }
 
-  #markdown-area > textarea {
+  #markdown-area {
     width: 100%;
-    height: 100%;
+    min-height: 500px;
     padding: 0;
     outline: none;
     border: none;
@@ -34,17 +61,42 @@
   }
 </style>
 <x-app>
-  <x-input placeholder="Title"></x-input>
-  <div id="content-area">
-    <section>
-      <h3>Markdown</h3>
-      <div id="markdown-area">
-        <textarea spellcheck="false"></textarea>
-      </div>
-    </section>
-    <section>
-      <h3>Preview</h3>
-      <div id="preview-area"></div>
-    </section>
+  <div id="wrapper">
+    <h1>New Article</h1>
+    <main>
+      <select id="category-select">
+        <option>-- Please choose an category --</option>
+        <option value="Financial">Financial</option>
+        <option value="Economy">Economy</option>
+        <option value="Social">Social</option>
+        <option value="IT">IT</option>
+        <option value="Science">Science</option>
+      </select>
+      <button>Upload</button>
+      <x-input id="title-input" placeholder="Title"></x-input>
+      <x-input id="subtitle-input" placeholder="Sub Title"></x-input>
+      <table id="display-area">
+        <thead>
+          <tr>
+            <th scope="col">Markdown</th>
+            <th scope="col">Preview</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <textarea
+                class="content-area"
+                id="markdown-area"
+                spellcheck="false"
+              ></textarea>
+            </td>
+            <td>
+              <div class="content-area" id="preview-area"></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
   </div>
 </x-app>
