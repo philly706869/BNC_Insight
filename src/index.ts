@@ -1,3 +1,4 @@
+import ConnectSessionSequelize from "connect-session-sequelize";
 import express from "express";
 import expressSession from "express-session";
 import http from "http";
@@ -11,6 +12,8 @@ import { logger } from "./util/logger.js";
 
 const app = express();
 
+const SequqlizeStore = ConnectSessionSequelize(expressSession.Store);
+
 app.use(
   expressSession({
     secret: serverConfig.sessionSecret,
@@ -20,6 +23,7 @@ app.use(
       signed: true,
       maxAge: 1000 * 60 * 60 * 24 * 31,
     },
+    store: new SequqlizeStore({ db: sequelize }),
   })
 );
 

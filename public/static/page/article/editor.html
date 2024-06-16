@@ -1,11 +1,6 @@
 <style>
   @import "/static/css/default.css";
 
-  #body {
-    flex: 1 0;
-    width: 60%;
-  }
-
   .content-wrapper {
     padding: 30px;
     border-width: 3px 2px;
@@ -110,47 +105,43 @@
     color: gray;
   }
 </style>
-<x-app>
-  <div id="body">
-    <h1>New Article</h1>
-    <div class="content-wrapper" id="article-field">
-      <div id="metadata-wrapper">
-        <div id="metadata-top">
-          <select id="category-select">
-            <option value="">-- Please choose an category --</option>
-            <option value="Financial">Financial</option>
-            <option value="Economy">Economy</option>
-            <option value="Social">Social</option>
-            <option value="IT">IT</option>
-            <option value="Science">Science</option>
-          </select>
-          <button id="upload-button">Upload</button>
-        </div>
-        <x-input id="title-input" placeholder="Title"></x-input>
-        <x-input id="subtitle-input" placeholder="Subtitle"></x-input>
-      </div>
-      <div class="content-wrapper" id="content">
-        <section>Test</section>
-        <section id="new-content-section">
-          <nav>
-            <ul id="new-content-ul">
-              <li>
-                <button class="new-content-button">
-                  <div class="new-content-button-img" id="text-img"></div>
-                  <span>Text</span>
-                </button>
-              </li>
-              <li>
-                <button class="new-content-button">
-                  <div class="new-content-button-img" id="photo-img"></div>
-                  <span>Photo</span>
-                </button>
-              </li>
-            </ul>
-          </nav>
-          <span>New section</span>
-        </section>
-      </div>
+<h1 id="title"></h1>
+<div class="content-wrapper" id="article-field">
+  <div id="metadata-wrapper">
+    <div id="metadata-top">
+      <select id="category-select">
+        <option value="">-- Please choose an category --</option>
+        <option value="Financial">Financial</option>
+        <option value="Economy">Economy</option>
+        <option value="Social">Social</option>
+        <option value="IT">IT</option>
+        <option value="Science">Science</option>
+      </select>
+      <button id="upload-button">Upload</button>
     </div>
+    <x-input id="title-input" placeholder="Title"></x-input>
+    <x-input id="subtitle-input" placeholder="Subtitle"></x-input>
   </div>
-</x-app>
+  <div class="content-wrapper" id="content">
+    <section>Test</section>
+    <section id="new-content-section">
+      <nav>
+        <ul id="new-content-ul">
+          <li>
+            <button class="new-content-button">
+              <div class="new-content-button-img" id="text-img"></div>
+              <span>Text</span>
+            </button>
+          </li>
+          <li>
+            <button class="new-content-button">
+              <div class="new-content-button-img" id="photo-img"></div>
+              <span>Photo</span>
+            </button>
+          </li>
+        </ul>
+      </nav>
+      <span>New section</span>
+    </section>
+  </div>
+</div>
