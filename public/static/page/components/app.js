@@ -1,16 +1,14 @@
+import { Component, fetchHTML } from "../../js/component.js";
 import {} from "./header.js";
 
-const html = await fetch("/static/page/components/app.html").then((data) =>
-  data.text()
-);
+const html = await fetchHTML(import.meta.url);
 
 customElements.define(
   "x-app",
-  class extends HTMLElement {
+  class extends Component {
     constructor() {
       super();
-      const shadowRoot = this.attachShadow({ mode: "closed" });
-      shadowRoot.innerHTML = html;
+      const { shadowRoot, internals } = this.init(html);
     }
   }
 );

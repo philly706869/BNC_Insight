@@ -1,20 +1,18 @@
+import { Component, fetchHTML } from "../../../js/component.js";
 import {} from "../input.js";
 
-const html = await fetch("/static/page/components/account/slide.html").then(
-  (data) => data.text()
-);
+const html = await fetchHTML(import.meta.url);
 
 customElements.define(
   "x-slide",
-  class extends HTMLElement {
+  class extends Component {
     #input;
     #error;
     #submit;
 
     constructor() {
       super();
-      const shadowRoot = this.attachShadow({ mode: "closed" });
-      shadowRoot.innerHTML = html;
+      const { shadowRoot, internals } = this.init(html);
 
       this.#input = shadowRoot.getElementById("input");
       this.#error = shadowRoot.getElementById("error");
@@ -42,7 +40,7 @@ customElements.define(
       "error",
     ];
 
-    attributeChangedCallback(name, oldValue, newValue) {
+    onAttributeUpdate(name, oldValue, newValue) {
       switch (name) {
         case "title":
           this.#input.setAttribute("title", newValue);

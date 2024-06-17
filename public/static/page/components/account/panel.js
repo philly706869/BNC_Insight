@@ -1,18 +1,17 @@
-const html = await fetch("/static/page/components/account/panel.html").then(
-  (data) => data.text()
-);
+import { Component, fetchHTML } from "../../../js/component.js";
+
+const html = await fetchHTML(import.meta.url);
 
 customElements.define(
   "x-account-panel",
-  class extends HTMLElement {
+  class extends Component {
     #title;
     #slides;
     #index = 0;
 
     constructor() {
       super();
-      const shadowRoot = this.attachShadow({ mode: "closed" });
-      shadowRoot.innerHTML = html;
+      const { shadowRoot, internals } = this.init(html);
 
       const closeButton = shadowRoot.querySelector("#close-button");
       closeButton.addEventListener("click", () => {
@@ -27,7 +26,7 @@ customElements.define(
 
     static observedAttributes = ["title"];
 
-    attributeChangedCallback(name, oldValue, newValue) {
+    onAttributeUpdate(name, oldValue, newValue) {
       switch (name) {
         case "title":
           this.#title.textContent = newValue;

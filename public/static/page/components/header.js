@@ -1,10 +1,9 @@
+import { Component, fetchHTML } from "../../js/component.js";
 import {} from "./login.js";
 import { raiseModal } from "./modal.js";
 import {} from "./signup.js";
 
-const html = await fetch("/static/page/components/header.html").then((data) =>
-  data.text()
-);
+const html = await fetchHTML(import.meta.url);
 
 const getUser = async () => {
   const res = await fetch("/api/user");
@@ -13,14 +12,13 @@ const getUser = async () => {
 
 customElements.define(
   "x-header",
-  class extends HTMLElement {
+  class extends Component {
     #userPanel;
     #articlePanel;
 
     constructor() {
       super();
-      const shadowRoot = this.attachShadow({ mode: "closed" });
-      shadowRoot.innerHTML = html;
+      const { shadowRoot, internals } = this.init(html);
 
       const timePanel = shadowRoot.querySelector("#time-panel");
       const date = new Date();

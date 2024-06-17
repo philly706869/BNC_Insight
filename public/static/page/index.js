@@ -1,12 +1,15 @@
-import { Component } from "../js/component.js";
+import { Component, fetchHTML } from "../js/component.js";
 import {} from "./components/app.js";
 import {} from "./components/modal.js";
+
+const html = await fetchHTML(import.meta.url);
 
 customElements.define(
   "x-index",
   class extends Component {
-    static url = import.meta.url;
-
-    onCreate(shadowRoot, internals) {}
+    constructor() {
+      super();
+      const { shadowRoot, internals } = this.init(html);
+    }
   }
 );

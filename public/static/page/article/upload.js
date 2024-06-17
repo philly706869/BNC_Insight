@@ -1,24 +1,15 @@
+import { Component, fetchHTML } from "../../js/component.js";
 import {} from "../components/app.js";
 import {} from "../components/input.js";
 
-const html = await fetch("/static/page/article/upload.html").then((data) =>
-  data.text()
-);
+const html = await fetchHTML(import.meta.url);
 
 customElements.define(
   "x-article-upload",
-  class extends HTMLElement {
+  class extends Component {
     constructor() {
       super();
-      const shadowRoot = this.attachShadow({ mode: "closed" });
-      shadowRoot.innerHTML = html;
-
-      const markdownArea = shadowRoot.querySelector("#markdown-area");
-      const previewArea = shadowRoot.querySelector("#preview-area");
-
-      markdownArea.addEventListener("input", () => {
-        previewArea.innerHTML = markdownArea.value;
-      });
+      const { shadowRoot, internals } = this.init(html);
 
       const categorySelect = shadowRoot.querySelector("#category-select");
       const titleInput = shadowRoot.querySelector("#title-input");

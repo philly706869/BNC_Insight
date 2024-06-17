@@ -1,27 +1,35 @@
-export class Component extends HTMLElement {
-  static #htmls = {};
+export const fetchHTML = (importURL) =>
+  fetch(`${importURL.slice(0, importURL.lastIndexOf("."))}.html`).then((data) =>
+    data.text()
+  );
 
+export class Component extends HTMLElement {
   constructor() {
     super();
-
-    const importURL = this.constructor.url;
-
-    if (!(importURL in Component.#htmls)) {
-      const htmlURL = `${importURL.slice(0, importURL.lastIndexOf("."))}.html`;
-      Component.#htmls[importURL] = fetch(htmlURL).then((data) => data.text());
-    }
-
-    (async () => {
-      const shadowRoot = this.attachShadow({ mode: "closed" });
-      shadowRoot.innerHTML = await Component.#htmls[importURL];
-      const internals = this.attachInternals();
-      this.onCreate(shadowRoot, internals);
-    })();
   }
 
-  onCreate(shadowRoot, internals) {}
+  init(html) {
+    const shadowRoot = this.attachShadow({ mode: "closed" });
+    shadowRoot.innerHTML = html;
+    const internals = this.attachInternals();
+    return { shadowRoot, internals };
+  }
+
   onConnect() {}
   onDisconnect() {}
   onAdopted() {}
-  onAttributeUpdate(name, oldValue, newValue) {}
+  onAttributeUpdate(name, oldValue, newValue, namespace) {}
+
+  connectedCallback() {
+    this.onConnect();
+  }
+  disconnectedCallback() {
+    this.onDisconnect();
+  }
+  adoptedCallback() {
+    this.onAdopted();
+  }
+  attributeChangedCallback(name, oldValue, newValue, namespace) {
+    this.onAttributeUpdate(name, oldValue, newValue, namespace);
+  }
 }

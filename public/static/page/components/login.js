@@ -1,13 +1,16 @@
-import { Component } from "../../js/component.js";
+import { Component, fetchHTML } from "../../js/component.js";
 import {} from "./account/panel.js";
 import {} from "./account/slide.js";
+
+const html = await fetchHTML(import.meta.url);
 
 customElements.define(
   "x-login-panel",
   class extends Component {
-    static url = import.meta.url;
+    constructor() {
+      super();
+      const { shadowRoot, internals } = this.init(html);
 
-    onCreate(shadowRoot, internals) {
       const modal = this.closest("x-modal");
 
       const panel = shadowRoot.querySelector("#panel");

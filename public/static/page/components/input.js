@@ -1,14 +1,17 @@
-import { Component } from "../../js/component.js";
+import { Component, fetchHTML } from "../../js/component.js";
+
+const html = await fetchHTML(import.meta.url);
 
 customElements.define(
   "x-input",
   class extends Component {
-    static url = import.meta.url;
-
     #input;
     #placeholder;
 
-    onCreate(shadowRoot, internals) {
+    constructor() {
+      super();
+      const { shadowRoot, internals } = this.init(html);
+
       this.#input = shadowRoot.getElementById("input");
       this.#placeholder = shadowRoot.getElementById("placeholder");
 
