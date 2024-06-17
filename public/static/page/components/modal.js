@@ -1,15 +1,11 @@
-const html = await fetch("/static/page/components/modal.html").then((data) =>
-  data.text()
-);
+import { Component } from "../../js/component.js";
 
 customElements.define(
   "x-modal",
-  class extends HTMLElement {
-    constructor() {
-      super();
-      const shadowRoot = this.attachShadow({ mode: "closed" });
-      shadowRoot.innerHTML = html;
+  class extends Component {
+    static url = import.meta.url;
 
+    onCreate(shadowRoot, internals) {
       this.#open();
     }
 

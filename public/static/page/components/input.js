@@ -1,18 +1,14 @@
-const html = await fetch("/static/page/components/input.html").then((data) =>
-  data.text()
-);
+import { Component } from "../../js/component.js";
 
 customElements.define(
   "x-input",
-  class extends HTMLElement {
+  class extends Component {
+    static url = import.meta.url;
+
     #input;
     #placeholder;
 
-    constructor() {
-      super();
-      const shadowRoot = this.attachShadow({ mode: "closed" });
-      shadowRoot.innerHTML = html;
-
+    onCreate(shadowRoot, internals) {
       this.#input = shadowRoot.getElementById("input");
       this.#placeholder = shadowRoot.getElementById("placeholder");
 
@@ -25,7 +21,7 @@ customElements.define(
 
     static observedAttributes = ["password-mode", "placeholder", "error"];
 
-    attributeChangedCallback(name, oldValue, newValue) {
+    onAttributeUpdate(name, oldValue, newValue) {
       switch (name) {
         case "password-mode":
           this.#input.setAttribute(
