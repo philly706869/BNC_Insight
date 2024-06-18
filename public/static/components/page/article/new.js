@@ -1,11 +1,11 @@
-import { createComponent } from "../../js/component.js";
-import {} from "../app.js";
-import {} from "../input.js";
+import { createComponent } from "../../../js/component.js";
+import {} from "../../app.js";
+import {} from "../../input.js";
 
 createComponent(
   import.meta.url,
   (Component, getProtectedProps) =>
-    class ArticleUpload extends Component {
+    class NewArticle extends Component {
       constructor() {
         super();
         const { shadowRoot, internals } = getProtectedProps(this);
