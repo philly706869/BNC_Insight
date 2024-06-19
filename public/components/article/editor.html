@@ -29,80 +29,16 @@
     padding: 0;
   }
 
-  #content > section {
-    margin: 30px;
-    border: 2px dashed var(--light-silver);
-    border-left: 3px solid var(--scarlet);
-  }
-
-  #new-content-section {
+  #textarea {
+    width: 100%;
+    min-height: 100px;
     padding: 10px;
-    display: flex;
-    align-items: center;
+    box-sizing: border-box;
+    /* font-family: Arial, Helvetica, sans-serif; */
   }
 
-  #new-content-ul {
-    margin: 0;
-    padding: 0;
-    display: flex;
-    list-style: none;
-  }
-
-  #new-content-ul > li {
-    margin: 10px;
-  }
-
-  .new-content-button {
-    width: 70px;
-    height: 70px;
-    border: 2px dashed silver;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: transparent;
-  }
-
-  .new-content-button-img {
-    width: 70%;
-    height: 70%;
-    background-color: silver;
-  }
-
-  #text-img {
-    mask: url(/static/img/text.svg) no-repeat center;
-  }
-
-  #photo-img {
-    mask: url(/static/img/photo.svg) no-repeat center;
-  }
-
-  .new-content-button > span {
-    font-weight: bold;
-    color: silver;
-  }
-
-  .new-content-button:hover {
-    border-color: gray;
-  }
-
-  .new-content-button:hover > .new-content-button-img {
-    background-color: gray;
-  }
-
-  .new-content-button:hover > span {
-    color: gray;
-  }
-
-  #new-content-section > span {
-    margin: 0 30px;
-    font-size: 16pt;
-    font-weight: bold;
-    color: silver;
-  }
-
-  #new-content-section:has(.new-content-button:hover) > span {
-    color: gray;
+  #textarea:focus {
+    outline: none;
   }
 </style>
 <h1 id="title"></h1>
@@ -123,25 +59,16 @@
     <x-input id="subtitle-input" placeholder="Subtitle"></x-input>
   </div>
   <div class="content-wrapper" id="content">
-    <section>Test</section>
-    <section id="new-content-section">
-      <nav>
-        <ul id="new-content-ul">
-          <li>
-            <button class="new-content-button">
-              <div class="new-content-button-img" id="text-img"></div>
-              <span>Text</span>
-            </button>
-          </li>
-          <li>
-            <button class="new-content-button">
-              <div class="new-content-button-img" id="photo-img"></div>
-              <span>Photo</span>
-            </button>
-          </li>
-        </ul>
-      </nav>
-      <span>New section</span>
-    </section>
+    <nav>
+      <button><b>B</b></button>
+      <button><i>I</i></button>
+      <button><s>S</s></button>
+      <button><u>U</u></button>
+      <button>&ldquo;&rdquo;</button>
+      <button>OL</button>
+      <button>UL</button>
+      <button>Link</button>
+    </nav>
+    <div id="textarea" contenteditable></div>
   </div>
 </div>

@@ -69,6 +69,23 @@ createComponent(
             })
           );
         });
+
+        const textarea = shadowRoot.querySelector("#textarea");
+        let currentLine;
+        const newLine = () => {
+          const newLine = document.createElement("span");
+          textarea.appendChild(newLine);
+          currentLine = newLine;
+        };
+        newLine();
+        textarea.addEventListener("keypress", (event) => {
+          event.preventDefault();
+          switch (event.key) {
+            case "Enter":
+              newLine();
+              break;
+          }
+        });
       }
 
       static observedAttributes = ["title"];
