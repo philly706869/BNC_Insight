@@ -1,5 +1,5 @@
 import ConnectSessionSequelize from "connect-session-sequelize";
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import expressSession from "express-session";
 import http from "http";
 import path from "path";
@@ -39,43 +39,80 @@ declare module "express-session" {
 app.use(express.json());
 app.use("/api", apiRouter);
 app.use("/user", userRouter);
-app.use("/static", express.static(path.join(__dirname, "./public/static")));
+app.use("/static", express.static(path.join(__dirname, "./public")));
 
-const pagePath = path.join(__dirname, "./public/page");
-const staticOption = {
-  extensions: ["html", "htm"],
+app.set("view engine", "ejs");
+
+const access = {
+  user: (req: Request, res: Response, next: NextFunction) => {
+    const { user } = req.session;
+    if (user) next();
+    else res.status(404).end();
+  },
+  admin: (req: Request, res: Response, next: NextFunction) => {
+    const { user } = req.session;
+    if (user && user.isAdmin) next();
+    else res.status(404).end();
+  },
 };
 
-const privatePageProvider = express.static(
-  path.join(pagePath, "./private"),
-  staticOption
+const renderer = (options: {
+  title: string;
+  script: string;
+  component: string;
+}) => {
+  return (req: Request, res: Response) => {
+    res.render("template", options);
+  };
+};
+
+app.get(
+  "/",
+  renderer({
+    title: "BNC_Insight",
+    script: "index.js",
+    component: "x-index",
+  })
 );
-const protectedPageProvider = express.static(
-  path.join(pagePath, "./protected"),
-  staticOption
+
+app.get(
+  "/user",
+  access.user,
+  renderer({
+    title: "BNC_Insight User",
+    script: "user.js",
+    component: "x-user",
+  })
 );
-const publicPageProvider = express.static(
-  path.join(pagePath, "./public"),
-  staticOption
+
+app.get(
+  "/article/new",
+  access.user,
+  renderer({
+    title: "BNC_Insight New Article",
+    script: "article/new.js",
+    component: "x-new-article",
+  })
 );
 
-app.use((req, res, next) => {
-  const { user } = req.session;
-  if (user && user.isAdmin) privatePageProvider(req, res, next);
-  else next();
-});
+app.get(
+  "/article/edit/\\d+",
+  access.user,
+  renderer({
+    title: "BNC_Insight Edit Article",
+    script: "article/edit.js",
+    component: "x-edit-article",
+  })
+);
 
-app.use((req, res, next) => {
-  const { user } = req.session;
-  if (user) protectedPageProvider(req, res, next);
-  else next();
-});
-
-app.use(publicPageProvider);
-
-app.use((req, res) => {
-  res.sendFile(path.join(pagePath, "./404.html"));
-});
+app.get(
+  "/article/\\d+",
+  renderer({
+    title: "BNC_Insight Article",
+    script: "article/view.js",
+    component: "x-view-article",
+  })
+);
 
 const server = http.createServer(app);
 
