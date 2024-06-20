@@ -1,3 +1,4 @@
+import { Quill } from "quill";
 import { createComponent } from "../../js/component.js";
 import {} from "../input.js";
 
@@ -9,6 +10,9 @@ createComponent(
 
       constructor(protectedProps) {
         super(protectedProps);
+        /**
+         * @type {{ shadowRoot: ShadowRoot }}
+         */
         const { shadowRoot } = protectedProps;
 
         this.#title = shadowRoot.querySelector("#title");
@@ -71,20 +75,17 @@ createComponent(
         });
 
         const textarea = shadowRoot.querySelector("#textarea");
-        let currentLine;
-        const newLine = () => {
-          const newLine = document.createElement("span");
-          textarea.appendChild(newLine);
-          currentLine = newLine;
-        };
-        newLine();
-        textarea.addEventListener("keypress", (event) => {
-          event.preventDefault();
+        textarea.addEventListener("keydown", (event) => {
+          // event.preventDefault();
+          console.log(event);
+          const selection = shadowRoot.getSelection();
           switch (event.key) {
             case "Enter":
-              newLine();
               break;
           }
+        });
+        const quill = Quill.find(shadowRoot.querySelector("#editor"), {
+          theme: "snow",
         });
       }
 
