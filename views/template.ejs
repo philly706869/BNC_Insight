@@ -4,7 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%=title%></title>
-    <script type="importmap" src="/static/js/imports.json"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "jquery": "https://cdn.jsdelivr.net/npm/jquery@3.7.1/+esm"
+        }
+      }
+    </script>
     <script type="module" src="/static/components/page/<%=script%>"></script>
   </head>
   <body style="margin: 0;">

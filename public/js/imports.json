@@ -1,5 +1,0 @@
-{
-  "imports": {
-    "quill": "https://cdn.jsdelivr.net/npm/quill@2.0.2/+esm"
-  }
-}

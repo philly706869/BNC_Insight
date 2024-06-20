@@ -1,4 +1,3 @@
-import { Quill } from "quill";
 import { createComponent } from "../../js/component.js";
 import {} from "../input.js";
 
@@ -74,18 +73,51 @@ createComponent(
           );
         });
 
-        const textarea = shadowRoot.querySelector("#textarea");
-        textarea.addEventListener("keydown", (event) => {
-          // event.preventDefault();
-          console.log(event);
+        const editor = shadowRoot.querySelector("#editor");
+
+        const combineSameTags = (nodes) => {
+          if (nodes.length === 0) return;
+          let currentNode = nodes[0];
+
+          for (let i = 1; i < nodes.length; i++) {
+            const node = nodes[i];
+            combineSameTags(node.childNodes);
+            if (node.tagName === currentNode.tagName) {
+              if (currentNode.nodeType === Node.TEXT_NODE) {
+                currentNode.data += node.data;
+              } else if (currentNode.nodeType === Node.ELEMENT_NODE) {
+                currentNode.append(...node.childNodes);
+              }
+              node.remove();
+            } else currentNode = node;
+          }
+        };
+
+        editor.addEventListener("keydown", (event) => {
+          /**
+           * @type {Selection}
+           */
           const selection = shadowRoot.getSelection();
+          if (selection.rangeCount > 0) {
+            const range = selection.getRangeAt(0);
+            if (!range.collapsed) {
+              const bold = document.createElement("b");
+              const text = range.extractContents();
+              text.querySelectorAll("b").forEach((element) => {
+                element.replaceWith(...element.childNodes);
+              });
+              bold.appendChild(text);
+              range.insertNode(bold);
+              selection.removeAllRanges();
+              selection.addRange(range);
+            }
+            combineSameTags(editor.childNodes);
+          }
+
           switch (event.key) {
             case "Enter":
               break;
           }
-        });
-        const quill = Quill.find(shadowRoot.querySelector("#editor"), {
-          theme: "snow",
         });
       }
 
