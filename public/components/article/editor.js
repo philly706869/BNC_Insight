@@ -76,12 +76,12 @@ createComponent(
         const editor = shadowRoot.querySelector("#editor");
 
         const combineSameTags = (nodes) => {
-          if (nodes.length === 0) return;
+          if (nodes.length < 2) return;
           let currentNode = nodes[0];
 
           for (let i = 1; i < nodes.length; i++) {
             const node = nodes[i];
-            combineSameTags(node.childNodes);
+            console.log(node);
             if (node.tagName === currentNode.tagName) {
               if (currentNode.nodeType === Node.TEXT_NODE) {
                 currentNode.data += node.data;
@@ -89,8 +89,12 @@ createComponent(
                 currentNode.append(...node.childNodes);
               }
               node.remove();
-            } else currentNode = node;
+            } else {
+              combineSameTags(currentNode.childNodes);
+              currentNode = node;
+            }
           }
+          combineSameTags(currentNode.childNodes);
         };
 
         editor.addEventListener("keydown", (event) => {
