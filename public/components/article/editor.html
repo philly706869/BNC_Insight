@@ -31,14 +31,7 @@
 
   #editor {
     width: 100%;
-    min-height: 100px;
-    padding: 10px;
-    box-sizing: border-box;
-    /* font-family: Arial, Helvetica, sans-serif; */
-  }
-
-  #editor:focus {
-    outline: none;
+    border: none;
   }
 </style>
 <h1 id="title"></h1>
@@ -58,17 +51,8 @@
     <x-input id="title-input" placeholder="Title"></x-input>
     <x-input id="subtitle-input" placeholder="Subtitle"></x-input>
   </div>
-  <div class="content-wrapper" id="content">
-    <nav>
-      <button><b>B</b></button>
-      <button><i>I</i></button>
-      <button><s>S</s></button>
-      <button><u>U</u></button>
-      <button>&ldquo;&rdquo;</button>
-      <button>OL</button>
-      <button>UL</button>
-      <button>Link</button>
-    </nav>
-    <div id="editor" contenteditable></div>
-  </div>
+  <iframe
+    id="editor"
+    src="/static/components/article/editor-frame.html"
+  ></iframe>
 </div>

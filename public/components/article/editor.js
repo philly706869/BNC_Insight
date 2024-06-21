@@ -1,4 +1,5 @@
 import { createComponent } from "../../js/component.js";
+import { createJQuerySelector } from "../../js/shadowJQuery.js";
 import {} from "../input.js";
 
 createComponent(
@@ -13,23 +14,32 @@ createComponent(
          * @type {{ shadowRoot: ShadowRoot }}
          */
         const { shadowRoot } = protectedProps;
+        const $$ = createJQuerySelector(shadowRoot);
 
-        this.#title = shadowRoot.querySelector("#title");
+        this.#title = $$("#title");
 
-        const uploadButton = shadowRoot.querySelector("#upload-button");
-        const categorySelect = shadowRoot.querySelector("#category-select");
-        const titleInput = shadowRoot.querySelector("#title-input");
-        const subtitleInput = shadowRoot.querySelector("#subtitle-input");
+        const $uploadButton = $$("#upload-button");
+        const $categorySelect = $$("#category-select");
+        const $titleInput = $$("#title-input");
+        const $subtitleInput = $$("#subtitle-input");
+        const $editor = $$("#editor");
 
-        uploadButton.addEventListener("click", () => {
-          const category =
-            categorySelect.options[categorySelect.selectedIndex].value;
-          const title = titleInput.value;
-          const subtitle = subtitleInput.value;
+        $editor.on("load", () => {
+          const $body = $editor.contents().find("body");
+          const resizeEditor = () => $editor.height($body.height());
+          resizeEditor();
+          const resizeObserver = new ResizeObserver(resizeEditor);
+          resizeObserver.observe($body[0]);
+        });
+
+        $uploadButton.on("click", () => {
+          const category = $categorySelect.find(":selected").val();
+          const title = $titleInput.val();
+          const subtitle = $subtitleInput.val();
 
           if (!category) {
             alert("Please choose an category");
-            categorySelect.focus();
+            $categorySelect.focus();
             return;
           }
 
@@ -57,71 +67,16 @@ createComponent(
               return;
           }
 
-          // if (markdownArea.value.length > 65535) {
-          //   alert("Aritcle content cannot be greater than 65535 characters");
-          // }
-
-          // if (previewArea.textContent.trim().length < 1) {
-          //   alert("Article content cannot be empty");
-          //   return;
-          // }
+          const quill = $editor[0].contentWindow.quill;
+          const json = JSON.stringify(quill.getContents().ops);
+          console.log(json);
+          quill.setContents(JSON.parse(json));
 
           this.dispatchEvent(
             new CustomEvent("submit", {
               detail: { category, title, subtitle, content: [] },
             })
           );
-        });
-
-        const editor = shadowRoot.querySelector("#editor");
-
-        const combineSameTags = (nodes) => {
-          if (nodes.length < 2) return;
-          let currentNode = nodes[0];
-
-          for (let i = 1; i < nodes.length; i++) {
-            const node = nodes[i];
-            console.log(node);
-            if (node.tagName === currentNode.tagName) {
-              if (currentNode.nodeType === Node.TEXT_NODE) {
-                currentNode.data += node.data;
-              } else if (currentNode.nodeType === Node.ELEMENT_NODE) {
-                currentNode.append(...node.childNodes);
-              }
-              node.remove();
-            } else {
-              combineSameTags(currentNode.childNodes);
-              currentNode = node;
-            }
-          }
-          combineSameTags(currentNode.childNodes);
-        };
-
-        editor.addEventListener("keydown", (event) => {
-          /**
-           * @type {Selection}
-           */
-          const selection = shadowRoot.getSelection();
-          if (selection.rangeCount > 0) {
-            const range = selection.getRangeAt(0);
-            if (!range.collapsed) {
-              const bold = document.createElement("b");
-              const text = range.extractContents();
-              text.querySelectorAll("b").forEach((element) => {
-                element.replaceWith(...element.childNodes);
-              });
-              bold.appendChild(text);
-              range.insertNode(bold);
-              selection.removeAllRanges();
-              selection.addRange(range);
-            }
-            combineSameTags(editor.childNodes);
-          }
-
-          switch (event.key) {
-            case "Enter":
-              break;
-          }
         });
       }
 
@@ -130,7 +85,7 @@ createComponent(
       onAttributeUpdate(name, oldValue, newValue) {
         switch (name) {
           case "title":
-            this.#title.textContent = newValue;
+            this.#title.text(newValue);
             break;
         }
       }
