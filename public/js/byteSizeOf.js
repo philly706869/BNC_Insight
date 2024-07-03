@@ -1,3 +1,5 @@
 const encoder = new TextEncoder();
 
-export const byteSizeOf = (string) => encoder.encode(string).byteLength;
+export function byteSizeOf(string) {
+  return encoder.encode(string).byteLength;
+}

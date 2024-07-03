@@ -1,4 +1,7 @@
 import $ from "jquery";
 
-export const createJQuerySelector = (shadowRoot) => (query) =>
-  $(shadowRoot.querySelectorAll(query));
+export function createJQuerySelector(shadowRoot) {
+  return function (query) {
+    return $(shadowRoot.querySelectorAll(query));
+  };
+}

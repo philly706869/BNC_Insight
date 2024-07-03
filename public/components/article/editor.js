@@ -22,11 +22,11 @@ createComponent(
         const $categorySelect = $$("#category-select");
         const $titleInput = $$("#title-input");
         const $subtitleInput = $$("#subtitle-input");
-        const $editor = $$("#editor");
+        const $editorFrame = $$("#editor-frame");
 
-        $editor.on("load", () => {
-          const $body = $editor.contents().find("body");
-          const resizeEditor = () => $editor.height($body.height());
+        $editorFrame.on("load", () => {
+          const $body = $editorFrame.contents().find("body");
+          const resizeEditor = () => $editorFrame.height($body.height());
           resizeEditor();
           const resizeObserver = new ResizeObserver(resizeEditor);
           resizeObserver.observe($body[0]);
@@ -67,7 +67,7 @@ createComponent(
               return;
           }
 
-          const quill = $editor[0].contentWindow.quill;
+          const quill = $editorFrame[0].contentWindow.quill;
           const json = JSON.stringify(quill.getContents().ops);
           console.log(json);
           quill.setContents(JSON.parse(json));

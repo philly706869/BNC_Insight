@@ -36,7 +36,7 @@ createComponent(
     }
 );
 
-export const raiseModal = async (innerHTML) => {
+export async function raiseModal(innerHTML) {
   const template = document.createElement("template");
   template.innerHTML = `<x-modal>${innerHTML}</x-modal>`;
   const modal = template.content.querySelector("x-modal");
@@ -46,4 +46,4 @@ export const raiseModal = async (innerHTML) => {
       resolve(event.detail);
     });
   });
-};
+}

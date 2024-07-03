@@ -1,7 +1,7 @@
 import { JTDParser } from "ajv/dist/jtd.js";
 import fs from "fs";
 
-export const readConfig = <T>(path: string, parse: JTDParser<T>): T => {
+export function readConfig<T>(path: string, parse: JTDParser<T>): T {
   if (!fs.existsSync(path) || !fs.lstatSync(path).isFile())
     throw new Error(`config file not found (requird file: ${path})`);
 
@@ -14,4 +14,4 @@ export const readConfig = <T>(path: string, parse: JTDParser<T>): T => {
   }
 
   return config;
-};
+}

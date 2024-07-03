@@ -1,8 +1,8 @@
-export const controlledThrottle = (callback) => {
+export function controlledThrottle(callback) {
   let timer = null;
-  const interrupt = (unit, times, callback, ...args) => {
+  const interrupt = function (unit, times, callback, ...args) {
     let time = 0;
-    const setUnitTimeout = () => {
+    const setUnitTimeout = function () {
       time += 1;
       if (time > times) {
         timer = null;
@@ -16,8 +16,8 @@ export const controlledThrottle = (callback) => {
     callback(0, times);
     timer = setUnitTimeout();
   };
-  return (...args) => {
+  return function (...args) {
     if (timer) return;
     callback(interrupt, ...args);
   };
-};
+}

@@ -56,15 +56,15 @@ const access = {
   },
 };
 
-const renderer = (options: {
+function renderer(options: {
   title: string;
   script: string;
   component: string;
-}) => {
+}) {
   return (req: Request, res: Response) => {
     res.render("template", options);
   };
-};
+}
 
 app.get(
   "/",

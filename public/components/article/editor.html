@@ -11,12 +11,6 @@
   #article-field {
     display: flex;
     flex-direction: column;
-    gap: 30px;
-  }
-
-  #metadata-wrapper {
-    display: flex;
-    flex-direction: column;
     gap: 10px;
   }
 
@@ -25,34 +19,28 @@
     gap: 10px;
   }
 
-  #content {
-    padding: 0;
-  }
-
-  #editor {
+  #editor-frame {
     width: 100%;
     border: none;
   }
 </style>
 <h1 id="title"></h1>
 <div class="content-wrapper" id="article-field">
-  <div id="metadata-wrapper">
-    <div id="metadata-top">
-      <select id="category-select">
-        <option value="">-- Please choose an category --</option>
-        <option value="Financial">Financial</option>
-        <option value="Economy">Economy</option>
-        <option value="Social">Social</option>
-        <option value="IT">IT</option>
-        <option value="Science">Science</option>
-      </select>
-      <button id="upload-button">Upload</button>
-    </div>
-    <x-input id="title-input" placeholder="Title"></x-input>
-    <x-input id="subtitle-input" placeholder="Subtitle"></x-input>
+  <div id="metadata-top">
+    <select id="category-select">
+      <option value="">-- Please choose an category --</option>
+      <option value="Financial">Financial</option>
+      <option value="Economy">Economy</option>
+      <option value="Social">Social</option>
+      <option value="IT">IT</option>
+      <option value="Science">Science</option>
+    </select>
+    <button id="upload-button">Upload</button>
   </div>
+  <x-input id="title-input" placeholder="Title"></x-input>
+  <x-input id="subtitle-input" placeholder="Subtitle"></x-input>
   <iframe
-    id="editor"
+    id="editor-frame"
     src="/static/components/article/editor-frame.html"
   ></iframe>
 </div>

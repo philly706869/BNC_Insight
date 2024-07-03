@@ -56,6 +56,6 @@ export class ComponentManager {
 }
 
 export const defaultComponentManager = new ComponentManager("x");
-export const createComponent = defaultComponentManager.createComponent.bind(
-  defaultComponentManager
-);
+export function createComponent(...args) {
+  return defaultComponentManager.createComponent(...args);
+}
