@@ -4,62 +4,62 @@
 
 .font-c-light {
   font-family: "Cormorant", serif;
-  font-weight: 300;
   font-style: normal;
+  font-weight: 300;
 }
 
 .font-c-regular {
   font-family: "Cormorant", serif;
-  font-weight: 400;
   font-style: normal;
+  font-weight: 400;
 }
 
 .font-c-medium {
   font-family: "Cormorant", serif;
-  font-weight: 500;
   font-style: normal;
+  font-weight: 500;
 }
 
 .font-c-semibold {
   font-family: "Cormorant", serif;
-  font-weight: 600;
   font-style: normal;
+  font-weight: 600;
 }
 
 .font-c-bold {
   font-family: "Cormorant", serif;
-  font-weight: 700;
   font-style: normal;
+  font-weight: 700;
 }
 
 .font-c-light-italic {
   font-family: "Cormorant", serif;
-  font-weight: 300;
   font-style: italic;
+  font-weight: 300;
 }
 
 .font-c-regular-italic {
   font-family: "Cormorant", serif;
-  font-weight: 400;
   font-style: italic;
+  font-weight: 400;
 }
 
 .font-c-medium-italic {
   font-family: "Cormorant", serif;
-  font-weight: 500;
   font-style: italic;
+  font-weight: 500;
 }
 
 .font-c-semibold-italic {
   font-family: "Cormorant", serif;
-  font-weight: 600;
   font-style: italic;
+  font-weight: 600;
 }
 
 .font-c-bold-italic {
   font-family: "Cormorant", serif;
-  font-weight: 700;
   font-style: italic;
+  font-weight: 700;
 }
 
 /****************************************************************************************************/
@@ -68,72 +68,72 @@
 
 .font-cg-light {
   font-family: "Cormorant Garamond", serif;
-  font-optical-sizing: auto;
-  font-weight: 300;
   font-style: normal;
+  font-weight: 300;
+  font-optical-sizing: auto;
 }
 
 .font-cg-regular {
   font-family: "Cormorant Garamond", serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
   font-style: normal;
+  font-weight: 400;
+  font-optical-sizing: auto;
 }
 
 .font-cg-medium {
   font-family: "Cormorant Garamond", serif;
-  font-optical-sizing: auto;
-  font-weight: 500;
   font-style: normal;
+  font-weight: 500;
+  font-optical-sizing: auto;
 }
 
 .font-cg-semibold {
   font-family: "Cormorant Garamond", serif;
-  font-optical-sizing: auto;
-  font-weight: 600;
   font-style: normal;
+  font-weight: 600;
+  font-optical-sizing: auto;
 }
 
 .font-cg-bold {
   font-family: "Cormorant Garamond", serif;
-  font-optical-sizing: auto;
-  font-weight: 700;
   font-style: normal;
+  font-weight: 700;
+  font-optical-sizing: auto;
 }
 
 .font-cg-light-italic {
   font-family: "Cormorant Garamond", serif;
-  font-optical-sizing: auto;
-  font-weight: 300;
   font-style: italic;
+  font-weight: 300;
+  font-optical-sizing: auto;
 }
 
 .font-cg-regular-italic {
   font-family: "Cormorant Garamond", serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
   font-style: italic;
+  font-weight: 400;
+  font-optical-sizing: auto;
 }
 
 .font-cg-medium-italic {
   font-family: "Cormorant Garamond", serif;
-  font-optical-sizing: auto;
-  font-weight: 500;
   font-style: italic;
+  font-weight: 500;
+  font-optical-sizing: auto;
 }
 
 .font-cg-semibold-italic {
   font-family: "Cormorant Garamond", serif;
-  font-optical-sizing: auto;
-  font-weight: 600;
   font-style: italic;
+  font-weight: 600;
+  font-optical-sizing: auto;
 }
 
 .font-cg-bold-italic {
   font-family: "Cormorant Garamond", serif;
-  font-optical-sizing: auto;
-  font-weight: 700;
   font-style: italic;
+  font-weight: 700;
+  font-optical-sizing: auto;
 }
 
 /****************************************************************************************************/
@@ -142,70 +142,70 @@
 
 .font-rs-light {
   font-family: "Roboto Slab", serif;
-  font-optical-sizing: auto;
-  font-weight: 300;
   font-style: normal;
+  font-weight: 300;
+  font-optical-sizing: auto;
 }
 
 .font-rs-regular {
   font-family: "Roboto Slab", serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
   font-style: normal;
+  font-weight: 400;
+  font-optical-sizing: auto;
 }
 
 .font-rs-medium {
   font-family: "Roboto Slab", serif;
-  font-optical-sizing: auto;
-  font-weight: 500;
   font-style: normal;
+  font-weight: 500;
+  font-optical-sizing: auto;
 }
 
 .font-rs-semibold {
   font-family: "Roboto Slab", serif;
-  font-optical-sizing: auto;
-  font-weight: 600;
   font-style: normal;
+  font-weight: 600;
+  font-optical-sizing: auto;
 }
 
 .font-rs-bold {
   font-family: "Roboto Slab", serif;
-  font-optical-sizing: auto;
-  font-weight: 700;
   font-style: normal;
+  font-weight: 700;
+  font-optical-sizing: auto;
 }
 
 .font-rs-light-italic {
   font-family: "Roboto Slab", serif;
-  font-optical-sizing: auto;
-  font-weight: 300;
   font-style: italic;
+  font-weight: 300;
+  font-optical-sizing: auto;
 }
 
 .font-rs-regular-italic {
   font-family: "Roboto Slab", serif;
-  font-optical-sizing: auto;
-  font-weight: 400;
   font-style: italic;
+  font-weight: 400;
+  font-optical-sizing: auto;
 }
 
 .font-rs-medium-italic {
   font-family: "Roboto Slab", serif;
-  font-optical-sizing: auto;
-  font-weight: 500;
   font-style: italic;
+  font-weight: 500;
+  font-optical-sizing: auto;
 }
 
 .font-rs-semibold-italic {
   font-family: "Roboto Slab", serif;
-  font-optical-sizing: auto;
-  font-weight: 600;
   font-style: italic;
+  font-weight: 600;
+  font-optical-sizing: auto;
 }
 
 .font-rs-bold-italic {
   font-family: "Roboto Slab", serif;
-  font-optical-sizing: auto;
-  font-weight: 700;
   font-style: italic;
+  font-weight: 700;
+  font-optical-sizing: auto;
 }
