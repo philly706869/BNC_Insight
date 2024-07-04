@@ -35,8 +35,8 @@ export class Article extends Model {
   declare subtitle: string;
 
   @AllowNull(false)
-  @Column(DataType.TEXT)
-  declare content: string;
+  @Column(DataType.JSON)
+  declare content: any;
 
   @AllowNull(false)
   @Default(0)

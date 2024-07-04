@@ -1,9 +1,8 @@
 import $ from "jquery";
+import { categories } from "../../js/categories.js";
 import { createComponent } from "../../js/component.js";
 import { createJQuerySelector } from "../../js/shadowJQuery.js";
 import {} from "../input.js";
-
-const { categories } = await fetch("/api/category").then((data) => data.json());
 
 createComponent(
   import.meta.url,
@@ -27,12 +26,12 @@ createComponent(
 
         const $categoryButton = $categorySelect.find(".category-button");
 
-        $categoryButton.first().attr("data-selected", "");
+        $categoryButton.first().attr("selected", "");
 
         $categoryButton.on("click", (event) => {
-          const currentSelected = $categorySelect.filter("[data-selected]");
-          currentSelected.removeAttr("data-selected");
-          $(event.currentTarget).attr("data-selected", "");
+          const currentSelected = $categoryButton.filter("[selected]");
+          currentSelected.removeAttr("selected");
+          $(event.currentTarget).attr("selected", "");
         });
 
         const $titleInput = $$("#title-input");
@@ -49,7 +48,7 @@ createComponent(
 
         $$("#upload-button").on("click", () => {
           const category = $categoryButton
-            .filter("[data-selected]")
+            .filter("[selected]")
             .attr("data-category");
           const title = $titleInput.val();
           const subtitle = $subtitleInput.val();

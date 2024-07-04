@@ -11,8 +11,18 @@ createComponent(
         super(protectedProps);
         const $$ = createJQuerySelector(protectedProps.shadowRoot);
 
-        $$("#editor").on("submit", (event, ...args) => {
-          console.log(args);
+        $$("#editor").on("submit", async (event, article) => {
+          const res = await fetch("/api/article", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(article),
+          });
+
+          if (res.ok) {
+            window.location.href = "/";
+          }
         });
       }
     }

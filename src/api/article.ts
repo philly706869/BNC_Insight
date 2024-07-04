@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { body } from "express-validator";
-import { categories } from "../model/categories.js";
+import { body, validationResult } from "express-validator";
+import { Article } from "../model/Article.js";
+import { categories, Category } from "../model/categories.js";
 
 export const articleRouter = Router();
 
@@ -12,6 +13,35 @@ articleRouter.post(
     .custom((value) => categories.includes(value)),
   body("title").isString().bail().isLength({ min: 1, max: 64 }),
   body("subtitle").isString().bail().isLength({ min: 1, max: 128 }),
-  body("content").isString().bail().isLength({ min: 1, max: 65535 }),
-  (req, res) => {}
+  body("content").isJSON(),
+  async (req, res) => {
+    const validation = validationResult(req);
+    if (!validation.isEmpty()) {
+      res.status(400).end();
+      return;
+    }
+
+    const {
+      category,
+      title,
+      subtitle,
+      content,
+    }: {
+      category: Category;
+      title: string;
+      subtitle: string;
+      content: any;
+    } = req.body;
+
+    const article = new Article({
+      category,
+      title,
+      subtitle,
+      content,
+    });
+
+    await article.save();
+
+    res.status(201).end();
+  }
 );
