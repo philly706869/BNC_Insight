@@ -1,4 +1,6 @@
+import $ from "jquery";
 import { createComponent } from "../../js/component.js";
+import { createJQuerySelector } from "../../js/shadowJQuery.js";
 import {} from "./panel.js";
 import {} from "./slide.js";
 
@@ -8,27 +10,24 @@ createComponent(
     class SignupPanel extends Component {
       constructor(protectedProps) {
         super(protectedProps);
-        const { shadowRoot } = protectedProps;
+        const $$ = createJQuerySelector(protectedProps.shadowRoot);
+        const $this = $(this);
 
-        const modal = this.closest("x-modal");
+        const $panel = $$("#panel");
 
-        const panel = shadowRoot.querySelector("#panel");
-
-        const authTokenSlide = panel.querySelector("#auth-token-slide");
-        const idSlide = panel.querySelector("#id-slide");
-        const passwordSlide = panel.querySelector("#password-slide");
-        const passwordConfirmSlide = panel.querySelector(
-          "#password-confirm-slide"
-        );
-        const nameSlide = panel.querySelector("#name-slide");
+        const $authTokenSlide = $panel.find("#auth-token-slide");
+        const $idSlide = $panel.find("#id-slide");
+        const $passwordSlide = $panel.find("#password-slide");
+        const $passwordConfirmSlide = $panel.find("#password-confirm-slide");
+        const $nameSlide = $panel.find("#name-slide");
 
         let authToken;
         let id;
         let password;
         let name;
 
-        authTokenSlide.addEventListener("submit", async () => {
-          const value = authTokenSlide.value;
+        $authTokenSlide.on("submit", async () => {
+          const value = $authTokenSlide.prop("value");
 
           const validation = await fetch("/api/validate/token", {
             method: "POST",
@@ -39,16 +38,16 @@ createComponent(
           }).then((res) => res.json());
 
           if (!validation.valid) {
-            authTokenSlide.throwError("Invalid token.");
+            $authTokenSlide.triggerHandler("error", ["Invalid token."]);
             return;
           }
 
           authToken = value;
-          panel.nextSlide();
+          $panel.triggerHandler("nextSlide");
         });
 
-        idSlide.addEventListener("submit", async () => {
-          const value = idSlide.value;
+        $idSlide.on("submit", async () => {
+          const value = $idSlide.prop("value");
 
           const validation = await fetch("/api/validate/id", {
             method: "POST",
@@ -59,21 +58,21 @@ createComponent(
           }).then((res) => res.json());
 
           if (!validation.valid) {
-            idSlide.throwErrors(validation.messages);
+            $idSlide.triggerHandler("error", validation.messages);
             return;
           }
 
           if (validation.exists) {
-            idSlide.throwError("ID already exists.");
+            $idSlide.triggerHandler("error", ["ID already exists."]);
             return;
           }
 
           id = value;
-          panel.nextSlide();
+          $panel.triggerHandler("nextSlide");
         });
 
-        passwordSlide.addEventListener("submit", async () => {
-          const value = passwordSlide.value;
+        $passwordSlide.on("submit", async () => {
+          const value = $passwordSlide.prop("value");
 
           const validation = await fetch("/api/validate/password", {
             method: "POST",
@@ -84,27 +83,29 @@ createComponent(
           }).then((res) => res.json());
 
           if (!validation.valid) {
-            passwordSlide.throwErrors(validation.messages);
+            $passwordSlide.triggerHandler("error", validation.messages);
             return;
           }
 
           password = value;
-          panel.nextSlide();
+          $panel.triggerHandler("nextSlide");
         });
 
-        passwordConfirmSlide.addEventListener("submit", () => {
-          const passwordConfirm = passwordConfirmSlide.value;
+        $passwordConfirmSlide.on("submit", () => {
+          const passwordConfirm = $passwordConfirmSlide.prop("value");
 
           if (password !== passwordConfirm) {
-            passwordConfirmSlide.throwError("Password does not match.");
+            $passwordConfirmSlide.triggerHandler("error", [
+              "Password does not match.",
+            ]);
             return;
           }
 
-          panel.nextSlide();
+          $panel.triggerHandler("nextSlide");
         });
 
-        nameSlide.addEventListener("submit", async () => {
-          const value = nameSlide.value;
+        $nameSlide.on("submit", async () => {
+          const value = $nameSlide.prop("value");
 
           const validation = await fetch("/api/validate/name", {
             method: "POST",
@@ -115,7 +116,7 @@ createComponent(
           }).then((res) => res.json());
 
           if (!validation.valid) {
-            nameSlide.throwErrors(validation.messages);
+            $nameSlide.triggerHandler("error", validation.messages);
             return;
           }
 
@@ -150,12 +151,14 @@ createComponent(
             }),
           });
 
-          modal.close(true);
+          const $modal = $this.closest("x-modal");
+          $modal.fadeOut(200, () => $modal.trigger("close", [true]));
         });
 
-        this.replaceWith(...shadowRoot.childNodes);
-
-        authTokenSlide.focus();
+        $this.on("focusPanel", (event) => {
+          if (event.target !== this) return;
+          $panel.triggerHandler("focusSlide");
+        });
       }
     }
 );

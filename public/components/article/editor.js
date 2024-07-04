@@ -1,25 +1,40 @@
+import $ from "jquery";
 import { createComponent } from "../../js/component.js";
 import { createJQuerySelector } from "../../js/shadowJQuery.js";
 import {} from "../input.js";
+
+const { categories } = await fetch("/api/category").then((data) => data.json());
 
 createComponent(
   import.meta.url,
   (Component) =>
     class Editor extends Component {
-      #title;
+      #$title;
 
       constructor(protectedProps) {
         super(protectedProps);
-        /**
-         * @type {{ shadowRoot: ShadowRoot }}
-         */
-        const { shadowRoot } = protectedProps;
-        const $$ = createJQuerySelector(shadowRoot);
+        const $$ = createJQuerySelector(protectedProps.shadowRoot);
+        const $this = $(this);
 
-        this.#title = $$("#title");
-
-        const $uploadButton = $$("#upload-button");
         const $categorySelect = $$("#category-select");
+
+        for (const category of categories) {
+          const $button = $(`<button class="category-button"></button>`);
+          $button.attr("data-category", category);
+          $button.text(category);
+          $categorySelect.append($("<li></li>").append($button));
+        }
+
+        const $categoryButton = $categorySelect.find(".category-button");
+
+        $categoryButton.first().attr("data-selected", "");
+
+        $categoryButton.on("click", (event) => {
+          const currentSelected = $categorySelect.filter("[data-selected]");
+          currentSelected.removeAttr("data-selected");
+          $(event.currentTarget).attr("data-selected", "");
+        });
+
         const $titleInput = $$("#title-input");
         const $subtitleInput = $$("#subtitle-input");
         const $editorFrame = $$("#editor-frame");
@@ -32,15 +47,20 @@ createComponent(
           resizeObserver.observe($body[0]);
         });
 
-        $uploadButton.on("click", () => {
-          const category = $categorySelect.find(":selected").val();
+        $$("#upload-button").on("click", () => {
+          const category = $categoryButton
+            .filter("[data-selected]")
+            .attr("data-category");
           const title = $titleInput.val();
           const subtitle = $subtitleInput.val();
 
-          if (!category) {
-            alert("Please choose an category");
-            $categorySelect.focus();
-            return;
+          switch (true) {
+            case !category:
+              alert("Please choose an category");
+              return;
+            case !categories.includes(category):
+              alert("Unknown error in category");
+              return;
           }
 
           switch (true) {
@@ -68,16 +88,12 @@ createComponent(
           }
 
           const quill = $editorFrame[0].contentWindow.quill;
-          const json = JSON.stringify(quill.getContents().ops);
-          console.log(json);
-          quill.setContents(JSON.parse(json));
+          const content = quill.getContents().ops;
 
-          this.dispatchEvent(
-            new CustomEvent("submit", {
-              detail: { category, title, subtitle, content: [] },
-            })
-          );
+          $this.trigger("submit", [{ category, title, subtitle, content }]);
         });
+
+        this.#$title = $$("#title");
       }
 
       static observedAttributes = ["title"];
@@ -85,7 +101,7 @@ createComponent(
       onAttributeUpdate(name, oldValue, newValue) {
         switch (name) {
           case "title":
-            this.#title.text(newValue);
+            this.#$title.text(newValue);
             break;
         }
       }

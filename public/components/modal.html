@@ -1,6 +1,5 @@
+<link href="/static/css/global.css" rel="stylesheet" />
 <style>
-  @import "/static/css/default.css";
-
   :host {
     width: 100vw;
     height: 100vh;
@@ -10,24 +9,6 @@
     justify-content: center;
     align-items: center;
     background-color: rgba(0, 0, 0, 0.3);
-  }
-
-  :host([opening]) {
-    animation: opacity0to1 0.15s;
-  }
-
-  :host([closing]) {
-    animation: opacity0to1 0.15s reverse;
-  }
-
-  @keyframes opacity0to1 {
-    0% {
-      opacity: 0;
-    }
-
-    100% {
-      opacity: 1;
-    }
   }
 </style>
 <slot></slot>

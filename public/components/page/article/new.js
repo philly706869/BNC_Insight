@@ -1,4 +1,5 @@
 import { createComponent } from "../../../js/component.js";
+import { createJQuerySelector } from "../../../js/shadowJQuery.js";
 import {} from "../../app.js";
 import {} from "../../article/editor.js";
 
@@ -8,10 +9,11 @@ createComponent(
     class NewArticle extends Component {
       constructor(protectedProps) {
         super(protectedProps);
-        const { shadowRoot } = protectedProps;
+        const $$ = createJQuerySelector(protectedProps.shadowRoot);
 
-        const editor = shadowRoot.querySelector("#editor");
-        editor.addEventListener("submit", (event) => {});
+        $$("#editor").on("submit", (event, ...args) => {
+          console.log(args);
+        });
       }
     }
 );

@@ -1,4 +1,6 @@
+import $ from "jquery";
 import { createComponent } from "../js/component.js";
+import { createJQuerySelector } from "../js/shadowJQuery.js";
 import {} from "./account-control-panel/login.js";
 import {} from "./account-control-panel/signup.js";
 import { raiseModal } from "./modal.js";
@@ -12,20 +14,20 @@ createComponent(
   import.meta.url,
   (Component) =>
     class Header extends Component {
-      #userPanel;
-      #articlePanel;
+      #$userPanel;
+      #$articlePanel;
 
       constructor(protectedProps) {
         super(protectedProps);
-        const { shadowRoot } = protectedProps;
+        const $$ = createJQuerySelector(protectedProps.shadowRoot);
 
-        const timePanel = shadowRoot.querySelector("#time-panel");
+        const $timePanel = $$("#time-panel");
         const date = new Date();
-        timePanel.textContent = date.toDateString();
-        timePanel.setAttribute("datetime", date.toISOString().split("T")[0]);
+        $timePanel.text(date.toDateString());
+        $timePanel.attr("datetime", date.toISOString().split("T")[0]);
 
-        this.#userPanel = shadowRoot.querySelector("#user-panel");
-        this.#articlePanel = shadowRoot.querySelector("#article-panel");
+        this.#$userPanel = $$("#user-panel");
+        this.#$articlePanel = $$("#article-panel");
 
         this.updateUser();
       }
@@ -34,46 +36,53 @@ createComponent(
         const user = await getUser();
 
         if (user) {
-          this.#userPanel.innerHTML = `
+          this.#$userPanel.html(`
             <li><a id="user-button" href="/user"></a></li>
             <li><button id="logout-button">Log Out</button></li>
-          `;
+          `);
 
-          const userButton = this.#userPanel.querySelector("#user-button");
-          userButton.textContent = user.name;
-          userButton.addEventListener("click", () => {
+          const $userButton = this.#$userPanel.find("#user-button");
+          $userButton.text(user.name);
+          $userButton.on("click", () => {
             window.location.href = "/user";
           });
 
-          const logoutButton = this.#userPanel.querySelector("#logout-button");
-          logoutButton.addEventListener("click", async () => {
+          const $logoutButton = this.#$userPanel.find("#logout-button");
+          $logoutButton.on("click", async () => {
             await fetch("/user/log", { method: "DELETE" });
             this.updateUser();
           });
 
-          this.#articlePanel.innerHTML =
-            '<a href="/article/new">New Article</a>';
+          this.#$articlePanel.html('<a href="/article/new">New Article</a>');
         } else {
-          this.#userPanel.innerHTML = `
+          this.#$userPanel.html(`
             <li><button id="login-button">Log In</button></li>
             <li><button id="signup-button">Sign Up</button></li>
-          `;
+          `);
 
-          const loginButton = this.#userPanel.querySelector("#login-button");
-          loginButton.addEventListener("click", async () => {
-            const succeed = await raiseModal("<x-login-panel></x-login-panel>");
-            if (succeed) this.updateUser();
+          const $loginButton = this.#$userPanel.find("#login-button");
+          $loginButton.on("click", async () => {
+            const $modal = raiseModal().hide();
+            const $panel = $("<x-login-panel></x-login-panel>");
+            $modal.append($panel);
+            $modal.fadeIn(200, () => $panel.triggerHandler("focusPanel"));
+            $modal.on("close", (_, succeed) => {
+              if (succeed) this.updateUser();
+            });
           });
 
-          const signupButton = this.#userPanel.querySelector("#signup-button");
-          signupButton.addEventListener("click", async () => {
-            const succeed = await raiseModal(
-              "<x-signup-panel></x-signup-panel>"
-            );
-            if (succeed) this.updateUser();
+          const $signupButton = this.#$userPanel.find("#signup-button");
+          $signupButton.on("click", async () => {
+            const $modal = raiseModal();
+            const $panel = $("<x-signup-panel></x-signup-panel>");
+            $modal.append($panel);
+            $modal.fadeIn(200, () => $panel.triggerHandler("focusPanel"));
+            $modal.on("close", (_, succeed) => {
+              if (succeed) this.updateUser();
+            });
           });
 
-          this.#articlePanel.innerHTML = "";
+          this.#$articlePanel.html("");
         }
       }
     }

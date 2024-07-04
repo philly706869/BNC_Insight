@@ -1,31 +1,56 @@
+<link href="/static/css/global.css" rel="stylesheet" />
 <style>
-  @import "/static/css/default.css";
-
-  .content-wrapper {
+  #article-field {
     padding: 30px;
     border-width: 3px 2px;
     border-style: solid;
     border-color: var(--scarlet) var(--light-silver);
-  }
-
-  #article-field {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-  }
-
-  #metadata-top {
-    height: 50px;
-    display: flex;
+    align-items: center;
     gap: 10px;
   }
 
   #category-select {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 50px;
     display: flex;
+    justify-content: space-between;
+    list-style: none;
+  }
+
+  #category-select > li {
+    flex: 1;
+  }
+
+  .category-button {
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    background-color: transparent;
+    font-size: medium;
+  }
+
+  .category-button[data-selected] {
+    background-color: var(--scarlet);
+    color: white;
+  }
+
+  x-input {
+    width: 100%;
+  }
+
+  #editor-frame {
+    border: none;
+    width: 100%;
   }
 
   #upload-button {
-    width: 150px;
+    width: 200px;
+    height: 50px;
     border: none;
     border-radius: 3px;
     background-color: var(--regular-scarlet);
@@ -36,28 +61,15 @@
   #upload-button:hover {
     background-color: var(--deep-scarlet);
   }
-
-  #editor-frame {
-    border: none;
-    width: 100%;
-  }
 </style>
 <h1 id="title"></h1>
-<div class="content-wrapper" id="article-field">
-  <div id="metadata-top">
-    <nav id="category-select">
-      <button class="category-item" data-category="Financial">Financial</button>
-      <button class="category-item" data-category="Economy">Economy</button>
-      <button class="category-item" data-category="Social">Social</button>
-      <button class="category-item" data-category="IT">IT</button>
-      <button class="category-item" data-category="Science">Science</button>
-    </nav>
-    <button id="upload-button">Upload</button>
-  </div>
-  <x-input id="title-input" placeholder="Title"></x-input>
-  <x-input id="subtitle-input" placeholder="Subtitle"></x-input>
+<div id="article-field">
+  <ul id="category-select"></ul>
+  <x-input id="title-input" placeholder="Title" maxlength="64"></x-input>
+  <x-input id="subtitle-input" placeholder="Subtitle" maxlength="128"></x-input>
   <iframe
     id="editor-frame"
     src="/static/components/article/editor-frame.html"
   ></iframe>
+  <button id="upload-button">Upload</button>
 </div>

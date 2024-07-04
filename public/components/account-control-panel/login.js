@@ -1,4 +1,6 @@
+import $ from "jquery";
 import { createComponent } from "../../js/component.js";
+import { createJQuerySelector } from "../../js/shadowJQuery.js";
 import {} from "./panel.js";
 import {} from "./slide.js";
 
@@ -8,19 +10,18 @@ createComponent(
     class LoginPanel extends Component {
       constructor(protectedProps) {
         super(protectedProps);
-        const { shadowRoot } = protectedProps;
+        const $$ = createJQuerySelector(protectedProps.shadowRoot);
+        const $this = $(this);
 
-        const modal = this.closest("x-modal");
+        const $panel = $$("#panel");
 
-        const panel = shadowRoot.querySelector("#panel");
-
-        const idSlide = panel.querySelector("#id-slide");
-        const passwordSlide = panel.querySelector("#password-slide");
+        const $idSlide = $panel.find("#id-slide");
+        const $passwordSlide = $panel.find("#password-slide");
 
         let id;
 
-        idSlide.addEventListener("submit", async () => {
-          const value = idSlide.value;
+        $idSlide.on("submit", async () => {
+          const value = $idSlide.prop("value");
 
           const validation = await fetch("/api/validate/id", {
             method: "POST",
@@ -31,16 +32,16 @@ createComponent(
           }).then((res) => res.json());
 
           if (!validation.exists) {
-            idSlide.throwError("Wrong ID.");
+            $idSlide.triggerHandler("error", ["Wrong ID."]);
             return;
           }
 
           id = value;
-          panel.nextSlide();
+          $panel.triggerHandler("nextSlide");
         });
 
-        passwordSlide.addEventListener("submit", async () => {
-          const password = passwordSlide.value;
+        $passwordSlide.on("submit", async () => {
+          const password = $passwordSlide.prop("value");
 
           const res = await fetch("/user/log", {
             method: "PUT",
@@ -51,16 +52,18 @@ createComponent(
           });
 
           if (!res.ok) {
-            passwordSlide.throwError("Wrong password.");
+            $passwordSlide.triggerHandler("error", ["Wrong password."]);
             return;
           }
 
-          modal.close(true);
+          const $modal = $this.closest("x-modal");
+          $modal.fadeOut(200, () => $modal.trigger("close", [true]));
         });
 
-        this.replaceWith(...shadowRoot.childNodes);
-
-        idSlide.focus();
+        $this.on("focusPanel", (event) => {
+          if (event.target !== this) return;
+          $panel.triggerHandler("focusSlide");
+        });
       }
     }
 );

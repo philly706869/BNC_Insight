@@ -10,7 +10,7 @@ export class ComponentManager {
     const html = await fetch(htmlURL).then((data) => data.text());
 
     class ComponentAncestor extends HTMLElement {
-      constructor(protectedProps) {
+      constructor(protectedProps = {}) {
         super();
         const shadowRoot = this.attachShadow({ mode: "closed" });
         shadowRoot.innerHTML = html;
