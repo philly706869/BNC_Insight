@@ -13,10 +13,10 @@ articleRouter.post(
     .custom((value) => categories.includes(value)),
   body("title").isString().bail().isLength({ min: 1, max: 64 }),
   body("subtitle").isString().bail().isLength({ min: 1, max: 128 }),
-  body("content").isJSON(),
+  body("content").isArray(),
   async (req, res) => {
     const validation = validationResult(req);
-    if (!validation.isEmpty()) {
+    if (!validation.isEmpty() || !req.session.user) {
       res.status(400).end();
       return;
     }
@@ -34,6 +34,7 @@ articleRouter.post(
     } = req.body;
 
     const article = new Article({
+      uploaderUid: req.session.user.uid,
       category,
       title,
       subtitle,
