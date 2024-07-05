@@ -1,7 +1,5 @@
-import $ from "jquery";
 import { articleUid } from "../../../js/articleUid.js";
 import { createComponent } from "../../../js/component.js";
-import { createJQuerySelector } from "../../../js/shadowJQuery.js";
 import {} from "../../app.js";
 
 const article = await fetch(
@@ -9,22 +7,49 @@ const article = await fetch(
 ).then((data) => (data.ok ? data.json() : null));
 
 createComponent(
-  import.meta.url,
   (Component) =>
     class ViewArticle extends Component {
-      constructor(protectedProps) {
-        super(protectedProps);
-        const $$ = createJQuerySelector(protectedProps.shadowRoot);
-        const $this = $(this);
+      constructor(props) {
+        super(props);
+        const { $this, $shadow } = props;
 
-        const $article = $$("#article");
+        $shadow.html(
+          /*html*/
+          `
+            <link href="/static/css/global.css" rel="stylesheet" />
+            <style>
+              #article {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+              }
+            </style>
+            <x-app>
+              <article id="article">
+                <header>
+                  <h1 id="title"></h1>
+                  <h3 id="subtitle"></h3>
+                  <div>
+                    <span id="uploader"></span>
+                    <span id="views"></span>
+                  </div>
+                </header>
+                <main>
+                  <iframe id="content"></iframe>
+                </main>
+              </article>
+            </x-app>
+          `
+        );
+
+        const $article = $shadow.find("#article");
 
         if (article) {
-          $$("#title").text(article.title);
-          $$("#subtitle").text(article.subtitle);
-          $$("#uploader").text(`Uploader: ${article.uploader.name}`);
-          $$("#views").text(`Views: ${article.views}`);
-          $$("#content").text(article.content);
+          $article.find("#title").text(article.title);
+          $article.find("#subtitle").text(article.subtitle);
+          $article.find("#uploader").text(`Uploader: ${article.uploader.name}`);
+          $article.find("#views").text(`Views: ${article.views}`);
+          $article.find("#content").text(article.content);
         } else {
           $article.html(`404 Article not found.`);
         }

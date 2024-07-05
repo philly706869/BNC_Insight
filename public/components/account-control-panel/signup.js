@@ -1,19 +1,56 @@
-import $ from "jquery";
 import { createComponent } from "../../js/component.js";
-import { createJQuerySelector } from "../../js/shadowJQuery.js";
 import {} from "./panel.js";
 import {} from "./slide.js";
 
 createComponent(
-  import.meta.url,
   (Component) =>
     class SignupPanel extends Component {
-      constructor(protectedProps) {
-        super(protectedProps);
-        const $$ = createJQuerySelector(protectedProps.shadowRoot);
-        const $this = $(this);
+      constructor(props) {
+        super(props);
+        const { $this, $shadow } = props;
 
-        const $panel = $$("#panel");
+        $shadow.html(
+          /*html*/
+          `
+            <link href="/static/css/global.css" rel="stylesheet" />
+            <x-account-control-panel id="panel" title="Sign Up">
+              <x-slide
+                id="auth-token-slide"
+                title="Please enter the authentication token provided by the administrator."
+                placeholder="Authentication Token"
+                button-text="Continue"
+              ></x-slide>
+              <x-slide
+                id="id-slide"
+                title="Please enter your ID."
+                placeholder="ID"
+                button-text="Continue"
+              ></x-slide>
+              <x-slide
+                id="password-slide"
+                title="Please enter your password."
+                placeholder="Password"
+                password-mode
+                button-text="Continue"
+              ></x-slide>
+              <x-slide
+                id="password-confirm-slide"
+                title="Please confirm your password."
+                placeholder="Password Confirm"
+                password-mode
+                button-text="Continue"
+              ></x-slide>
+              <x-slide
+                id="name-slide"
+                title="Please enter a name to be displayed."
+                placeholder="Name"
+                button-text="Create Account"
+              ></x-slide>
+            </x-account-control-panel>
+          `
+        );
+
+        const $panel = $shadow.find("#panel");
 
         const $authTokenSlide = $panel.find("#auth-token-slide");
         const $idSlide = $panel.find("#id-slide");

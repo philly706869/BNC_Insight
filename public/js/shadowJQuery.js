@@ -1,6 +1,6 @@
 import $ from "jquery";
 
-export function createJQuerySelector(shadowRoot) {
+export function createShadowJQuery(shadowRoot) {
   return function (query) {
     return $(shadowRoot.querySelectorAll(query));
   };

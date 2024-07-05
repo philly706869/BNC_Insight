@@ -1,3 +1,5 @@
+import $ from "jquery";
+
 export class ComponentManager {
   prefix;
 
@@ -5,18 +7,16 @@ export class ComponentManager {
     this.prefix = prefix;
   }
 
-  async createComponent(importURL, constructor) {
-    const htmlURL = `${importURL.slice(0, importURL.lastIndexOf("."))}.html`;
-    const html = await fetch(htmlURL).then((data) => data.text());
-
+  async createComponent(constructor) {
     class ComponentAncestor extends HTMLElement {
       constructor(protectedProps = {}) {
         super();
         const shadowRoot = this.attachShadow({ mode: "closed" });
-        shadowRoot.innerHTML = html;
         const internals = this.attachInternals();
         protectedProps.shadowRoot = shadowRoot;
         protectedProps.internals = internals;
+        protectedProps.$this = $(this);
+        protectedProps.$shadow = $(shadowRoot);
       }
 
       onConnect() {}
