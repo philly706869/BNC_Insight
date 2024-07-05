@@ -12,13 +12,6 @@ createComponent(
         const $$ = createJQuerySelector(protectedProps.shadowRoot);
 
         $$("#editor").on("submit", (event) => {});
-
-        const uid = parseInt(
-          location.pathname.slice(
-            location.pathname.lastIndexOf("/") + 1,
-            location.pathname.length
-          )
-        );
       }
     }
 );

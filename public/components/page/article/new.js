@@ -21,7 +21,8 @@ createComponent(
           });
 
           if (res.ok) {
-            window.location.href = "/";
+            const { uid } = await res.json();
+            window.location.href = `/article/${uid}`;
           }
         });
       }

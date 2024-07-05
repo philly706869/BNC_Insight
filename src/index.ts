@@ -106,6 +106,16 @@ app.get(
 );
 
 app.get(
+  "/articles",
+  access.user,
+  renderer({
+    title: "BNC_Insight Articles",
+    script: "article/list.js",
+    component: "x-article-list",
+  })
+);
+
+app.get(
   "/article/\\d+",
   renderer({
     title: "BNC_Insight Article",
