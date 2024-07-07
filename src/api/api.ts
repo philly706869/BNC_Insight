@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { articleRouter } from "./article.js";
-import { categoriesRouter } from "./category.js";
+import { categoriesRouter } from "./categories.js";
 import { userRouter } from "./user.js";
 import { validate } from "./validate.js";
 

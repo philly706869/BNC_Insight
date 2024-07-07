@@ -6,12 +6,10 @@ export const userRouter = Router();
 userRouter.get("/", query("uuid").isUUID().optional(), async (req, res) => {
   const validation = validationResult(req);
   if (!validation.isEmpty()) {
-    res.status(400).json(
-      errorResponse({
-        error: "INVALID_UUID",
-        message: "Uuid is not in correct format.",
-      })
-    );
+    res.status(400).json({
+      error: "INVALID_UUID",
+      message: "Uuid is not in correct format.",
+    });
     return;
   }
 
@@ -29,24 +27,20 @@ userRouter.get("/", query("uuid").isUUID().optional(), async (req, res) => {
     : null;
 
   if (!selector) {
-    res.status(400).json(
-      errorResponse({
-        error: "USER_SPECIFIC_UNABLE",
-        message: "You must be logged in or provide uuid.",
-      })
-    );
+    res.status(400).json({
+      error: "USER_SPECIFIC_UNABLE",
+      message: "You must be logged in or provide uuid.",
+    });
     return;
   }
 
   const user = await selector();
 
   if (!user) {
-    res.status(404).json(
-      errorResponse({
-        error: "USER_NOT_FOUND",
-        message: "The requested user does not exist.",
-      })
-    );
+    res.status(404).json({
+      error: "USER_NOT_FOUND",
+      message: "The requested user does not exist.",
+    });
     return;
   }
 

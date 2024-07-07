@@ -12,6 +12,8 @@ import { logger } from "./util/logger.js";
 
 const app = express();
 
+express.response.error = express.response.json;
+
 const SequqlizeStore = ConnectSessionSequelize(expressSession.Store);
 
 app.use(
@@ -26,15 +28,6 @@ app.use(
     store: new SequqlizeStore({ db: sequelize }),
   })
 );
-
-declare module "express-session" {
-  export interface SessionData {
-    user: {
-      uid: number;
-      isAdmin: boolean;
-    };
-  }
-}
 
 app.use(express.json());
 app.use("/api", apiRouter);

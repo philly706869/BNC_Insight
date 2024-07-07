@@ -24,12 +24,10 @@ articleRouter.get(
     const article = await Article.findByPk(uid);
 
     if (!article) {
-      res
-        .status(404)
-        .json({
-          error: "ARTICLE_NOT_FOUND",
-          message: "The requested article does not exist.",
-        });
+      res.status(404).json({
+        error: "ARTICLE_NOT_FOUND",
+        message: "The requested article does not exist.",
+      });
       return;
     }
 
