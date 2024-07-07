@@ -12,7 +12,10 @@ articleRouter.get(
   async (req, res) => {
     const validation = validationResult(req);
     if (!validation.isEmpty()) {
-      res.status(404).end();
+      res.status(400).json({
+        error: "INVALID_UID",
+        message: "Uid must be an integer between 1 and 65535.",
+      });
       return;
     }
 
@@ -21,7 +24,12 @@ articleRouter.get(
     const article = await Article.findByPk(uid);
 
     if (!article) {
-      res.status(404).end();
+      res
+        .status(404)
+        .json({
+          error: "ARTICLE_NOT_FOUND",
+          message: "The requested article does not exist.",
+        });
       return;
     }
 
@@ -88,6 +96,6 @@ articleRouter.post(
 
     await article.save();
 
-    res.status(201).json({ uid: article.uid });
+    res.status(201).json({ articleUid: article.uid });
   }
 );

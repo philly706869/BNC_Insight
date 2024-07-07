@@ -20,7 +20,7 @@ validate.post(
   body("token").isString().withMessage("token must be string."),
   validator,
   async (req, res) => {
-    const { token }: { token: string } = req.body;
+    const token: string = req.body.token;
 
     res.status(200).json({ valid: await AuthToken.isAllocable(token) });
   }
@@ -31,7 +31,7 @@ validate.post(
   body("id").isString().withMessage("id must be string"),
   validator,
   async (req, res) => {
-    const { id }: { id: string } = req.body;
+    const id: string = req.body.id;
 
     const validationResult = User.validateId(id);
     const valid = validationResult === null;
@@ -51,7 +51,7 @@ validate.post(
   body("password").isString().withMessage("password must be string."),
   validator,
   async (req, res) => {
-    const { password }: { password: string } = req.body;
+    const password: string = req.body.password;
 
     const validationResult = User.validatePassword(password);
     const valid = validationResult === null;
@@ -69,7 +69,7 @@ validate.post(
   body("name").isString().withMessage("name must be string."),
   validator,
   async (req, res) => {
-    const { name }: { name: string } = req.body;
+    const name: string = req.body.name;
 
     const validationResult = User.validateName(name);
     const valid = validationResult === null;
