@@ -6,7 +6,7 @@ import { raiseModal } from "./modal.js";
 
 const getUser = async () => {
   const res = await fetch("/api/user");
-  return res.ok ? await res.json() : null;
+  return res.ok ? (await res.json()).user : null;
 };
 
 createComponent(

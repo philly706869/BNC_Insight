@@ -3,6 +3,7 @@ import { body, query, validationResult } from "express-validator";
 import { Article } from "../model/Article.js";
 import { categories, Category } from "../model/categories.js";
 import { User } from "../model/User.js";
+import { logger } from "../util/logger.js";
 
 export const articleRouter = Router();
 
@@ -93,6 +94,8 @@ articleRouter.post(
     });
 
     await article.save();
+
+    logger.info(`article posted (uid: ${article.uid})`);
 
     res.status(201).json({ articleUid: article.uid });
   }
