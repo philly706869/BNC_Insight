@@ -4,10 +4,12 @@ import {
   Column,
   DataType,
   Default,
+  ForeignKey,
   Model,
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
+import { User } from "./User.js";
 
 @Table
 export class Article extends Model {
@@ -17,6 +19,7 @@ export class Article extends Model {
   @Column(DataType.SMALLINT.UNSIGNED)
   declare uid: number;
 
+  @ForeignKey(() => User)
   @AllowNull(false)
   @Column(DataType.SMALLINT.UNSIGNED)
   declare uploaderUid: number;
