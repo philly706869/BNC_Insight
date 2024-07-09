@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { body, query, validationResult } from "express-validator";
 import { Article } from "../model/Article.js";
-import { categories, Category } from "../model/categories.js";
+import { Category } from "../model/Category.js";
 import { User } from "../model/User.js";
 import { logger } from "../util/logger.js";
 
@@ -62,7 +62,11 @@ articleRouter.post(
   body("category")
     .isString()
     .bail()
-    .custom((value) => categories.includes(value)),
+    .custom(async (category) =>
+      (await Category.findOne({ where: { name: category } })) !== null
+        ? Promise.resolve()
+        : Promise.reject()
+    ),
   body("title").isString().bail().isLength({ min: 1, max: 64 }),
   body("subtitle").isString().bail().isLength({ min: 1, max: 128 }),
   body("content").isArray(),

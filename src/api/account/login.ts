@@ -1,11 +1,11 @@
 import bcrypt from "bcrypt";
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
-import { User } from "../model/User.js";
+import { User } from "../../model/User.js";
 
-export const logRouter = Router();
+export const loginRouter = Router();
 
-logRouter.put(
+loginRouter.post(
   "/",
   body("id")
     .isString()
@@ -48,10 +48,3 @@ logRouter.put(
     res.status(201).end();
   }
 );
-
-logRouter.delete("/", (req, res) => {
-  req.session.destroy((error) => {
-    if (error) res.status(500).end();
-    else res.status(201).end();
-  });
-});

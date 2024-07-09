@@ -9,8 +9,8 @@ import {
   Unique,
 } from "sequelize-typescript";
 
-@Table({ modelName: "categories" })
-export class AuthToken extends Model {
+@Table
+export class Category extends Model {
   @PrimaryKey
   @AutoIncrement
   @AllowNull(false)

@@ -1,6 +1,13 @@
 import { Router } from "express";
-import { categories } from "../model/categories.js";
+import { Category } from "../model/Category.js";
 
 export const categoriesRouter = Router();
 
-categoriesRouter.get("/", (req, res) => res.status(200).json({ categories }));
+categoriesRouter.get("/", async (req, res) => {
+  const categories = (await Category.findAll()).map((category) => ({
+    uid: category.uid,
+    name: category.name,
+  }));
+
+  res.status(200).json({ categories });
+});

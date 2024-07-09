@@ -2,15 +2,19 @@ import bcrypt from "bcrypt";
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
 import { v4 as uuidv4 } from "uuid";
-import { AuthToken } from "../model/AuthToken.js";
-import { User } from "../model/User.js";
-import { logRouter } from "./log.js";
+import { AuthToken } from "../../model/AuthToken.js";
+import { User } from "../../model/User.js";
+import { authRouter } from "./auth.js";
+import { loginRouter } from "./login.js";
+import { logoutRouter } from "./logout.js";
 
-export const userRouter = Router();
+export const accountRouter = Router();
 
-userRouter.use("/log", logRouter);
+accountRouter.use("/auth", authRouter);
+accountRouter.use("/login", loginRouter);
+accountRouter.use("/logout", logoutRouter);
 
-userRouter.post(
+accountRouter.post(
   "/",
   body("authToken")
     .isString()
@@ -66,11 +70,3 @@ userRouter.post(
     res.status(201).end();
   }
 );
-
-userRouter.patch("/", (req, res) => {
-  res.end();
-});
-
-userRouter.delete("/", async (req, res) => {
-  res.end();
-});

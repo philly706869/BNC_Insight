@@ -9,7 +9,7 @@ import {
   Unique,
 } from "sequelize-typescript";
 
-@Table({ modelName: "users" })
+@Table
 export class User extends Model {
   @PrimaryKey
   @AutoIncrement

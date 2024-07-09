@@ -12,7 +12,7 @@ import {
 } from "sequelize-typescript";
 import { User } from "./User.js";
 
-@Table({ modelName: "auth_tokens" })
+@Table
 export class AuthToken extends Model {
   @PrimaryKey
   @AutoIncrement

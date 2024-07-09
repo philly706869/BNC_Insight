@@ -6,7 +6,6 @@ import path from "path";
 import { apiRouter } from "./api/api.js";
 import { config as serverConfig } from "./config/server.config.js";
 import { sequelize } from "./model/sequelize.js";
-import { userRouter } from "./user/user.js";
 import { __dirname } from "./util/__dirname.js";
 import { logger } from "./util/logger.js";
 
@@ -31,7 +30,6 @@ app.use(
 
 app.use(express.json());
 app.use("/api", apiRouter);
-app.use("/user", userRouter);
 app.use("/static", express.static(path.join(__dirname, "./public")));
 
 app.set("view engine", "ejs");
