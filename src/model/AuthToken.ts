@@ -4,11 +4,13 @@ import {
   Column,
   DataType,
   Default,
+  ForeignKey,
   Model,
   PrimaryKey,
   Table,
   Unique,
 } from "sequelize-typescript";
+import { User } from "./User.js";
 
 @Table({ modelName: "auth_tokens" })
 export class AuthToken extends Model {
@@ -28,6 +30,13 @@ export class AuthToken extends Model {
   @Default(null)
   @Column(DataType.SMALLINT.UNSIGNED)
   declare allocedUserUid: number | null;
+
+  @Unique
+  @AllowNull(true)
+  @Default(null)
+  @ForeignKey(() => User)
+  @Column
+  declare allocedUser: User;
 
   @AllowNull(false)
   @Default(false)
