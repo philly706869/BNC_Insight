@@ -1,50 +1,47 @@
 import bcrypt from "bcrypt";
 import { Router } from "express";
-import { body, validationResult } from "express-validator";
+import Joi from "joi";
 import { User } from "../../model/User.js";
 
 export const loginRouter = Router();
 
-loginRouter.post(
-  "/",
-  body("id")
-    .isString()
-    .bail()
-    .custom(async (id: string) =>
-      User.validateId(id) === null && (await User.findUserById(id)) !== null
-        ? Promise.resolve()
-        : Promise.reject()
-    ),
-  body("password")
-    .isString()
-    .bail()
-    .custom((password: string) => User.validatePassword(password) === null),
-  async (req, res) => {
-    const validation = validationResult(req);
-    if (!validation.isEmpty()) {
-      res.status(400).end();
-      return;
-    }
+const bodySchema = Joi.object<{ id: string; password: string }>({
+  id: Joi.string().required(),
+  password: Joi.string().required(),
+});
 
-    const { id, password }: { [key: string]: string } = req.body;
-
-    const user = (await User.findOne({
-      attributes: ["uid", "password", "isAdmin"],
-      where: { id },
-    }))!;
-
-    const isCorrectPassword = bcrypt.compareSync(password, user.password);
-
-    if (!isCorrectPassword) {
-      res.status(400).end();
-      return;
-    }
-
-    req.session.user = {
-      uid: user.uid,
-      isAdmin: user.isAdmin,
-    };
-
-    res.status(201).end();
+loginRouter.post("/", async (req, res) => {
+  const validation = bodySchema.validate(req.body);
+  if (validation.error) {
+    res.status(400).error({ errors: [{ error: "", message: "" }] });
+    return;
   }
-);
+
+  const { id, password } = validation.value;
+
+  const errors: { error: string; message: string }[] = [];
+
+  const idValidation = User.validateId(id);
+  const passwordValidation = User.validatePassword(password);
+
+  return; // TODO
+
+  const user = await User.findUserById(id);
+
+  if (user === null) {
+    res.status(400).error({ errors: [{ error: "", message: "" }] });
+    return;
+  }
+
+  if (!bcrypt.compareSync(password, user.password)) {
+    res.status(400).error({ errors: [{ error: "", message: "" }] });
+    return;
+  }
+
+  req.session.user = {
+    uid: user.uid,
+    isAdmin: user.isAdmin,
+  };
+
+  res.status(201).end();
+});

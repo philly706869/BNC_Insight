@@ -3,11 +3,15 @@ import {
   AutoIncrement,
   Column,
   DataType,
+  HasMany,
+  HasOne,
   Model,
   PrimaryKey,
   Table,
   Unique,
 } from "sequelize-typescript";
+import { Article } from "./Article.js";
+import { AuthToken } from "./AuthToken.js";
 
 @Table
 export class User extends Model {
@@ -22,10 +26,8 @@ export class User extends Model {
   @Column(DataType.UUID)
   declare uuid: string;
 
-  @Unique
-  @AllowNull(false)
-  @Column(DataType.SMALLINT.UNSIGNED)
-  declare tokenUid: number;
+  @HasOne(() => AuthToken)
+  declare authToken: AuthToken;
 
   @Unique
   @AllowNull(false)
@@ -44,6 +46,9 @@ export class User extends Model {
   @Column(DataType.BOOLEAN)
   declare isAdmin: boolean;
 
+  @HasMany(() => Article)
+  declare articles: Article[];
+
   static async findUserById(id: string) {
     return await User.findOne({ where: { id: id.toLowerCase() } });
   }
@@ -52,14 +57,14 @@ export class User extends Model {
     const errors = [];
 
     if (!/^\w*?$/.test(id))
-      errors.push("ID can only contain letters, numbers, and underline.");
+      errors.push("Id can only contain letters, numbers, and underline.");
 
     switch (true) {
       case id.length < 1:
-        errors.push("ID cannot be empty.");
+        errors.push("Id cannot be empty.");
         break;
       case id.length > 32:
-        errors.push("ID cannot be greater than 32 characters.");
+        errors.push("Id cannot be greater than 32 characters.");
         break;
     }
 
@@ -71,7 +76,7 @@ export class User extends Model {
 
     if (!/^[!"#$%&'()*+,\-./0-9:;<=>?@A-Z[\\\]^_`a-z{|}~]*?$/.test(password))
       errors.push(
-        "Passwords can only contain letters, numbers, and common punctuation characters."
+        "Password can only contain letters, numbers, and common punctuation characters."
       );
 
     switch (true) {

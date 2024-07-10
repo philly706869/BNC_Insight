@@ -1,10 +1,10 @@
 import { Router } from "express";
+import { accountRouter } from "./account/account.js";
 import { articleRouter } from "./article.js";
 import { categoriesRouter } from "./categories.js";
-import { userRouter } from "./user.js";
 
 export const apiRouter = Router();
 
-apiRouter.use("/user", userRouter);
 apiRouter.use("/category", categoriesRouter);
 apiRouter.use("/article", articleRouter);
+apiRouter.use("/account", accountRouter);

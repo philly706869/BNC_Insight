@@ -1,33 +1,67 @@
-import { Router } from "express";
+import { RequestHandler, Router } from "express";
+import Joi from "joi";
+import { AuthToken } from "../../model/AuthToken.js";
+import { User } from "../../model/User.js";
 
 export const authRouter = Router();
 
-authRouter.get("/", (req, res) => {
-  console.log(req.query);
+const bodySchema = Joi.object<{ value: string }>({
+  value: Joi.string().required(),
 });
 
-// query("token").isLength({ min: 1, max: 128 }),
-//   async (req, res) => {
-//     const token: string = req.query!!.token;
-//     const valid =
-//       !validationResult(req).isEmpty() || (await AuthToken.isAllocable(token));
-//     res.status(200).json({ valid });
-//   }
+function createValidateHandler(
+  validator: (value: string) => any
+): RequestHandler {
+  return async (req, res) => {
+    const validation = bodySchema.validate(req.body);
+    if (validation.error) {
+      res
+        .status(400)
+        .error({ errors: [{ error: "INVALID_BODY", message: "" }] });
+      return;
+    }
 
-// query("id"), (req, res) => {
-//   if (!validationResult(req).isEmpty()) {
-//     res
-//       .status(400)
-//       .error({ error: "ID_NOT_PROVIDED", message: "You must provide id." });
-//     return;
-//   }
+    const { value } = validation.value;
+    const response = await validator(value);
+    res.status(200).json(response);
+  };
+}
 
-//   const id: string = req.query!!.id;
-//   const result = User.validateId(id);
-//   const valid = result === null;
+authRouter.post(
+  "/token",
+  createValidateHandler(async (value) => {
+    const valid = await AuthToken.isAllocable(value);
+    return { valid };
+  })
+);
 
-//   res.status(200).json({
-//     valid,
-//     message: result,
-//   });
-// }
+authRouter.post(
+  "/id",
+  createValidateHandler(async (value) => {
+    const validation = User.validateId(value);
+    const valid = validation === null;
+    const exists = valid && (await User.findUserById(value)) !== null;
+    const messages = validation || [];
+    return { valid, exists, messages };
+  })
+);
+
+authRouter.post(
+  "/password",
+  createValidateHandler((value) => {
+    const validation = User.validatePassword(value);
+    const valid = validation === null;
+    const messages = validation || [];
+    return { valid, messages };
+  })
+);
+
+authRouter.post(
+  "/name",
+  createValidateHandler((value) => {
+    const validation = User.validateName(value);
+    const valid = validation === null;
+    const messages = validation || [];
+    return { valid, messages };
+  })
+);

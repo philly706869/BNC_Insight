@@ -1,24 +1,21 @@
 import {
   AllowNull,
-  AutoIncrement,
   Column,
   DataType,
+  HasMany,
   Model,
   PrimaryKey,
   Table,
-  Unique,
 } from "sequelize-typescript";
+import { Article } from "./Article.js";
 
 @Table
 export class Category extends Model {
   @PrimaryKey
-  @AutoIncrement
   @AllowNull(false)
-  @Column(DataType.SMALLINT.UNSIGNED)
-  declare uid: number;
-
-  @Unique
-  @AllowNull(false)
-  @Column(DataType.STRING(128))
+  @Column(DataType.STRING(16))
   declare name: string;
+
+  @HasMany(() => Article)
+  declare articles: Article[];
 }

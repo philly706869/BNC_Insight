@@ -1,6 +1,7 @@
 import {
   AllowNull,
   AutoIncrement,
+  BelongsTo,
   Column,
   DataType,
   Default,
@@ -28,15 +29,12 @@ export class AuthToken extends Model {
   @Unique
   @AllowNull(true)
   @Default(null)
+  @ForeignKey(() => User)
   @Column(DataType.SMALLINT.UNSIGNED)
   declare allocedUserUid: number | null;
 
-  @Unique
-  @AllowNull(true)
-  @Default(null)
-  @ForeignKey(() => User)
-  @Column
-  declare allocedUser: User;
+  @BelongsTo(() => User)
+  declare allocedUser: User | null;
 
   @AllowNull(false)
   @Default(false)

@@ -1,6 +1,7 @@
 import {
   AllowNull,
   AutoIncrement,
+  BelongsTo,
   Column,
   DataType,
   Default,
@@ -9,6 +10,7 @@ import {
   PrimaryKey,
   Table,
 } from "sequelize-typescript";
+import { Category } from "./Category.js";
 import { User } from "./User.js";
 
 @Table
@@ -19,14 +21,21 @@ export class Article extends Model {
   @Column(DataType.SMALLINT.UNSIGNED)
   declare uid: number;
 
-  @ForeignKey(() => User)
   @AllowNull(false)
+  @ForeignKey(() => User)
   @Column(DataType.SMALLINT.UNSIGNED)
   declare uploaderUid: number;
 
+  @BelongsTo(() => User)
+  declare uploader: User;
+
   @AllowNull(false)
-  @Column(DataType.TINYINT.UNSIGNED)
-  declare category: number;
+  @ForeignKey(() => Category)
+  @Column(DataType.STRING(16))
+  declare categoryName: string;
+
+  @BelongsTo(() => Category)
+  declare category: Category;
 
   @AllowNull(false)
   @Column(DataType.STRING(64))
