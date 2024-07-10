@@ -54,7 +54,7 @@ export class User extends Model {
   }
 
   static validateId(id: string) {
-    const errors = [];
+    const errors: string[] = [];
 
     if (!/^\w*?$/.test(id))
       errors.push("Id can only contain letters, numbers, and underline.");
@@ -72,7 +72,7 @@ export class User extends Model {
   }
 
   static validatePassword(password: string) {
-    const errors = [];
+    const errors: string[] = [];
 
     if (!/^[!"#$%&'()*+,\-./0-9:;<=>?@A-Z[\\\]^_`a-z{|}~]*?$/.test(password))
       errors.push(
@@ -92,7 +92,7 @@ export class User extends Model {
   }
 
   static validateName(name: string) {
-    const errors = [];
+    const errors: string[] = [];
 
     if (name.trim() !== name)
       errors.push("Name cannot start or end with a space.");

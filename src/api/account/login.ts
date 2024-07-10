@@ -1,7 +1,5 @@
-import bcrypt from "bcrypt";
 import { Router } from "express";
 import Joi from "joi";
-import { User } from "../../model/User.js";
 
 export const loginRouter = Router();
 
@@ -17,31 +15,34 @@ loginRouter.post("/", async (req, res) => {
     return;
   }
 
-  const { id, password } = validation.value;
+  console.log("login");
+  res.status(500).end();
 
-  const errors: { error: string; message: string }[] = [];
+  // const { id, password } = validation.value;
 
-  const idValidation = User.validateId(id);
-  const passwordValidation = User.validatePassword(password);
+  // const errors: { error: string; message: string }[] = [];
 
-  return; // TODO
+  // const idValidation = User.validateId(id);
+  // const passwordValidation = User.validatePassword(password);
 
-  const user = await User.findUserById(id);
+  // return; // TODO
 
-  if (user === null) {
-    res.status(400).error({ errors: [{ error: "", message: "" }] });
-    return;
-  }
+  // const user = await User.findUserById(id);
 
-  if (!bcrypt.compareSync(password, user.password)) {
-    res.status(400).error({ errors: [{ error: "", message: "" }] });
-    return;
-  }
+  // if (user === null) {
+  //   res.status(400).error({ errors: [{ error: "", message: "" }] });
+  //   return;
+  // }
 
-  req.session.user = {
-    uid: user.uid,
-    isAdmin: user.isAdmin,
-  };
+  // if (!bcrypt.compareSync(password, user.password)) {
+  //   res.status(400).error({ errors: [{ error: "", message: "" }] });
+  //   return;
+  // }
 
-  res.status(201).end();
+  // req.session.user = {
+  //   uid: user.uid,
+  //   isAdmin: user.isAdmin,
+  // };
+
+  // res.status(201).end();
 });

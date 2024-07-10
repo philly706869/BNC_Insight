@@ -5,7 +5,7 @@ import {} from "./account-control-panel/signup.js";
 import { raiseModal } from "./modal.js";
 
 const getUser = async () => {
-  const res = await fetch("/api/user");
+  const res = await fetch("/api/account");
   return res.ok ? (await res.json()).user : null;
 };
 
@@ -141,7 +141,7 @@ createComponent(
 
           const $logoutButton = this.#$userPanel.find("#logout-button");
           $logoutButton.on("click", async () => {
-            await fetch("/user/log", { method: "DELETE" });
+            await fetch("/api/account/logout", { method: "POST" });
             this.updateUser();
           });
 

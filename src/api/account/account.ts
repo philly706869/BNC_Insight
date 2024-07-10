@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import { Router } from "express";
-import { body, query, validationResult } from "express-validator";
+import { query, validationResult } from "express-validator";
+import Joi from "joi";
 import { v4 as uuidv4 } from "uuid";
 import { AuthToken } from "../../model/AuthToken.js";
 import { User } from "../../model/User.js";
@@ -14,70 +15,59 @@ accountRouter.use("/auth", authRouter);
 accountRouter.use("/login", loginRouter);
 accountRouter.use("/logout", logoutRouter);
 
-accountRouter.post(
-  "/",
-  body("authToken")
-    .isString()
-    .bail()
-    .custom(async (token: string) =>
-      (await AuthToken.isAllocable(token))
-        ? Promise.resolve()
-        : Promise.reject()
-    ),
-  body("id")
-    .isString()
-    .bail()
-    .custom(async (id: string) =>
-      User.validateId(id) === null && (await User.findUserById(id)) === null
-        ? Promise.resolve()
-        : Promise.reject()
-    ),
-  body("password")
-    .isString()
-    .custom((password: string) => User.validatePassword(password) === null),
-  body("name")
-    .isString()
-    .custom((name: string) => User.validateName(name) === null),
-  async (req, res) => {
-    const validation = validationResult(req);
-    if (!validation.isEmpty()) {
-      res
-        .status(400)
-        .error({ errors: [{ error: "INVALID_DATA_FORMAT", message: "" }] });
-      return;
-    }
+const postSchema = Joi.object<{
+  token: string;
+  id: string;
+  password: string;
+  name: string;
+}>({
+  token: Joi.string().required(),
+  id: Joi.string().required(),
+  password: Joi.string().required(),
+  name: Joi.string().required(),
+});
 
-    const { authToken, id, password, name }: { [key: string]: string } =
-      req.body;
-
-    const token = (await AuthToken.findOne({
-      attributes: ["uid", "isAdminToken"],
-      where: { token: authToken },
-    }))!;
-
-    const user = new User({
-      uuid: uuidv4(),
-      tokenUid: token.uid,
-      id,
-      password: bcrypt.hashSync(password, 10),
-      name,
-      isAdmin: token.isAdminToken,
-    });
-    await user.save();
-
-    token.allocedUserUid = user.uid;
-
-    await token.save();
-
-    res.status(201).end();
+accountRouter.post("/", async (req, res) => {
+  const validation = postSchema.validate(req.body);
+  if (validation.error) {
+    res
+      .status(400)
+      .error({ errors: [{ error: "INVALID_DATA_FORMAT", message: "" }] });
+    return;
   }
-);
+  const { token: tokenName, id, password, name } = validation.value;
+
+  const token = await AuthToken.findIfAllocable(tokenName);
+
+  if (!token) {
+    res.status(400).error({ errors: [{ error: "", message: "" }] });
+    return;
+  }
+
+  const user = await User.create({
+    uuid: uuidv4(),
+    tokenUid: token.uid,
+    id,
+    password: bcrypt.hashSync(password, 10),
+    name,
+    isAdmin: token.isAdminToken,
+  });
+
+  token.allocedUserUid = user.uid;
+  await token.save();
+
+  res.status(201).end();
+});
 
 accountRouter.get("/", query("uuid").isUUID().optional(), async (req, res) => {
   if (!validationResult(req).isEmpty()) {
     res.status(400).error({
-      error: "INVALID_UUID",
-      message: "Uuid is not in correct format.",
+      errors: [
+        {
+          error: "INVALID_UUID",
+          message: "Uuid is not in correct format.",
+        },
+      ],
     });
     return;
   }
@@ -94,14 +84,22 @@ accountRouter.get("/", query("uuid").isUUID().optional(), async (req, res) => {
   switch (user) {
     case undefined:
       res.status(400).error({
-        error: "USER_SPECIFIC_UNABLE",
-        message: "You must be logged in or provide id.",
+        errors: [
+          {
+            error: "USER_SPECIFIC_UNABLE",
+            message: "You must be logged in or provide id.",
+          },
+        ],
       });
       break;
     case null:
       res.status(404).error({
-        error: "USER_NOT_FOUND",
-        message: "The requested user does not exist.",
+        errors: [
+          {
+            error: "USER_NOT_FOUND",
+            message: "The requested user does not exist.",
+          },
+        ],
       });
       break;
     default:

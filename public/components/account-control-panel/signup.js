@@ -58,7 +58,7 @@ createComponent(
         const $passwordConfirmSlide = $panel.find("#password-confirm-slide");
         const $nameSlide = $panel.find("#name-slide");
 
-        let authToken;
+        let token;
         let id;
         let password;
         let name;
@@ -66,12 +66,12 @@ createComponent(
         $authTokenSlide.on("submit", async () => {
           const value = $authTokenSlide.prop("value");
 
-          const validation = await fetch("/api/validate/token", {
+          const validation = await fetch("/api/account/auth/token", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ token: value }),
+            body: JSON.stringify({ value }),
           }).then((res) => res.json());
 
           if (!validation.valid) {
@@ -79,19 +79,19 @@ createComponent(
             return;
           }
 
-          authToken = value;
+          token = value;
           $panel.triggerHandler("nextSlide");
         });
 
         $idSlide.on("submit", async () => {
           const value = $idSlide.prop("value");
 
-          const validation = await fetch("/api/validate/id", {
+          const validation = await fetch("/api/account/auth/id", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ id: value }),
+            body: JSON.stringify({ value }),
           }).then((res) => res.json());
 
           if (!validation.valid) {
@@ -111,12 +111,12 @@ createComponent(
         $passwordSlide.on("submit", async () => {
           const value = $passwordSlide.prop("value");
 
-          const validation = await fetch("/api/validate/password", {
+          const validation = await fetch("/api/account/auth/password", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ password: value }),
+            body: JSON.stringify({ value }),
           }).then((res) => res.json());
 
           if (!validation.valid) {
@@ -144,12 +144,12 @@ createComponent(
         $nameSlide.on("submit", async () => {
           const value = $nameSlide.prop("value");
 
-          const validation = await fetch("/api/validate/name", {
+          const validation = await fetch("/api/account/auth/name", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ name: value }),
+            body: JSON.stringify({ value }),
           }).then((res) => res.json());
 
           if (!validation.valid) {
@@ -159,13 +159,13 @@ createComponent(
 
           name = value;
 
-          const res = await fetch("/user", {
+          const res = await fetch("/api/account", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              authToken,
+              token,
               id,
               password,
               name,
@@ -177,8 +177,8 @@ createComponent(
             return;
           }
 
-          await fetch("/user/log", {
-            method: "PUT",
+          await fetch("/api/account/login", {
+            method: "POST",
             headers: {
               "Content-Type": "application/json",
             },

@@ -30,7 +30,7 @@ function createValidateHandler(
 authRouter.post(
   "/token",
   createValidateHandler(async (value) => {
-    const valid = await AuthToken.isAllocable(value);
+    const valid = (await AuthToken.findIfAllocable(value)) !== null;
     return { valid };
   })
 );

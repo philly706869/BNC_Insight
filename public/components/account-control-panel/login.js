@@ -41,12 +41,12 @@ createComponent(
         $idSlide.on("submit", async () => {
           const value = $idSlide.prop("value");
 
-          const validation = await fetch("/api/validate/id", {
+          const validation = await fetch("/api/account/auth/id", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ id: value }),
+            body: JSON.stringify({ value }),
           }).then((res) => res.json());
 
           if (!validation.exists) {
@@ -61,8 +61,8 @@ createComponent(
         $passwordSlide.on("submit", async () => {
           const password = $passwordSlide.prop("value");
 
-          const res = await fetch("/user/log", {
-            method: "PUT",
+          const res = await fetch("/api/account/login", {
+            method: "POST",
             headers: {
               "Content-Type": "application/json",
             },

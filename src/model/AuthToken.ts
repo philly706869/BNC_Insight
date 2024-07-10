@@ -41,9 +41,10 @@ export class AuthToken extends Model {
   @Column(DataType.BOOLEAN)
   declare isAdminToken: boolean;
 
-  static async isAllocable(token: string) {
-    if (token.length < 1 || token.length > 128) return false;
+  static async findIfAllocable(token: string) {
+    if (token.length < 1 || token.length > 128) return null;
     const authToken = await AuthToken.findOne({ where: { token } });
-    return authToken !== null && authToken.allocedUserUid === null;
+    if (authToken && !authToken.allocedUser) return authToken;
+    else return null;
   }
 }
