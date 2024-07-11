@@ -60,6 +60,7 @@ const bodySchema = Joi.object<{
     .custom(async (value: string) => {
       const category = await Category.findOne({ where: { name: value } });
       if (category) throw new Error();
+      return value;
     })
     .required(),
   title: Joi.string().min(1).max(64).required(),

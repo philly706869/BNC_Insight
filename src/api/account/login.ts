@@ -11,12 +11,14 @@ const bodySchema = Joi.object<{
 }>({
   id: Joi.string()
     .custom((value: string) => {
-      return User.validateId(value) === null;
+      if (User.validateId(value) !== null) throw new Error();
+      return value;
     })
     .required(),
   password: Joi.string()
     .custom((value: string) => {
-      return User.validatePassword(value) === null;
+      if (User.validatePassword(value) !== null) throw new Error();
+      return value;
     })
     .required(),
 }).unknown(true);

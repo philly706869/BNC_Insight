@@ -20,6 +20,8 @@ const bodySchema = Joi.object<{ value: string }>({
 
       const category = await Category.findByPk(value);
       if (category) throw new Error();
+
+      return value;
     })
     .required(),
 }).unknown(true);
