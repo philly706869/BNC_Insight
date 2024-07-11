@@ -117,13 +117,14 @@ app.get(
 
 const server = http.createServer(app);
 
-server.listen(serverConfig.port, async () => {
-  logger.info(`http server started listening on port ${serverConfig.port}`);
+try {
+  await sequelize.sync();
+  logger.info("Database successfully synced");
 
-  try {
-    await sequelize.sync();
-    logger.info("database sync succeed");
-  } catch (error) {
-    logger.error(error);
-  }
-});
+  server.listen(serverConfig.port, async () => {
+    logger.info(`Http server started listening on port ${serverConfig.port}`);
+  });
+} catch (error) {
+  logger.error(error);
+  logger.error("Failed to start server");
+}

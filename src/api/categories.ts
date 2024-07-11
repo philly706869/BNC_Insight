@@ -1,6 +1,7 @@
 import { Router } from "express";
-import Joi from "joi";
 import { Category } from "../model/Category.js";
+import { validationHandler } from "./validationHandler.js";
+import { valueValidator } from "./valueValidator.js";
 
 export const categoriesRouter = Router();
 
@@ -12,34 +13,35 @@ categoriesRouter.get("/", async (req, res) => {
   res.status(200).json({ categories });
 });
 
-const bodySchema = Joi.object<{ value: string }>({
-  value: Joi.string().required(),
-});
+categoriesRouter.post(
+  "/",
+  valueValidator.custom(async (value: string) => {
+    const validation = Category.validateName(value);
+    if (validation !== null)
+      throw { error: "INVALID_CATEGORY_NAME", messages: validation };
+    const category = await Category.findByPk(value);
+    if (category)
+      throw {
+        error: "CATEGORY_ALREADY_EXISTS",
+        message: `Category named \`${value}\` already exists`,
+      };
+  }),
+  validationHandler,
+  async (req, res) => {
+    const value: string = req.body.value;
 
-categoriesRouter.post("/", async (req, res) => {
-  const validation = bodySchema.validate(req.body);
-  if (validation.error) {
-    res.status(400).error({ errors: [{ error: "", message: "" }] });
-    return;
+    try {
+      await Category.create({ name: value });
+    } catch (error) {
+      res
+        .status(500)
+        .error({
+          errors: [
+            { error: "UNKNOWN_ERROR", message: "Failed to create category." },
+          ],
+        });
+    }
+
+    res.status(201).end();
   }
-  const { value } = validation.value;
-
-  const nameValidation = Category.validateName(value);
-  if (nameValidation !== null) {
-    res.status(400).error({ errors: [{ error: "", message: "" }] });
-    return;
-  }
-
-  if ((await Category.findByPk(value)) !== null) {
-    res.status(400).error({ errors: [{ error: "", message: "" }] });
-    return;
-  }
-
-  try {
-    await Category.create({ name: value });
-  } catch (error) {
-    res.status(500).error({ errors: [{ error: "", message: "" }] });
-  }
-
-  res.status(201).end();
-});
+);
