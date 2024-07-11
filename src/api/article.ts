@@ -12,42 +12,42 @@ const querySchema = Joi.object<{ uid: number }>({
 }).unknown(true);
 
 articleRouter.get("/", async (req, res) => {
-  const validation = querySchema.validate(req.query);
-  if (validation.error) {
-    res.status(400).end();
-    return;
+  try {
+    const { uid } = await querySchema.validateAsync(req.query);
+
+    const article = await Article.findByPk(uid);
+
+    if (!article) {
+      res.status(404).end();
+      return;
+    }
+
+    article.views += 1;
+    await article.save();
+
+    const uploader = await User.findByPk(article.uploaderUid);
+
+    res.status(200).json({
+      uid: article.uid,
+      uploader: uploader
+        ? {
+            uuid: uploader.uuid,
+            name: uploader.name,
+            isAdmin: uploader.isAdmin,
+          }
+        : null,
+      category: article.category,
+      title: article.title,
+      subtitle: article.subtitle,
+      content: article.content,
+      views: article.views,
+      createdAt: article.createdAt,
+      updatedAt: article.updatedAt,
+    });
+  } catch (error) {
+    if (Joi.isError(error)) res.status(400).end();
+    else res.status(500).end();
   }
-  const { uid } = validation.value;
-
-  const article = await Article.findByPk(uid);
-
-  if (!article) {
-    res.status(404).end();
-    return;
-  }
-
-  article.views += 1;
-  await article.save();
-
-  const uploader = await User.findByPk(article.uploaderUid);
-
-  res.status(200).json({
-    uid: article.uid,
-    uploader: uploader
-      ? {
-          uuid: uploader.uuid,
-          name: uploader.name,
-          isAdmin: uploader.isAdmin,
-        }
-      : null,
-    category: article.category,
-    title: article.title,
-    subtitle: article.subtitle,
-    content: article.content,
-    views: article.views,
-    createdAt: article.createdAt,
-    updatedAt: article.updatedAt,
-  });
 });
 
 const bodySchema = Joi.object<{
@@ -57,9 +57,9 @@ const bodySchema = Joi.object<{
   content: any[];
 }>({
   category: Joi.string()
-    .custom(async (value: string) => {
-      const category = await Category.findOne({ where: { name: value } });
-      if (category) throw new Error();
+    .external(async (value: string, helper) => {
+      if (await Category.findOne({ where: { name: value } }))
+        return helper.message({});
       return value;
     })
     .required(),
@@ -69,30 +69,31 @@ const bodySchema = Joi.object<{
 }).unknown(true);
 
 articleRouter.post("/", async (req, res) => {
-  const user = req.session.user;
-  if (!user) {
-    res.status(401).end();
-    return;
+  try {
+    const { category, title, subtitle, content } =
+      await bodySchema.validateAsync(req.body);
+
+    const user = req.session.user;
+    if (!user) {
+      res.status(401).end();
+      return;
+    }
+
+    const article = new Article({
+      uploaderUid: user.uid,
+      category,
+      title,
+      subtitle,
+      content,
+    });
+
+    await article.save();
+
+    logger.info(`article posted (uid: ${article.uid})`);
+
+    res.status(201).json({ articleUid: article.uid });
+  } catch (error) {
+    if (Joi.isError(error)) res.status(400).end();
+    else res.status(500).end();
   }
-
-  const validation = bodySchema.validate(req.body);
-  if (validation.error) {
-    res.status(400).end();
-    return;
-  }
-  const { category, title, subtitle, content } = validation.value;
-
-  const article = new Article({
-    uploaderUid: user.uid,
-    category,
-    title,
-    subtitle,
-    content,
-  });
-
-  await article.save();
-
-  logger.info(`article posted (uid: ${article.uid})`);
-
-  res.status(201).json({ articleUid: article.uid });
 });

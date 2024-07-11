@@ -10,43 +10,42 @@ const bodySchema = Joi.object<{
   password: string;
 }>({
   id: Joi.string()
-    .custom((value: string) => {
-      if (User.validateId(value) !== null) throw new Error();
+    .external((value: string, helper) => {
+      if (User.validateId(value) !== null) return helper.message({});
       return value;
     })
     .required(),
   password: Joi.string()
-    .custom((value: string) => {
-      if (User.validatePassword(value) !== null) throw new Error();
+    .external((value: string, helper) => {
+      if (User.validatePassword(value) !== null) return helper.message({});
       return value;
     })
     .required(),
 }).unknown(true);
 
 loginRouter.post("/", async (req, res) => {
-  const validation = bodySchema.validate(req.body);
-  if (validation.error) {
-    res.status(400).end();
-    return;
+  try {
+    const { id, password } = await bodySchema.validateAsync(req.body);
+    const user = await User.findUserById(id);
+
+    if (user === null) {
+      res.status(401).end();
+      return;
+    }
+
+    if (!bcrypt.compareSync(password, user.password)) {
+      res.status(401).end();
+      return;
+    }
+
+    req.session.user = {
+      uid: user.uid,
+      isAdmin: user.isAdmin,
+    };
+
+    res.status(201).end();
+  } catch (error) {
+    if (Joi.isError(error)) res.status(400).end();
+    else res.status(500).end();
   }
-  const { id, password } = validation.value;
-
-  const user = await User.findUserById(id);
-
-  if (user === null) {
-    res.status(401).end();
-    return;
-  }
-
-  if (!bcrypt.compareSync(password, user.password)) {
-    res.status(401).end();
-    return;
-  }
-
-  req.session.user = {
-    uid: user.uid,
-    isAdmin: user.isAdmin,
-  };
-
-  res.status(201).end();
 });

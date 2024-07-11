@@ -14,31 +14,28 @@ categoriesRouter.get("/", async (req, res) => {
 
 const bodySchema = Joi.object<{ value: string }>({
   value: Joi.string()
-    .custom(async (value: string) => {
-      const validation = Category.validateName(value);
-      if (validation !== null) throw new Error();
-
-      const category = await Category.findByPk(value);
-      if (category) throw new Error();
-
+    .external(async (value: string, helper) => {
+      if (Category.validateName(value) !== null) return helper.message({});
+      if (await Category.findByPk(value)) return helper.message({});
       return value;
     })
     .required(),
 }).unknown(true);
 
 categoriesRouter.post("/", async (req, res) => {
-  const validaiton = bodySchema.validate(req.body);
-  if (validaiton.error) {
-    res.status(400).end();
-    return;
-  }
-  const { value } = validaiton.value;
-
   try {
-    await Category.create({ name: value });
-  } catch (error) {
-    res.status(500).end();
-  }
+    const body = await bodySchema.validateAsync(req.body);
+    const { value } = body;
 
-  res.status(201).end();
+    try {
+      await Category.create({ name: value });
+    } catch (error) {
+      res.status(500).end();
+    }
+
+    res.status(201).end();
+  } catch (error) {
+    if (Joi.isError(error)) res.status(400).end();
+    else res.status(500).end();
+  }
 });

@@ -2,16 +2,16 @@ import ConnectSessionSequelize from "connect-session-sequelize";
 import express, { NextFunction, Request, Response } from "express";
 import expressSession from "express-session";
 import http from "http";
+import Joi from "joi";
 import path from "path";
 import { apiRouter } from "./api/api.js";
 import { config as serverConfig } from "./config/server.config.js";
+import { Category } from "./model/Category.js";
 import { sequelize } from "./model/sequelize.js";
 import { __dirname } from "./util/__dirname.js";
 import { logger } from "./util/logger.js";
 
 const app = express();
-
-express.response.error = express.response.json;
 
 const SequqlizeStore = ConnectSessionSequelize(expressSession.Store);
 
@@ -63,6 +63,33 @@ app.get(
     title: "BNC_Insight",
     script: "index.js",
     component: "x-index",
+  })
+);
+
+const categorySchema = Joi.object<{ name: string }>({
+  name: Joi.string()
+    .external(async (value: string, helper) => {
+      if (Category.validateName(value) !== null) return helper.message({});
+      if ((await Category.findByPk(value)) === null) return helper.message({});
+      return value;
+    })
+    .required(),
+});
+
+app.get(
+  "/category",
+  async (req, res, next) => {
+    try {
+      await categorySchema.validateAsync(req.query);
+      next();
+    } catch (error) {
+      res.status(404).end();
+    }
+  },
+  renderer({
+    title: "BNC_Insight User",
+    script: "user.js",
+    component: "x-user",
   })
 );
 

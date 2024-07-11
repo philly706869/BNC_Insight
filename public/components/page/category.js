@@ -6,7 +6,7 @@ import {} from "../modal.js";
 
 createComponent(
   (Component) =>
-    class Index extends Component {
+    class Category extends Component {
       constructor(props) {
         super(props);
         const { $this, $shadow } = props;
