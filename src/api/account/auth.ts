@@ -2,6 +2,7 @@ import { Router } from "express";
 import Joi from "joi";
 import { AuthToken } from "../../model/AuthToken.js";
 import { User } from "../../model/User.js";
+import { logger } from "../../util/logger.js";
 
 export const authRouter = Router();
 
@@ -16,7 +17,10 @@ authRouter.post("/token", async (req, res) => {
     res.status(200).json({ valid });
   } catch (error) {
     if (Joi.isError(error)) res.status(400).end();
-    else res.status(500).end();
+    else {
+      logger.error(error);
+      res.status(500).end();
+    }
   }
 });
 
@@ -30,7 +34,10 @@ authRouter.post("/id", async (req, res) => {
     res.status(200).json({ valid, exists, messages });
   } catch (error) {
     if (Joi.isError(error)) res.status(400).end();
-    else res.status(500).end();
+    else {
+      logger.error(error);
+      res.status(500).end();
+    }
   }
 });
 
@@ -43,7 +50,10 @@ authRouter.post("/password", async (req, res) => {
     res.status(200).json({ valid, messages });
   } catch (error) {
     if (Joi.isError(error)) res.status(400).end();
-    else res.status(500).end();
+    else {
+      logger.error(error);
+      res.status(500).end();
+    }
   }
 });
 
@@ -56,6 +66,9 @@ authRouter.post("/name", async (req, res) => {
     res.status(200).json({ valid, messages });
   } catch (error) {
     if (Joi.isError(error)) res.status(400).end();
-    else res.status(500).end();
+    else {
+      logger.error(error);
+      res.status(500).end();
+    }
   }
 });

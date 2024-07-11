@@ -4,6 +4,7 @@ import Joi from "joi";
 import { v4 as uuidv4 } from "uuid";
 import { AuthToken } from "../../model/AuthToken.js";
 import { User } from "../../model/User.js";
+import { logger } from "../../util/logger.js";
 import { authRouter } from "./auth.js";
 import { loginRouter } from "./login.js";
 import { logoutRouter } from "./logout.js";
@@ -49,7 +50,10 @@ accountRouter.post("/", async (req, res) => {
     res.status(201).end();
   } catch (error) {
     if (Joi.isError(error)) res.status(400).end();
-    else res.status(500).end();
+    else {
+      logger.error(error);
+      res.status(500).end();
+    }
   }
 });
 
@@ -82,6 +86,9 @@ accountRouter.get("/", async (req, res) => {
     });
   } catch (error) {
     if (Joi.isError(error)) res.status(400).end();
-    else res.status(500).end();
+    else {
+      logger.error(error);
+      res.status(500).end();
+    }
   }
 });

@@ -46,7 +46,10 @@ articleRouter.get("/", async (req, res) => {
     });
   } catch (error) {
     if (Joi.isError(error)) res.status(400).end();
-    else res.status(500).end();
+    else {
+      logger.error(error);
+      res.status(500).end();
+    }
   }
 });
 
@@ -94,6 +97,9 @@ articleRouter.post("/", async (req, res) => {
     res.status(201).json({ articleUid: article.uid });
   } catch (error) {
     if (Joi.isError(error)) res.status(400).end();
-    else res.status(500).end();
+    else {
+      logger.error(error);
+      res.status(500).end();
+    }
   }
 });

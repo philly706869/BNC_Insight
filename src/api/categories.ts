@@ -1,15 +1,21 @@
 import { Router } from "express";
 import Joi from "joi";
 import { Category } from "../model/Category.js";
+import { logger } from "../util/logger.js";
 
 export const categoriesRouter = Router();
 
 categoriesRouter.get("/", async (req, res) => {
-  const categories = (await Category.findAll()).map(
-    (category) => category.name
-  );
+  try {
+    const categories = (await Category.findAll()).map(
+      (category) => category.name
+    );
 
-  res.status(200).json({ categories });
+    res.status(200).json({ categories });
+  } catch (error) {
+    logger.error(error);
+    res.status(500).end();
+  }
 });
 
 const bodySchema = Joi.object<{ value: string }>({
@@ -36,6 +42,9 @@ categoriesRouter.post("/", async (req, res) => {
     res.status(201).end();
   } catch (error) {
     if (Joi.isError(error)) res.status(400).end();
-    else res.status(500).end();
+    else {
+      logger.error(error);
+      res.status(500).end();
+    }
   }
 });

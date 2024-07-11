@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import { Router } from "express";
 import Joi from "joi";
 import { User } from "../../model/User.js";
+import { logger } from "../../util/logger.js";
 
 export const loginRouter = Router();
 
@@ -46,6 +47,9 @@ loginRouter.post("/", async (req, res) => {
     res.status(201).end();
   } catch (error) {
     if (Joi.isError(error)) res.status(400).end();
-    else res.status(500).end();
+    else {
+      logger.error(error);
+      res.status(500).end();
+    }
   }
 });
