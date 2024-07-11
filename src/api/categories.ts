@@ -12,7 +12,7 @@ categoriesRouter.get("/", async (req, res) => {
   res.status(200).json({ categories });
 });
 
-const postSchema = Joi.object<{ value: string }>({
+const bodySchema = Joi.object<{ value: string }>({
   value: Joi.string()
     .custom(async (value: string) => {
       const validation = Category.validateName(value);
@@ -22,10 +22,10 @@ const postSchema = Joi.object<{ value: string }>({
       if (category) throw new Error();
     })
     .required(),
-});
+}).unknown(true);
 
 categoriesRouter.post("/", async (req, res) => {
-  const validaiton = postSchema.validate(req.body);
+  const validaiton = bodySchema.validate(req.body);
   if (validaiton.error) {
     res.status(400).end();
     return;

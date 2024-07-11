@@ -5,12 +5,12 @@ import { User } from "../../model/User.js";
 
 export const authRouter = Router();
 
-const valueSchema = Joi.object<{ value: string }>({
+const bodySchema = Joi.object<{ value: string }>({
   value: Joi.string().allow("").required(),
 });
 
 authRouter.post("/token", async (req, res) => {
-  const validation = valueSchema.validate(req.body);
+  const validation = bodySchema.validate(req.body);
   if (validation.error) {
     res.status(400).end();
     return;
@@ -21,7 +21,7 @@ authRouter.post("/token", async (req, res) => {
 });
 
 authRouter.post("/id", async (req, res) => {
-  const validation = valueSchema.validate(req.body);
+  const validation = bodySchema.validate(req.body);
   if (validation.error) {
     res.status(400).end();
     return;
@@ -35,7 +35,7 @@ authRouter.post("/id", async (req, res) => {
 });
 
 authRouter.post("/password", async (req, res) => {
-  const validation = valueSchema.validate(req.body);
+  const validation = bodySchema.validate(req.body);
   if (validation.error) {
     res.status(400).end();
     return;
@@ -48,7 +48,7 @@ authRouter.post("/password", async (req, res) => {
 });
 
 authRouter.post("/name", async (req, res) => {
-  const validation = valueSchema.validate(req.body);
+  const validation = bodySchema.validate(req.body);
   if (validation.error) {
     res.status(400).end();
     return;

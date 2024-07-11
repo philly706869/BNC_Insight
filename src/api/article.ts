@@ -7,12 +7,12 @@ import { logger } from "../util/logger.js";
 
 export const articleRouter = Router();
 
-const getSchema = Joi.object<{ uid: number }>({
+const querySchema = Joi.object<{ uid: number }>({
   uid: Joi.number().integer().min(1).max(65535).required(),
 }).unknown(true);
 
 articleRouter.get("/", async (req, res) => {
-  const validation = getSchema.validate(req.query);
+  const validation = querySchema.validate(req.query);
   if (validation.error) {
     res.status(400).end();
     return;
@@ -50,7 +50,7 @@ articleRouter.get("/", async (req, res) => {
   });
 });
 
-const postSchema = Joi.object<{
+const bodySchema = Joi.object<{
   category: string;
   title: string;
   subtitle: string;
@@ -74,7 +74,7 @@ articleRouter.post("/", async (req, res) => {
     return;
   }
 
-  const validation = postSchema.validate(req.body);
+  const validation = bodySchema.validate(req.body);
   if (validation.error) {
     res.status(400).end();
     return;

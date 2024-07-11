@@ -14,7 +14,7 @@ accountRouter.use("/auth", authRouter);
 accountRouter.use("/login", loginRouter);
 accountRouter.use("/logout", logoutRouter);
 
-const postSchema = Joi.object<{
+const bodySchema = Joi.object<{
   token: string;
   id: string;
   password: string;
@@ -27,7 +27,7 @@ const postSchema = Joi.object<{
 }).unknown(true);
 
 accountRouter.post("/", async (req, res) => {
-  const validation = postSchema.validate(req.body);
+  const validation = bodySchema.validate(req.body);
   if (validation.error) {
     res.status(400).end();
     return;
@@ -53,12 +53,12 @@ accountRouter.post("/", async (req, res) => {
   res.status(201).end();
 });
 
-const getSchema = Joi.object<{ uuid: string | undefined }>({
+const querySchema = Joi.object<{ uuid: string | undefined }>({
   uuid: Joi.string().uuid().optional(),
 }).unknown(true);
 
 accountRouter.get("/", async (req, res) => {
-  const validation = getSchema.validate(req.query);
+  const validation = querySchema.validate(req.query);
   if (validation.error) {
     res.status(400).end();
     return;

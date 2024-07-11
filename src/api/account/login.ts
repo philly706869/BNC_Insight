@@ -5,7 +5,7 @@ import { User } from "../../model/User.js";
 
 export const loginRouter = Router();
 
-const schema = Joi.object<{
+const bodySchema = Joi.object<{
   id: string;
   password: string;
 }>({
@@ -22,7 +22,7 @@ const schema = Joi.object<{
 }).unknown(true);
 
 loginRouter.post("/", async (req, res) => {
-  const validation = schema.validate(req.body);
+  const validation = bodySchema.validate(req.body);
   if (validation.error) {
     res.status(400).end();
     return;
