@@ -1,7 +1,6 @@
 import { Router } from "express";
+import Joi from "joi";
 import { Category } from "../model/Category.js";
-import { validationHandler } from "./validationHandler.js";
-import { valueValidator } from "./valueValidator.js";
 
 export const categoriesRouter = Router();
 
@@ -13,35 +12,31 @@ categoriesRouter.get("/", async (req, res) => {
   res.status(200).json({ categories });
 });
 
-categoriesRouter.post(
-  "/",
-  valueValidator.custom(async (value: string) => {
-    const validation = Category.validateName(value);
-    if (validation !== null)
-      throw { error: "INVALID_CATEGORY_NAME", messages: validation };
-    const category = await Category.findByPk(value);
-    if (category)
-      throw {
-        error: "CATEGORY_ALREADY_EXISTS",
-        message: `Category named \`${value}\` already exists`,
-      };
-  }),
-  validationHandler,
-  async (req, res) => {
-    const value: string = req.body.value;
+const postSchema = Joi.object<{ value: string }>({
+  value: Joi.string()
+    .custom(async (value: string) => {
+      const validation = Category.validateName(value);
+      if (validation !== null) throw new Error();
 
-    try {
-      await Category.create({ name: value });
-    } catch (error) {
-      res
-        .status(500)
-        .error({
-          errors: [
-            { error: "UNKNOWN_ERROR", message: "Failed to create category." },
-          ],
-        });
-    }
+      const category = await Category.findByPk(value);
+      if (category) throw new Error();
+    })
+    .required(),
+});
 
-    res.status(201).end();
+categoriesRouter.post("/", async (req, res) => {
+  const validaiton = postSchema.validate(req.body);
+  if (validaiton.error) {
+    res.status(400).end();
+    return;
   }
-);
+  const { value } = validaiton.value;
+
+  try {
+    await Category.create({ name: value });
+  } catch (error) {
+    res.status(500).end();
+  }
+
+  res.status(201).end();
+});

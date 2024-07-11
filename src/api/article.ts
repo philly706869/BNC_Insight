@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { body, query, validationResult } from "express-validator";
+import Joi from "joi";
 import { Article } from "../model/Article.js";
 import { Category } from "../model/Category.js";
 import { User } from "../model/User.js";
@@ -7,100 +7,91 @@ import { logger } from "../util/logger.js";
 
 export const articleRouter = Router();
 
-articleRouter.get(
-  "/",
-  query("uid").isInt({ min: 1, max: 65535 }),
-  async (req, res) => {
-    const validation = validationResult(req);
-    if (!validation.isEmpty()) {
-      res.status(400).json({
-        error: "INVALID_UID",
-        message: "Uid must be an integer between 1 and 65535.",
-      });
-      return;
-    }
+const getSchema = Joi.object<{ uid: number }>({
+  uid: Joi.number().integer().min(1).max(65535).required(),
+}).unknown(true);
 
-    const uid = parseInt(req.query!!.uid);
-
-    const article = await Article.findByPk(uid);
-
-    if (!article) {
-      res.status(404).json({
-        error: "ARTICLE_NOT_FOUND",
-        message: "The requested article does not exist.",
-      });
-      return;
-    }
-
-    article.views += 1;
-    article.save();
-
-    const uploader = await User.findByPk(article.uploaderUid);
-
-    res.status(200).json({
-      uid: article.uid,
-      uploader: uploader
-        ? {
-            uuid: uploader.uuid,
-            name: uploader.name,
-            isAdmin: uploader.isAdmin,
-          }
-        : null,
-      category: article.category,
-      title: article.title,
-      subtitle: article.subtitle,
-      content: article.content,
-      views: article.views,
-      createdAt: article.createdAt,
-      updatedAt: article.updatedAt,
-    });
+articleRouter.get("/", async (req, res) => {
+  const validation = getSchema.validate(req.query);
+  if (validation.error) {
+    res.status(400).end();
+    return;
   }
-);
+  const { uid } = validation.value;
 
-articleRouter.post(
-  "/",
-  body("category")
-    .isString()
-    .bail()
-    .custom(async (category) =>
-      (await Category.findOne({ where: { name: category } })) !== null
-        ? Promise.resolve()
-        : Promise.reject()
-    ),
-  body("title").isString().bail().isLength({ min: 1, max: 64 }),
-  body("subtitle").isString().bail().isLength({ min: 1, max: 128 }),
-  body("content").isArray(),
-  async (req, res) => {
-    const validation = validationResult(req);
-    if (!validation.isEmpty() || !req.session.user) {
-      res.status(400).end();
-      return;
-    }
+  const article = await Article.findByPk(uid);
 
-    const {
-      category,
-      title,
-      subtitle,
-      content,
-    }: {
-      category: Category;
-      title: string;
-      subtitle: string;
-      content: any[];
-    } = req.body;
-
-    const article = new Article({
-      uploaderUid: req.session.user.uid,
-      category,
-      title,
-      subtitle,
-      content,
-    });
-
-    await article.save();
-
-    logger.info(`article posted (uid: ${article.uid})`);
-
-    res.status(201).json({ articleUid: article.uid });
+  if (!article) {
+    res.status(404).end();
+    return;
   }
-);
+
+  article.views += 1;
+  await article.save();
+
+  const uploader = await User.findByPk(article.uploaderUid);
+
+  res.status(200).json({
+    uid: article.uid,
+    uploader: uploader
+      ? {
+          uuid: uploader.uuid,
+          name: uploader.name,
+          isAdmin: uploader.isAdmin,
+        }
+      : null,
+    category: article.category,
+    title: article.title,
+    subtitle: article.subtitle,
+    content: article.content,
+    views: article.views,
+    createdAt: article.createdAt,
+    updatedAt: article.updatedAt,
+  });
+});
+
+const postSchema = Joi.object<{
+  category: string;
+  title: string;
+  subtitle: string;
+  content: any[];
+}>({
+  category: Joi.string()
+    .custom(async (value: string) => {
+      const category = await Category.findOne({ where: { name: value } });
+      if (category) throw new Error();
+    })
+    .required(),
+  title: Joi.string().min(1).max(64).required(),
+  subtitle: Joi.string().min(1).max(128).required(),
+  content: Joi.array().required(),
+}).unknown(true);
+
+articleRouter.post("/", async (req, res) => {
+  const user = req.session.user;
+  if (!user) {
+    res.status(401).end();
+    return;
+  }
+
+  const validation = postSchema.validate(req.body);
+  if (validation.error) {
+    res.status(400).end();
+    return;
+  }
+  const { category, title, subtitle, content } = validation.value;
+
+  const article = new Article({
+    uploaderUid: user.uid,
+    category,
+    title,
+    subtitle,
+    content,
+  });
+
+  await article.save();
+
+  logger.info(`article posted (uid: ${article.uid})`);
+
+  res.status(201).json({ articleUid: article.uid });
+});
