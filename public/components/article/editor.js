@@ -1,5 +1,5 @@
 import $ from "jquery";
-import { categories } from "../../js/categories.js";
+import { categories, getCategories } from "../../js/categories.js";
 import { createComponent } from "../../js/component.js";
 import {} from "../input.js";
 
@@ -95,12 +95,64 @@ createComponent(
 
         const $categorySelect = $shadow.find("#category-select");
 
-        for (const category of categories) {
+        function appendCategory(category) {
           const $button = $(`<button class="category-button"></button>`);
           $button.attr("data-category", category);
           $button.text(category);
           $categorySelect.append($("<li></li>").append($button));
         }
+
+        const $appendButton = $(`<button>+</button>`);
+        $appendButton.on("click", async () => {
+          // const $modal =  raiseModal().hide()
+          // const $
+          // $modal.append()
+          // $modal.fadeIn(200);
+          // $modal.on("close", (_, succeed) => {
+
+          // });
+          const categoryName = prompt(
+            "Enter the category name you want to add"
+          );
+
+          const errors = [];
+
+          if (categoryName.trim() !== categoryName)
+            errors.push("Category cannot start or end with a space.");
+
+          if (categoryName.includes("\n"))
+            errors.push("Category cannot contain line breaks.");
+
+          switch (true) {
+            case categoryName.length < 1:
+              errors.push("Category cannot be empty");
+              break;
+            case categoryName.length > 16:
+              errors.push("Category cannot be greater than 16 characters.");
+              break;
+          }
+
+          if (errors.length !== 0) {
+            alert(`Failed to add category.\n${errors.join("\n")}`);
+            return;
+          }
+
+          const res = await fetch("/api/categories", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ value: categoryName }),
+          });
+          if (!res.ok) {
+            alert("Failed to add category.\nCategory name duplicated.");
+          }
+          categories.push(categoryName);
+          categories.sort();
+        });
+
+        for (const category of categories) appendCategory(category);
+        $categorySelect.append($(`<li></li>`).append($appendButton));
 
         const $categoryButton = $categorySelect.find(".category-button");
 
@@ -135,7 +187,7 @@ createComponent(
             case !category:
               alert("Please choose an category");
               return;
-            case !categories.includes(category):
+            case !getCategories.includes(category):
               alert("Unknown error in category");
               return;
           }

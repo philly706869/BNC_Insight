@@ -33,7 +33,7 @@ export class Category extends Model {
         errors.push("Category cannot be empty");
         break;
       case name.length > 16:
-        errors.push("Category cannot be greater than 64 characters.");
+        errors.push("Category cannot be greater than 16 characters.");
         break;
     }
 

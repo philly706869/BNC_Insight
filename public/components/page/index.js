@@ -1,5 +1,5 @@
 import $ from "jquery";
-import { categories } from "../../js/categories.js";
+import { getCategories } from "../../js/categories.js";
 import { createComponent } from "../../js/component.js";
 import {} from "../app.js";
 import {} from "../modal.js";
@@ -108,7 +108,7 @@ createComponent(
 
         const $category = $shadow.find("#category");
 
-        for (const category of categories) {
+        for (const category of getCategories) {
           const $categoryItem = $("<li></li>").append(
             $(
               `<a href="/category?${new URLSearchParams({

@@ -142,7 +142,11 @@ createComponent(
           const $logoutButton = this.#$userPanel.find("#logout-button");
           $logoutButton.on("click", async () => {
             await fetch("/api/account/logout", { method: "POST" });
-            this.updateUser();
+            const thisPage = await fetch(window.location.href, {
+              method: "HEAD",
+            });
+            if (thisPage.ok) this.updateUser();
+            else window.location.replace("/");
           });
 
           this.#$articlePanel.html('<a href="/article/new">New Article</a>');

@@ -15,6 +15,8 @@ import { AuthToken } from "./AuthToken.js";
 
 @Table
 export class User extends Model {
+  static UID_MIN = 1
+  static UID_MAX = 
   @PrimaryKey
   @AutoIncrement
   @AllowNull(false)
@@ -29,9 +31,10 @@ export class User extends Model {
   @HasOne(() => AuthToken)
   declare authToken: AuthToken;
 
+  static ID_LENGTH = 32;
   @Unique
   @AllowNull(false)
-  @Column(DataType.STRING(32))
+  @Column(DataType.STRING(User.ID_LENGTH))
   declare id: string;
 
   @AllowNull(false)
