@@ -12,11 +12,20 @@ import {
 } from "sequelize-typescript";
 import { Article } from "./Article.js";
 import { AuthToken } from "./AuthToken.js";
+import { IntegerRanges } from "./IntegerRange.js";
+
+class InvalidNameError {
+  messages: string[];
+
+  constructor(messages: string[]) {
+    this.messages = messages;
+  }
+}
 
 @Table
 export class User extends Model {
-  static UID_MIN = 1
-  static UID_MAX = 
+  static UID_MIN = IntegerRanges.SMALLINT.UNSIGNED.MIN + 1;
+  static UID_MAX = IntegerRanges.SMALLINT.UNSIGNED.MAX;
   @PrimaryKey
   @AutoIncrement
   @AllowNull(false)
@@ -31,10 +40,11 @@ export class User extends Model {
   @HasOne(() => AuthToken)
   declare authToken: AuthToken;
 
-  static ID_LENGTH = 32;
+  static ID_LENGTH_MIN = 1;
+  static ID_LENGTH_MAX = 32;
   @Unique
   @AllowNull(false)
-  @Column(DataType.STRING(User.ID_LENGTH))
+  @Column(DataType.STRING(User.ID_LENGTH_MAX))
   declare id: string;
 
   @AllowNull(false)
@@ -43,10 +53,32 @@ export class User extends Model {
 
   @AllowNull(false)
   @Column(DataType.STRING(64))
-  declare name: string;
+  get name(): string {
+    return this.getDataValue("name");
+  }
+
+  set name(value: string) {
+    const errors: string[] = [];
+
+    if (!/^\w*?$/.test(value))
+      errors.push("Id can only contain letters, numbers, and underline.");
+
+    switch (true) {
+      case value.length < 1:
+        errors.push("Id cannot be empty.");
+        break;
+      case value.length > 32:
+        errors.push("Id cannot be greater than 32 characters.");
+        break;
+    }
+
+    if (errors.length !== 0) throw new InvalidNameError(errors);
+
+    this.setDataValue("name", value);
+  }
 
   @AllowNull(false)
-  @Column(DataType.BOOLEAN)
+  @Column
   declare isAdmin: boolean;
 
   @HasMany(() => Article)
