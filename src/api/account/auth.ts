@@ -7,10 +7,10 @@ import { logger } from "../../util/logger.js";
 export const authRouter = Router();
 
 const bodySchema = Joi.object<{ value: string }>({
-  value: Joi.string().allow("").required(),
+  value: Joi.string().allow(``).required(),
 }).unknown(true);
 
-authRouter.post("/token", async (req, res) => {
+authRouter.post(`/token`, async (req, res) => {
   try {
     const { value } = await bodySchema.validateAsync(req.body);
     const valid = (await AuthToken.findIfAllocable(value)) !== null;
@@ -24,7 +24,7 @@ authRouter.post("/token", async (req, res) => {
   }
 });
 
-authRouter.post("/id", async (req, res) => {
+authRouter.post(`/id`, async (req, res) => {
   try {
     const { value } = await bodySchema.validateAsync(req.body);
     const idValidation = User.validateId(value);
@@ -41,7 +41,7 @@ authRouter.post("/id", async (req, res) => {
   }
 });
 
-authRouter.post("/password", async (req, res) => {
+authRouter.post(`/password`, async (req, res) => {
   try {
     const { value } = await bodySchema.validateAsync(req.body);
     const passwordValidation = User.validatePassword(value);
@@ -57,7 +57,7 @@ authRouter.post("/password", async (req, res) => {
   }
 });
 
-authRouter.post("/name", async (req, res) => {
+authRouter.post(`/name`, async (req, res) => {
   try {
     const { value } = await bodySchema.validateAsync(req.body);
     const nameValidation = User.validateName(value);

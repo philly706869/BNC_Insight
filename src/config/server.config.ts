@@ -3,7 +3,7 @@ import { ajv } from "./ajv.js";
 import { configPath } from "./configPath.js";
 import { readConfig } from "./configReader.js";
 
-const path = join(configPath, "server.json");
+const path = join(configPath, `server.json`);
 
 interface ServerConfig {
   readonly port: number;
@@ -14,10 +14,10 @@ interface ServerConfig {
 
 const parse = ajv.compileParser<ServerConfig>({
   properties: {
-    port: { type: "uint32" },
-    logDir: { type: "string" },
-    cookieSecret: { type: "string" },
-    sessionSecret: { type: "string" },
+    port: { type: `uint32` },
+    logDir: { type: `string` },
+    cookieSecret: { type: `string` },
+    sessionSecret: { type: `string` },
   },
 });
 

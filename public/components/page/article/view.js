@@ -3,7 +3,7 @@ import { createComponent } from "../../../js/component.js";
 import {} from "../../app.js";
 
 const article = await fetch(
-  "/api/article?" + new URLSearchParams({ uid: articleUid })
+  `/api/article?${new URLSearchParams({ uid: articleUid })}`
 ).then((data) => (data.ok ? data.json() : null));
 
 createComponent(
@@ -42,14 +42,14 @@ createComponent(
           `
         );
 
-        const $article = $shadow.find("#article");
+        const $article = $shadow.find(`#article`);
 
         if (article) {
-          $article.find("#title").text(article.title);
-          $article.find("#subtitle").text(article.subtitle);
-          $article.find("#uploader").text(`Uploader: ${article.uploader.name}`);
-          $article.find("#views").text(`Views: ${article.views}`);
-          $article.find("#content").text(article.content);
+          $article.find(`#title`).text(article.title);
+          $article.find(`#subtitle`).text(article.subtitle);
+          $article.find(`#uploader`).text(`Uploader: ${article.uploader.name}`);
+          $article.find(`#views`).text(`Views: ${article.views}`);
+          $article.find(`#content`).text(article.content);
         } else {
           $article.html(`404 Article not found.`);
         }

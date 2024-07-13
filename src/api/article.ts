@@ -11,7 +11,7 @@ const querySchema = Joi.object<{ uid: number }>({
   uid: Joi.number().integer().min(1).max(65535).required(),
 }).unknown(true);
 
-articleRouter.get("/", async (req, res) => {
+articleRouter.get(`/`, async (req, res) => {
   try {
     const { uid } = await querySchema.validateAsync(req.query);
 
@@ -71,7 +71,7 @@ const bodySchema = Joi.object<{
   content: Joi.array().required(),
 }).unknown(true);
 
-articleRouter.post("/", async (req, res) => {
+articleRouter.post(`/`, async (req, res) => {
   try {
     const { category, title, subtitle, content } =
       await bodySchema.validateAsync(req.body);

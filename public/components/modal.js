@@ -28,7 +28,7 @@ createComponent(
           `
         );
 
-        $this.on("close", () => {
+        $this.on(`close`, () => {
           $this.remove();
         });
       }
@@ -36,9 +36,9 @@ createComponent(
 );
 
 export function raiseModal() {
-  const $template = $("<template></template>");
-  $template.html("<x-modal></x-modal>");
+  const $template = $(`<template></template>`);
+  $template.html(`<x-modal></x-modal>`);
   const $modal = $template.contents();
-  $("body").append($modal);
+  $(`body`).append($modal);
   return $modal;
 }

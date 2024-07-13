@@ -1,7 +1,5 @@
-import bcrypt from "bcrypt";
 import { Router } from "express";
 import Joi from "joi";
-import { v4 as uuidv4 } from "uuid";
 import { AuthToken } from "../../model/AuthToken.js";
 import { User } from "../../model/User.js";
 import { logger } from "../../util/logger.js";
@@ -11,9 +9,9 @@ import { logoutRouter } from "./logout.js";
 
 export const accountRouter = Router();
 
-accountRouter.use("/auth", authRouter);
-accountRouter.use("/login", loginRouter);
-accountRouter.use("/logout", logoutRouter);
+accountRouter.use(`/auth`, authRouter);
+accountRouter.use(`/login`, loginRouter);
+accountRouter.use(`/logout`, logoutRouter);
 
 const bodySchema = Joi.object<{
   token: string;
@@ -27,7 +25,7 @@ const bodySchema = Joi.object<{
   name: Joi.string().required(),
 }).unknown(true);
 
-accountRouter.post("/", async (req, res) => {
+accountRouter.post(`/`, async (req, res) => {
   try {
     const { token, id, password, name } = await bodySchema.validateAsync(
       req.body
@@ -36,16 +34,15 @@ accountRouter.post("/", async (req, res) => {
     if (!authToken) return Promise.reject();
 
     const user = await User.create({
-      uuid: uuidv4(),
-      tokenUid: authToken.uid,
-      id,
-      password: bcrypt.hashSync(password, 10),
+      identifier: id,
+      password: password,
       name,
       isAdmin: authToken.isAdminToken,
     });
 
-    authToken.allocedUserUid = user.uid;
-    await authToken.save();
+    await authToken.update({
+      allocedUserUid: user.uid,
+    });
 
     res.status(201).end();
   } catch (error) {
@@ -61,7 +58,7 @@ const querySchema = Joi.object<{ uuid: string | undefined }>({
   uuid: Joi.string().uuid().optional(),
 }).unknown(true);
 
-accountRouter.get("/", async (req, res) => {
+accountRouter.get(`/`, async (req, res) => {
   try {
     const { uuid } = await querySchema.validateAsync(req.query);
     const uid = req.session.user?.uid;

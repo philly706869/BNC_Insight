@@ -7,7 +7,7 @@ import { User } from "./User.js";
 
 export const sequelize = new Sequelize({
   ...config,
-  timezone: "+09:00",
+  timezone: `+09:00`,
   logging: false,
 });
 

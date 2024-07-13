@@ -93,59 +93,59 @@ createComponent(
           `
         );
 
-        const $categorySelect = $shadow.find("#category-select");
+        const $categorySelect = $shadow.find(`#category-select`);
 
         function appendCategory(category) {
           const $button = $(`<button class="category-button"></button>`);
-          $button.attr("data-category", category);
+          $button.attr(`data-category`, category);
           $button.text(category);
-          $categorySelect.append($("<li></li>").append($button));
+          $categorySelect.append($(`<li></li>`).append($button));
         }
 
         const $appendButton = $(`<button>+</button>`);
-        $appendButton.on("click", async () => {
+        $appendButton.on(`click`, async () => {
           // const $modal =  raiseModal().hide()
           // const $
           // $modal.append()
           // $modal.fadeIn(200);
-          // $modal.on("close", (_, succeed) => {
+          // $modal.on(`close`, (_, succeed) => {
 
           // });
           const categoryName = prompt(
-            "Enter the category name you want to add"
+            `Enter the category name you want to add`
           );
 
           const errors = [];
 
           if (categoryName.trim() !== categoryName)
-            errors.push("Category cannot start or end with a space.");
+            errors.push(`Category cannot start or end with a space.`);
 
-          if (categoryName.includes("\n"))
-            errors.push("Category cannot contain line breaks.");
+          if (categoryName.includes(`\n`))
+            errors.push(`Category cannot contain line breaks.`);
 
           switch (true) {
             case categoryName.length < 1:
-              errors.push("Category cannot be empty");
+              errors.push(`Category cannot be empty`);
               break;
             case categoryName.length > 16:
-              errors.push("Category cannot be greater than 16 characters.");
+              errors.push(`Category cannot be greater than 16 characters.`);
               break;
           }
 
           if (errors.length !== 0) {
-            alert(`Failed to add category.\n${errors.join("\n")}`);
+            alert(`Failed to add category.\n${errors.join(`\n`)}`);
             return;
           }
 
-          const res = await fetch("/api/categories", {
-            method: "POST",
+          const res = await fetch(`/api/categories`, {
+            method: `POST`,
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type": `application/json`,
             },
             body: JSON.stringify({ value: categoryName }),
           });
           if (!res.ok) {
-            alert("Failed to add category.\nCategory name duplicated.");
+            alert(`Failed to add category.\nCategory name duplicated.`);
           }
           categories.push(categoryName);
           categories.sort();
@@ -154,48 +154,48 @@ createComponent(
         for (const category of categories) appendCategory(category);
         $categorySelect.append($(`<li></li>`).append($appendButton));
 
-        const $categoryButton = $categorySelect.find(".category-button");
+        const $categoryButton = $categorySelect.find(`.category-button`);
 
-        $categoryButton.first().attr("selected", "");
+        $categoryButton.first().attr(`selected`, ``);
 
-        $categoryButton.on("click", (event) => {
-          const currentSelected = $categoryButton.filter("[selected]");
-          currentSelected.removeAttr("selected");
-          $(event.currentTarget).attr("selected", "");
+        $categoryButton.on(`click`, (event) => {
+          const currentSelected = $categoryButton.filter(`[selected]`);
+          currentSelected.removeAttr(`selected`);
+          $(event.currentTarget).attr(`selected`, ``);
         });
 
-        const $titleInput = $shadow.find("#title-input");
-        const $subtitleInput = $shadow.find("#subtitle-input");
-        const $editorFrame = $shadow.find("#editor-frame");
+        const $titleInput = $shadow.find(`#title-input`);
+        const $subtitleInput = $shadow.find(`#subtitle-input`);
+        const $editorFrame = $shadow.find(`#editor-frame`);
 
-        $editorFrame.on("load", () => {
-          const $body = $editorFrame.contents().find("body");
+        $editorFrame.on(`load`, () => {
+          const $body = $editorFrame.contents().find(`body`);
           const resizeEditor = () => $editorFrame.height($body.height());
           resizeEditor();
           const resizeObserver = new ResizeObserver(resizeEditor);
           resizeObserver.observe($body[0]);
         });
 
-        $shadow.find("#upload-button").on("click", () => {
+        $shadow.find(`#upload-button`).on(`click`, () => {
           const category = $categoryButton
-            .filter("[selected]")
-            .attr("data-category");
+            .filter(`[selected]`)
+            .attr(`data-category`);
           const title = $titleInput.val();
           const subtitle = $subtitleInput.val();
 
           switch (true) {
             case !category:
-              alert("Please choose an category");
+              alert(`Please choose an category`);
               return;
             case !getCategories.includes(category):
-              alert("Unknown error in category");
+              alert(`Unknown error in category`);
               return;
           }
 
           switch (true) {
             case !title:
             case title.length < 1:
-              alert("Please enter title");
+              alert(`Please enter title`);
               return;
             case title.length > 64:
               alert(
@@ -207,7 +207,7 @@ createComponent(
           switch (true) {
             case !subtitle:
             case subtitle.length < 1:
-              alert("Please enter subtitle");
+              alert(`Please enter subtitle`);
               return;
             case subtitle.length > 128:
               alert(
@@ -219,17 +219,17 @@ createComponent(
           const quill = $editorFrame[0].contentWindow.quill;
           const content = quill.getContents().ops;
 
-          $this.trigger("submit", [{ category, title, subtitle, content }]);
+          $this.trigger(`submit`, [{ category, title, subtitle, content }]);
         });
 
-        this.#$title = $shadow.find("#title");
+        this.#$title = $shadow.find(`#title`);
       }
 
-      static observedAttributes = ["title"];
+      static observedAttributes = [`title`];
 
       onAttributeUpdate(name, oldValue, newValue) {
         switch (name) {
-          case "title":
+          case `title`:
             this.#$title.text(newValue);
             break;
         }

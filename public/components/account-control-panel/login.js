@@ -31,56 +31,56 @@ createComponent(
           `
         );
 
-        const $panel = $shadow.find("#panel");
+        const $panel = $shadow.find(`#panel`);
 
-        const $idSlide = $panel.find("#id-slide");
-        const $passwordSlide = $panel.find("#password-slide");
+        const $idSlide = $panel.find(`#id-slide`);
+        const $passwordSlide = $panel.find(`#password-slide`);
 
         let id;
 
-        $idSlide.on("submit", async () => {
-          const value = $idSlide.prop("value");
+        $idSlide.on(`submit`, async () => {
+          const value = $idSlide.prop(`value`);
 
-          const validation = await fetch("/api/account/auth/id", {
-            method: "POST",
+          const validation = await fetch(`/api/account/auth/id`, {
+            method: `POST`,
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type": `application/json`,
             },
             body: JSON.stringify({ value }),
           }).then((res) => res.json());
 
           if (!validation.exists) {
-            $idSlide.triggerHandler("error", ["Wrong ID."]);
+            $idSlide.triggerHandler(`error`, [`Wrong ID.`]);
             return;
           }
 
           id = value;
-          $panel.triggerHandler("nextSlide");
+          $panel.triggerHandler(`nextSlide`);
         });
 
-        $passwordSlide.on("submit", async () => {
-          const password = $passwordSlide.prop("value");
+        $passwordSlide.on(`submit`, async () => {
+          const password = $passwordSlide.prop(`value`);
 
-          const res = await fetch("/api/account/login", {
-            method: "POST",
+          const res = await fetch(`/api/account/login`, {
+            method: `POST`,
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type": `application/json`,
             },
             body: JSON.stringify({ id, password }),
           });
 
           if (!res.ok) {
-            $passwordSlide.triggerHandler("error", ["Wrong password."]);
+            $passwordSlide.triggerHandler(`error`, [`Wrong password.`]);
             return;
           }
 
-          const $modal = $this.closest("x-modal");
-          $modal.fadeOut(200, () => $modal.trigger("close", [true]));
+          const $modal = $this.closest(`x-modal`);
+          $modal.fadeOut(200, () => $modal.trigger(`close`, [true]));
         });
 
-        $this.on("focusPanel", (event) => {
+        $this.on(`focusPanel`, (event) => {
           if (event.target !== this) return;
-          $panel.triggerHandler("focusSlide");
+          $panel.triggerHandler(`focusSlide`);
         });
       }
     }

@@ -4,7 +4,7 @@ import { ajv } from "./ajv.js";
 import { configPath } from "./configPath.js";
 import { readConfig } from "./configReader.js";
 
-const path = join(configPath, "database.json");
+const path = join(configPath, `database.json`);
 
 interface DatabaseConfig {
   readonly username: string;
@@ -20,15 +20,15 @@ interface DatabaseConfig {
 
 const parse = ajv.compileParser<DatabaseConfig>({
   properties: {
-    username: { type: "string" },
-    password: { type: "string" },
-    database: { type: "string" },
-    host: { type: "string" },
-    dialect: { type: "string" },
+    username: { type: `string` },
+    password: { type: `string` },
+    database: { type: `string` },
+    host: { type: `string` },
+    dialect: { type: `string` },
     pool: {
       properties: {
-        max: { type: "uint32" },
-        min: { type: "uint32" },
+        max: { type: `uint32` },
+        min: { type: `uint32` },
       },
     },
   },

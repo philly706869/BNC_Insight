@@ -71,18 +71,18 @@ createComponent(
           `
         );
 
-        const $input = $shadow.find("#input");
-        const $placeholder = $shadow.find("#placeholder");
+        const $input = $shadow.find(`#input`);
+        const $placeholder = $shadow.find(`#placeholder`);
 
-        $input.on("keypress", (event) => {
-          if (event.key === "Enter") {
-            $this.triggerHandler("enter");
+        $input.on(`keypress`, (event) => {
+          if (event.key === `Enter`) {
+            $this.triggerHandler(`enter`);
           }
         });
 
-        $this.on("focus", (event) => {
+        $this.on(`focus`, (event) => {
           if (event.target !== this) return;
-          $input.trigger("focus");
+          $input.trigger(`focus`);
         });
 
         this.#$input = $input;
@@ -90,10 +90,10 @@ createComponent(
       }
 
       static observedAttributes = [
-        "password-mode",
-        "placeholder",
-        "error",
-        "maxlength",
+        `password-mode`,
+        `placeholder`,
+        `error`,
+        `maxlength`,
       ];
 
       onAttributeUpdate(name, oldValue, newValue) {
@@ -102,27 +102,27 @@ createComponent(
         const $placeholder = this.#$placeholder;
 
         switch (name) {
-          case "password-mode":
+          case `password-mode`:
             $input.attr(
-              "type",
-              $this.is("[password-mode]") ? "password" : "text"
+              `type`,
+              $this.is(`[password-mode]`) ? `password` : `text`
             );
             break;
-          case "placeholder":
+          case `placeholder`:
             $placeholder.text(newValue);
             break;
-          case "error":
-            switch ($this.is("[error]")) {
+          case `error`:
+            switch ($this.is(`[error]`)) {
               case true:
-                $input.attr("error", "");
+                $input.attr(`error`, ``);
                 break;
               case false:
-                $input.removeAttr("error");
+                $input.removeAttr(`error`);
                 break;
             }
             break;
-          case "maxlength":
-            $input.attr("maxlength", newValue);
+          case `maxlength`:
+            $input.attr(`maxlength`, newValue);
         }
       }
 

@@ -78,41 +78,41 @@ createComponent(
           `
         );
 
-        const $closeButton = $shadow.find("#close-button");
-        $closeButton.on("click", () => {
+        const $closeButton = $shadow.find(`#close-button`);
+        $closeButton.on(`click`, () => {
           const $modal = $this.offsetParent();
-          $modal.fadeOut(200, () => $modal.triggerHandler("close", [false]));
+          $modal.fadeOut(200, () => $modal.triggerHandler(`close`, [false]));
         });
 
         const $slides = $this.children();
-        $slides.first().attr("display", "");
+        $slides.first().attr(`display`, ``);
 
         let index = 0;
 
-        $this.on("nextSlide", () => {
+        $this.on(`nextSlide`, () => {
           if (index >= $slides.length - 1) return;
           const $oldSlide = $slides.eq(index);
           index += 1;
           const $newSlide = $slides.eq(index);
-          $oldSlide.triggerHandler("disappear");
-          $newSlide.triggerHandler("appear");
+          $oldSlide.triggerHandler(`disappear`);
+          $newSlide.triggerHandler(`appear`);
         });
 
-        $this.on("focusSlide", (event) => {
+        $this.on(`focusSlide`, (event) => {
           if (event.target !== this) return;
-          $slides.eq(index).triggerHandler("focusInput");
+          $slides.eq(index).triggerHandler(`focusInput`);
         });
 
-        this.#$title = $shadow.find("#title");
+        this.#$title = $shadow.find(`#title`);
       }
 
-      static observedAttributes = ["title"];
+      static observedAttributes = [`title`];
 
       onAttributeUpdate(name, oldValue, newValue) {
         const $title = this.#$title;
 
         switch (name) {
-          case "title":
+          case `title`:
             $title.text(newValue);
             break;
         }

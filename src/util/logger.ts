@@ -7,8 +7,8 @@ const { combine, timestamp, label, printf, colorize } = winston.format;
 
 export const logger = winston.createLogger({
   format: combine(
-    timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-    label({ label: "Http Server" }),
+    timestamp({ format: `YYYY-MM-DD HH:mm:ss` }),
+    label({ label: `Http Server` }),
     printf(
       ({ timestamp, label, level, message }) =>
         `[${timestamp}]-[${label}]-[${level}]: ${message}`
@@ -16,21 +16,21 @@ export const logger = winston.createLogger({
   ),
   transports: [
     new transports.Console({
-      level: "silly",
+      level: `silly`,
       format: colorize({ all: true }),
     }),
     new winstonDRF({
-      level: "silly",
-      datePattern: "YYYY-MM-DD",
+      level: `silly`,
+      datePattern: `YYYY-MM-DD`,
       dirname: config.logDir,
       filename: `%DATE%.log`,
       maxFiles: 365,
       zippedArchive: true,
     }),
     new winstonDRF({
-      level: "error",
-      datePattern: "YYYY-MM-DD",
-      dirname: path.join(config.logDir, "error"),
+      level: `error`,
+      datePattern: `YYYY-MM-DD`,
+      dirname: path.join(config.logDir, `error`),
       filename: `%DATE%.error.log`,
       maxFiles: 365,
       zippedArchive: true,

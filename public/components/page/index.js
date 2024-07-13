@@ -106,10 +106,10 @@ createComponent(
           `
         );
 
-        const $category = $shadow.find("#category");
+        const $category = $shadow.find(`#category`);
 
         for (const category of getCategories) {
-          const $categoryItem = $("<li></li>").append(
+          const $categoryItem = $(`<li></li>`).append(
             $(
               `<a href="/category?${new URLSearchParams({
                 name: category,

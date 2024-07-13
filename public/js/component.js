@@ -11,7 +11,7 @@ export class ComponentManager {
     class ComponentAncestor extends HTMLElement {
       constructor(protectedProps = {}) {
         super();
-        const shadowRoot = this.attachShadow({ mode: "closed" });
+        const shadowRoot = this.attachShadow({ mode: `closed` });
         const internals = this.attachInternals();
         protectedProps.shadowRoot = shadowRoot;
         protectedProps.internals = internals;
@@ -55,7 +55,7 @@ export class ComponentManager {
   }
 }
 
-export const defaultComponentManager = new ComponentManager("x");
+export const defaultComponentManager = new ComponentManager(`x`);
 export function createComponent(...args) {
   return defaultComponentManager.createComponent(...args);
 }

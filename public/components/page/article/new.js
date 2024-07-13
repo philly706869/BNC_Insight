@@ -27,11 +27,11 @@ createComponent(
           `
         );
 
-        $shadow.find("#editor").on("submit", async (event, article) => {
-          const res = await fetch("/api/article", {
-            method: "POST",
+        $shadow.find(`#editor`).on(`submit`, async (event, article) => {
+          const res = await fetch(`/api/article`, {
+            method: `POST`,
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type": `application/json`,
             },
             body: JSON.stringify(article),
           });

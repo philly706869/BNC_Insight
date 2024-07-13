@@ -29,10 +29,10 @@ app.use(
 );
 
 app.use(express.json());
-app.use("/api", apiRouter);
-app.use("/static", express.static(path.join(__dirname, "./public")));
+app.use(`/api`, apiRouter);
+app.use(`/static`, express.static(path.join(__dirname, `./public`)));
 
-app.set("view engine", "ejs");
+app.set(`view engine`, `ejs`);
 
 const access = {
   user: (req: Request, res: Response, next: NextFunction) => {
@@ -53,16 +53,16 @@ function renderer(options: {
   component: string;
 }) {
   return (req: Request, res: Response) => {
-    res.render("template", options);
+    res.render(`template`, options);
   };
 }
 
 app.get(
-  "/",
+  `/`,
   renderer({
-    title: "BNC_Insight",
-    script: "index.js",
-    component: "x-index",
+    title: `BNC_Insight`,
+    script: `index.js`,
+    component: `x-index`,
   })
 );
 
@@ -77,7 +77,7 @@ const categorySchema = Joi.object<{ name: string }>({
 });
 
 app.get(
-  "/category",
+  `/category`,
   async (req, res, next) => {
     try {
       await categorySchema.validateAsync(req.query);
@@ -87,58 +87,58 @@ app.get(
     }
   },
   renderer({
-    title: "BNC_Insight User",
-    script: "user.js",
-    component: "x-user",
+    title: `BNC_Insight User`,
+    script: `user.js`,
+    component: `x-user`,
   })
 );
 
 app.get(
-  "/user",
+  `/user`,
   access.user,
   renderer({
-    title: "BNC_Insight User",
-    script: "user.js",
-    component: "x-user",
+    title: `BNC_Insight User`,
+    script: `user.js`,
+    component: `x-user`,
   })
 );
 
 app.get(
-  "/article/new",
+  `/article/new`,
   access.user,
   renderer({
-    title: "BNC_Insight New Article",
-    script: "article/new.js",
-    component: "x-new-article",
+    title: `BNC_Insight New Article`,
+    script: `article/new.js`,
+    component: `x-new-article`,
   })
 );
 
 app.get(
-  "/article/edit/\\d+",
+  `/article/edit/\\d+`,
   access.user,
   renderer({
-    title: "BNC_Insight Edit Article",
-    script: "article/edit.js",
-    component: "x-edit-article",
+    title: `BNC_Insight Edit Article`,
+    script: `article/edit.js`,
+    component: `x-edit-article`,
   })
 );
 
 app.get(
-  "/articles",
+  `/articles`,
   access.user,
   renderer({
-    title: "BNC_Insight Articles",
-    script: "article/list.js",
-    component: "x-article-list",
+    title: `BNC_Insight Articles`,
+    script: `article/list.js`,
+    component: `x-article-list`,
   })
 );
 
 app.get(
-  "/article/\\d+",
+  `/article/\\d+`,
   renderer({
-    title: "BNC_Insight Article",
-    script: "article/view.js",
-    component: "x-view-article",
+    title: `BNC_Insight Article`,
+    script: `article/view.js`,
+    component: `x-view-article`,
   })
 );
 
@@ -146,12 +146,12 @@ const server = http.createServer(app);
 
 try {
   await sequelize.sync();
-  logger.info("Database successfully synced");
+  logger.info(`Database successfully synced`);
 
   server.listen(serverConfig.port, async () => {
     logger.info(`Http server started listening on port ${serverConfig.port}`);
   });
 } catch (error) {
   logger.error(error);
-  logger.error("Failed to start server");
+  logger.error(`Failed to start server`);
 }

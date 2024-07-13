@@ -5,6 +5,6 @@ import { categoriesRouter } from "./categories.js";
 
 export const apiRouter = Router();
 
-apiRouter.use("/account", accountRouter);
-apiRouter.use("/article", articleRouter);
-apiRouter.use("/categories", categoriesRouter);
+apiRouter.use(`/account`, accountRouter);
+apiRouter.use(`/article`, articleRouter);
+apiRouter.use(`/categories`, categoriesRouter);

@@ -50,119 +50,119 @@ createComponent(
           `
         );
 
-        const $panel = $shadow.find("#panel");
+        const $panel = $shadow.find(`#panel`);
 
-        const $authTokenSlide = $panel.find("#auth-token-slide");
-        const $idSlide = $panel.find("#id-slide");
-        const $passwordSlide = $panel.find("#password-slide");
-        const $passwordConfirmSlide = $panel.find("#password-confirm-slide");
-        const $nameSlide = $panel.find("#name-slide");
+        const $authTokenSlide = $panel.find(`#auth-token-slide`);
+        const $idSlide = $panel.find(`#id-slide`);
+        const $passwordSlide = $panel.find(`#password-slide`);
+        const $passwordConfirmSlide = $panel.find(`#password-confirm-slide`);
+        const $nameSlide = $panel.find(`#name-slide`);
 
         let token;
         let id;
         let password;
         let name;
 
-        $authTokenSlide.on("submit", async () => {
-          const value = $authTokenSlide.prop("value");
+        $authTokenSlide.on(`submit`, async () => {
+          const value = $authTokenSlide.prop(`value`);
 
-          const validation = await fetch("/api/account/auth/token", {
-            method: "POST",
+          const validation = await fetch(`/api/account/auth/token`, {
+            method: `POST`,
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type": `application/json`,
             },
             body: JSON.stringify({ value }),
           }).then((res) => res.json());
 
           if (!validation.valid) {
-            $authTokenSlide.triggerHandler("error", ["Invalid token."]);
+            $authTokenSlide.triggerHandler(`error`, [`Invalid token.`]);
             return;
           }
 
           token = value;
-          $panel.triggerHandler("nextSlide");
+          $panel.triggerHandler(`nextSlide`);
         });
 
-        $idSlide.on("submit", async () => {
-          const value = $idSlide.prop("value");
+        $idSlide.on(`submit`, async () => {
+          const value = $idSlide.prop(`value`);
 
-          const validation = await fetch("/api/account/auth/id", {
-            method: "POST",
+          const validation = await fetch(`/api/account/auth/id`, {
+            method: `POST`,
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type": `application/json`,
             },
             body: JSON.stringify({ value }),
           }).then((res) => res.json());
 
           if (!validation.valid) {
-            $idSlide.triggerHandler("error", validation.messages);
+            $idSlide.triggerHandler(`error`, validation.messages);
             return;
           }
 
           if (validation.exists) {
-            $idSlide.triggerHandler("error", ["ID already exists."]);
+            $idSlide.triggerHandler(`error`, [`ID already exists.`]);
             return;
           }
 
           id = value;
-          $panel.triggerHandler("nextSlide");
+          $panel.triggerHandler(`nextSlide`);
         });
 
-        $passwordSlide.on("submit", async () => {
-          const value = $passwordSlide.prop("value");
+        $passwordSlide.on(`submit`, async () => {
+          const value = $passwordSlide.prop(`value`);
 
-          const validation = await fetch("/api/account/auth/password", {
-            method: "POST",
+          const validation = await fetch(`/api/account/auth/password`, {
+            method: `POST`,
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type": `application/json`,
             },
             body: JSON.stringify({ value }),
           }).then((res) => res.json());
 
           if (!validation.valid) {
-            $passwordSlide.triggerHandler("error", validation.messages);
+            $passwordSlide.triggerHandler(`error`, validation.messages);
             return;
           }
 
           password = value;
-          $panel.triggerHandler("nextSlide");
+          $panel.triggerHandler(`nextSlide`);
         });
 
-        $passwordConfirmSlide.on("submit", () => {
-          const passwordConfirm = $passwordConfirmSlide.prop("value");
+        $passwordConfirmSlide.on(`submit`, () => {
+          const passwordConfirm = $passwordConfirmSlide.prop(`value`);
 
           if (password !== passwordConfirm) {
-            $passwordConfirmSlide.triggerHandler("error", [
-              "Password does not match.",
+            $passwordConfirmSlide.triggerHandler(`error`, [
+              `Password does not match.`,
             ]);
             return;
           }
 
-          $panel.triggerHandler("nextSlide");
+          $panel.triggerHandler(`nextSlide`);
         });
 
-        $nameSlide.on("submit", async () => {
-          const value = $nameSlide.prop("value");
+        $nameSlide.on(`submit`, async () => {
+          const value = $nameSlide.prop(`value`);
 
-          const validation = await fetch("/api/account/auth/name", {
-            method: "POST",
+          const validation = await fetch(`/api/account/auth/name`, {
+            method: `POST`,
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type": `application/json`,
             },
             body: JSON.stringify({ value }),
           }).then((res) => res.json());
 
           if (!validation.valid) {
-            $nameSlide.triggerHandler("error", validation.messages);
+            $nameSlide.triggerHandler(`error`, validation.messages);
             return;
           }
 
           name = value;
 
-          const res = await fetch("/api/account", {
-            method: "POST",
+          const res = await fetch(`/api/account`, {
+            method: `POST`,
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type": `application/json`,
             },
             body: JSON.stringify({
               token,
@@ -173,14 +173,14 @@ createComponent(
           });
 
           if (!res.ok) {
-            alert("Unknown Error. Sign up failed.");
+            alert(`Unknown Error. Sign up failed.`);
             return;
           }
 
-          await fetch("/api/account/login", {
-            method: "POST",
+          await fetch(`/api/account/login`, {
+            method: `POST`,
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type": `application/json`,
             },
             body: JSON.stringify({
               id,
@@ -188,13 +188,13 @@ createComponent(
             }),
           });
 
-          const $modal = $this.closest("x-modal");
-          $modal.fadeOut(200, () => $modal.trigger("close", [true]));
+          const $modal = $this.closest(`x-modal`);
+          $modal.fadeOut(200, () => $modal.trigger(`close`, [true]));
         });
 
-        $this.on("focusPanel", (event) => {
+        $this.on(`focusPanel`, (event) => {
           if (event.target !== this) return;
-          $panel.triggerHandler("focusSlide");
+          $panel.triggerHandler(`focusSlide`);
         });
       }
     }

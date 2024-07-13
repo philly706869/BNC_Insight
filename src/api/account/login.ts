@@ -24,7 +24,7 @@ const bodySchema = Joi.object<{
     .required(),
 }).unknown(true);
 
-loginRouter.post("/", async (req, res) => {
+loginRouter.post(`/`, async (req, res) => {
   try {
     const { id, password } = await bodySchema.validateAsync(req.body);
     const user = await User.findUserById(id);

@@ -5,7 +5,7 @@ import {} from "./account-control-panel/signup.js";
 import { raiseModal } from "./modal.js";
 
 const getUser = async () => {
-  const res = await fetch("/api/account");
+  const res = await fetch(`/api/account`);
   return res.ok ? (await res.json()).user : null;
 };
 
@@ -113,13 +113,13 @@ createComponent(
           `
         );
 
-        const $timePanel = $shadow.find("#time-panel");
+        const $timePanel = $shadow.find(`#time-panel`);
         const date = new Date();
         $timePanel.text(date.toDateString());
-        $timePanel.attr("datetime", date.toISOString().split("T")[0]);
+        $timePanel.attr(`datetime`, date.toISOString().split(`T`)[0]);
 
-        this.#$userPanel = $shadow.find("#user-panel");
-        this.#$articlePanel = $shadow.find("#article-panel");
+        this.#$userPanel = $shadow.find(`#user-panel`);
+        this.#$articlePanel = $shadow.find(`#article-panel`);
 
         this.updateUser();
       }
@@ -133,20 +133,20 @@ createComponent(
             <li><button id="logout-button">Log Out</button></li>
           `);
 
-          const $userButton = this.#$userPanel.find("#user-button");
+          const $userButton = this.#$userPanel.find(`#user-button`);
           $userButton.text(user.name);
-          $userButton.on("click", () => {
-            window.location.href = "/user";
+          $userButton.on(`click`, () => {
+            window.location.href = `/user`;
           });
 
-          const $logoutButton = this.#$userPanel.find("#logout-button");
-          $logoutButton.on("click", async () => {
-            await fetch("/api/account/logout", { method: "POST" });
+          const $logoutButton = this.#$userPanel.find(`#logout-button`);
+          $logoutButton.on(`click`, async () => {
+            await fetch(`/api/account/logout`, { method: `POST` });
             const thisPage = await fetch(window.location.href, {
-              method: "HEAD",
+              method: `HEAD`,
             });
             if (thisPage.ok) this.updateUser();
-            else window.location.replace("/");
+            else window.location.replace(`/`);
           });
 
           this.#$articlePanel.html('<a href="/article/new">New Article</a>');
@@ -156,29 +156,29 @@ createComponent(
             <li><button id="signup-button">Sign Up</button></li>
           `);
 
-          const $loginButton = this.#$userPanel.find("#login-button");
-          $loginButton.on("click", async () => {
+          const $loginButton = this.#$userPanel.find(`#login-button`);
+          $loginButton.on(`click`, async () => {
             const $modal = raiseModal().hide();
-            const $panel = $("<x-login-panel></x-login-panel>");
+            const $panel = $(`<x-login-panel></x-login-panel>`);
             $modal.append($panel);
-            $modal.fadeIn(200, () => $panel.triggerHandler("focusPanel"));
-            $modal.on("close", (_, succeed) => {
+            $modal.fadeIn(200, () => $panel.triggerHandler(`focusPanel`));
+            $modal.on(`close`, (_, succeed) => {
               if (succeed) this.updateUser();
             });
           });
 
-          const $signupButton = this.#$userPanel.find("#signup-button");
-          $signupButton.on("click", async () => {
+          const $signupButton = this.#$userPanel.find(`#signup-button`);
+          $signupButton.on(`click`, async () => {
             const $modal = raiseModal();
-            const $panel = $("<x-signup-panel></x-signup-panel>");
+            const $panel = $(`<x-signup-panel></x-signup-panel>`);
             $modal.append($panel);
-            $modal.fadeIn(200, () => $panel.triggerHandler("focusPanel"));
-            $modal.on("close", (_, succeed) => {
+            $modal.fadeIn(200, () => $panel.triggerHandler(`focusPanel`));
+            $modal.on(`close`, (_, succeed) => {
               if (succeed) this.updateUser();
             });
           });
 
-          this.#$articlePanel.html("");
+          this.#$articlePanel.html(``);
         }
       }
     }

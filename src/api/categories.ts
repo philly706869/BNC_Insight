@@ -5,7 +5,7 @@ import { logger } from "../util/logger.js";
 
 export const categoriesRouter = Router();
 
-categoriesRouter.get("/", async (req, res) => {
+categoriesRouter.get(`/`, async (req, res) => {
   try {
     const categories = (await Category.findAll()).map(
       (category) => category.name
@@ -28,7 +28,7 @@ const bodySchema = Joi.object<{ value: string }>({
     .required(),
 }).unknown(true);
 
-categoriesRouter.post("/", async (req, res) => {
+categoriesRouter.post(`/`, async (req, res) => {
   try {
     const body = await bodySchema.validateAsync(req.body);
     const { value } = body;

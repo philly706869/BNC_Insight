@@ -27,7 +27,7 @@ createComponent(
           `
         );
 
-        $shadow.find("#editor").on("submit", (event) => {});
+        $shadow.find(`#editor`).on(`submit`, (event) => {});
       }
     }
 );
