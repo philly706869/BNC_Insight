@@ -1,9 +1,6 @@
-import { join } from "path";
-import { ajv } from "./ajv.js";
+import fs from "fs/promises";
+import path from "path";
 import { configPath } from "./configPath.js";
-import { readConfig } from "./configReader.js";
-
-const path = join(configPath, `server.json`);
 
 interface ServerConfig {
   readonly port: number;
@@ -12,13 +9,6 @@ interface ServerConfig {
   readonly sessionSecret: string;
 }
 
-const parse = ajv.compileParser<ServerConfig>({
-  properties: {
-    port: { type: `uint32` },
-    logDir: { type: `string` },
-    cookieSecret: { type: `string` },
-    sessionSecret: { type: `string` },
-  },
-});
-
-export const config = readConfig(path, parse);
+export const config: ServerConfig = JSON.parse(
+  (await fs.readFile(path.join(configPath, `server.json`))).toString(`utf-8`)
+);

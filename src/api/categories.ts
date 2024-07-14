@@ -20,12 +20,17 @@ categoriesRouter.get(`/`, async (req, res) => {
 
 const bodySchema = Joi.object<{ value: string }>({
   value: Joi.string()
+    .allow(``)
+    .required()
     .external(async (value: string, helper) => {
-      if (Category.validateName(value) !== null) return helper.message({});
-      if (await Category.findByPk(value)) return helper.message({});
+      const errors = Category.validateName(value);
+      if (errors) return helper.message({});
+
+      const category = await Category.findByPk(value);
+      if (category) return helper.message({});
+
       return value;
-    })
-    .required(),
+    }),
 }).unknown(true);
 
 categoriesRouter.post(`/`, async (req, res) => {

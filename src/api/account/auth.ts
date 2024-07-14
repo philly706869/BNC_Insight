@@ -13,7 +13,8 @@ const bodySchema = Joi.object<{ value: string }>({
 authRouter.post(`/token`, async (req, res) => {
   try {
     const { value } = await bodySchema.validateAsync(req.body);
-    const valid = (await AuthToken.findIfAllocable(value)) !== null;
+    const authToken = await AuthToken.findOne({ where: { token: value } });
+    const valid = authToken !== null && authToken.allocedUserUid === null;
     res.status(200).json({ valid });
   } catch (error) {
     if (Joi.isError(error)) res.status(400).end();
@@ -29,7 +30,8 @@ authRouter.post(`/id`, async (req, res) => {
     const { value } = await bodySchema.validateAsync(req.body);
     const idValidation = User.validateId(value);
     const valid = idValidation === null;
-    const exists = valid && (await User.findUserById(value)) !== null;
+    const exists =
+      valid && (await User.findOne({ where: { id: value } })) !== null;
     const messages = idValidation || [];
     res.status(200).json({ valid, exists, messages });
   } catch (error) {

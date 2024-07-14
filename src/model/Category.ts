@@ -19,16 +19,15 @@ class InvalidNameError {
 
 @Table
 export class Category extends Model {
-  static NAME_MIN_LENGTH = 1;
-  static NAME_MAX_LENGTH = 16;
+  static readonly NAME_MIN_LENGTH = 1;
+  static readonly NAME_MAX_LENGTH = 16;
+
   @PrimaryKey
   @AllowNull(false)
   @Column(DataType.STRING(Category.NAME_MAX_LENGTH))
-  get name(): string {
-    return this.getDataValue(`name`);
-  }
+  declare name: string;
 
-  set name(value: string) {
+  static validateName(value: string) {
     const errors: string[] = [];
 
     if (value.trim() !== value)
@@ -48,9 +47,7 @@ export class Category extends Model {
         break;
     }
 
-    if (errors.length !== 0) throw new InvalidNameError(errors);
-
-    this.setDataValue(`name`, value);
+    return errors.length !== 0 ? errors : null;
   }
 
   @HasMany(() => Article)

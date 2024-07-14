@@ -11,14 +11,20 @@ const bodySchema = Joi.object<{
   password: string;
 }>({
   id: Joi.string()
+    .allow(``)
     .external((value: string, helper) => {
-      if (User.validateId(value) !== null) return helper.message({});
+      const errors = User.validateId(value);
+      if (errors) return helper.message({});
+
       return value;
     })
     .required(),
   password: Joi.string()
+    .allow(``)
     .external((value: string, helper) => {
-      if (User.validatePassword(value) !== null) return helper.message({});
+      const errors = User.validatePassword(value);
+      if (errors) return helper.message({});
+
       return value;
     })
     .required(),
@@ -27,7 +33,7 @@ const bodySchema = Joi.object<{
 loginRouter.post(`/`, async (req, res) => {
   try {
     const { id, password } = await bodySchema.validateAsync(req.body);
-    const user = await User.findUserById(id);
+    const user = await User.findOne({ where: { id } });
 
     if (user === null) {
       res.status(401).end();

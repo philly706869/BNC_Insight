@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import {
   AllowNull,
   AutoIncrement,
@@ -14,30 +13,6 @@ import {
 } from "sequelize-typescript";
 import { Article } from "./Article.js";
 import { AuthToken } from "./AuthToken.js";
-
-class InvalidIdentifierError {
-  messages: string[];
-
-  constructor(messages: string[]) {
-    this.messages = messages;
-  }
-}
-
-class InvalidPasswordError {
-  messages: string[];
-
-  constructor(messages: string[]) {
-    this.messages = messages;
-  }
-}
-
-class InvalidNameError {
-  messages: string[];
-
-  constructor(messages: string[]) {
-    this.messages = messages;
-  }
-}
 
 @Table
 export class User extends Model {
@@ -56,16 +31,15 @@ export class User extends Model {
   @HasOne(() => AuthToken)
   declare authToken: AuthToken;
 
-  static IDENTIFIER_MIN_LENGTH = 1;
-  static IDENTIFIER_MAX_LENGTH = 32;
+  static readonly IDENTIFIER_MIN_LENGTH = 1;
+  static readonly IDENTIFIER_MAX_LENGTH = 32;
+
   @Unique
   @AllowNull(false)
   @Column(DataType.STRING(User.IDENTIFIER_MAX_LENGTH))
-  get identifier(): string {
-    return this.getDataValue(`identifier`);
-  }
+  declare id: string;
 
-  set identifier(value: string) {
+  static validateId(value: string) {
     const errors: string[] = [];
 
     if (!/^\w*?$/.test(value))
@@ -82,20 +56,17 @@ export class User extends Model {
         break;
     }
 
-    if (errors.length !== 0) throw new InvalidIdentifierError(errors);
-
-    this.setDataValue(`identifier`, value.toLowerCase());
+    return errors.length !== 0 ? errors : null;
   }
 
-  static PASSWORD_MIN_LENGTH = 8;
-  static PASSWORD_MAX_LENGTH = 72;
+  static readonly PASSWORD_MIN_LENGTH = 8;
+  static readonly PASSWORD_MAX_LENGTH = 72;
+
   @AllowNull(false)
   @Column(DataType.STRING(60).BINARY)
-  get password(): string {
-    return this.getDataValue(`password`);
-  }
+  declare password: string;
 
-  set password(value: string) {
+  static validatePassword(value: string) {
     const errors: string[] = [];
 
     if (!/^[!`#$%&'()*+,\-./0-9:;<=>?@A-Z[\\\]^_`a-z{|}~]*?$/.test(value))
@@ -114,22 +85,17 @@ export class User extends Model {
         break;
     }
 
-    if (errors.length !== 0) throw new InvalidPasswordError(errors);
-
-    const hash = bcrypt.hashSync(value, 10);
-
-    this.setDataValue(`password`, hash);
+    return errors.length !== 0 ? errors : null;
   }
 
-  static NAME_MIN_LENGTH = 1;
-  static NAME_MAX_LENGTH = 32;
+  static readonly NAME_MIN_LENGTH = 1;
+  static readonly NAME_MAX_LENGTH = 64;
+
   @AllowNull(false)
-  @Column(DataType.STRING(64))
-  get name(): string {
-    return this.getDataValue(`name`);
-  }
+  @Column(DataType.STRING(User.NAME_MAX_LENGTH))
+  declare name: string;
 
-  set name(value: string) {
+  static validateName(value: string) {
     const errors: string[] = [];
 
     if (!/^\w*?$/.test(value))
@@ -146,9 +112,7 @@ export class User extends Model {
         break;
     }
 
-    if (errors.length !== 0) throw new InvalidNameError(errors);
-
-    this.setDataValue(`name`, value);
+    return errors.length !== 0 ? errors : null;
   }
 
   @AllowNull(false)

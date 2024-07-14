@@ -31,18 +31,24 @@ export class Article extends Model {
 
   @AllowNull(false)
   @ForeignKey(() => Category)
-  @Column(DataType.STRING(16))
+  @Column(DataType.STRING(Category.NAME_MAX_LENGTH))
   declare categoryName: string;
 
   @BelongsTo(() => Category)
   declare category: Category;
 
-  @AllowNull(false)
-  @Column(DataType.STRING(64))
-  declare title: string;
+  static readonly TITLE_MIN_LENGTH = 1;
+  static readonly TITLE_MAX_LENGTH = 64;
 
   @AllowNull(false)
-  @Column(DataType.STRING(128))
+  @Column(DataType.STRING(Article.TITLE_MAX_LENGTH))
+  declare title: string;
+
+  static readonly SUBTITLE_MIN_LENGTH = 0;
+  static readonly SUBTITLE_MAX_LENGTH = 128;
+
+  @AllowNull(false)
+  @Column(DataType.STRING(Article.SUBTITLE_MAX_LENGTH))
   declare subtitle: string;
 
   @AllowNull(false)

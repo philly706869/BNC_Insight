@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import { Router } from "express";
 import Joi from "joi";
 import { AuthToken } from "../../model/AuthToken.js";
@@ -14,15 +15,54 @@ accountRouter.use(`/login`, loginRouter);
 accountRouter.use(`/logout`, logoutRouter);
 
 const bodySchema = Joi.object<{
-  token: string;
+  token: AuthToken;
   id: string;
   password: string;
   name: string;
 }>({
-  token: Joi.string().required(),
-  id: Joi.string().required(),
-  password: Joi.string().required(),
-  name: Joi.string().required(),
+  token: Joi.string()
+    .allow(``)
+    .required()
+    .external(async (value: string, helper) => {
+      const valid = AuthToken.validateToken(value);
+      if (!valid) return helper.message({});
+
+      const authToken = await AuthToken.findOne({ where: { token: value } });
+      if (!authToken || authToken.allocedUserUid !== null)
+        return helper.message({});
+
+      return authToken;
+    }),
+  id: Joi.string()
+    .allow(``)
+    .required()
+    .external(async (value: string, helper) => {
+      const errors = User.validateId(value);
+      if (errors) helper.message({});
+
+      const user = await User.findOne({ where: { id: value } });
+      if (user) return helper.message({});
+
+      return value;
+    }),
+  password: Joi.string()
+    .allow(``)
+    .required()
+    .external(async (value: string, helper) => {
+      const errors = User.validatePassword(value);
+      if (errors) return helper.message({});
+
+      return value;
+    }),
+  name: Joi.string()
+    .allow(``)
+    .required()
+    .external(async (value: string, helper) => {
+      const errors = User.validateName(value);
+      if (errors) return helper.message({});
+
+      return value;
+    }),
 }).unknown(true);
 
 accountRouter.post(`/`, async (req, res) => {
@@ -30,17 +70,15 @@ accountRouter.post(`/`, async (req, res) => {
     const { token, id, password, name } = await bodySchema.validateAsync(
       req.body
     );
-    const authToken = await AuthToken.findIfAllocable(token);
-    if (!authToken) return Promise.reject();
 
     const user = await User.create({
-      identifier: id,
-      password: password,
+      id,
+      password: bcrypt.hashSync(password, 10),
       name,
-      isAdmin: authToken.isAdminToken,
+      isAdmin: token.isAdminToken,
     });
 
-    await authToken.update({
+    await token.update({
       allocedUserUid: user.uid,
     });
 

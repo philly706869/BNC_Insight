@@ -1,5 +1,5 @@
 import $ from "jquery";
-import { categories, getCategories } from "../../js/categories.js";
+import { categories } from "../../js/categories.js";
 import { createComponent } from "../../js/component.js";
 import {} from "../input.js";
 

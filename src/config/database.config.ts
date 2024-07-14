@@ -1,10 +1,7 @@
-import { join } from "path";
+import fs from "fs/promises";
+import path from "path";
 import { Dialect } from "sequelize";
-import { ajv } from "./ajv.js";
 import { configPath } from "./configPath.js";
-import { readConfig } from "./configReader.js";
-
-const path = join(configPath, `database.json`);
 
 interface DatabaseConfig {
   readonly username: string;
@@ -18,20 +15,6 @@ interface DatabaseConfig {
   };
 }
 
-const parse = ajv.compileParser<DatabaseConfig>({
-  properties: {
-    username: { type: `string` },
-    password: { type: `string` },
-    database: { type: `string` },
-    host: { type: `string` },
-    dialect: { type: `string` },
-    pool: {
-      properties: {
-        max: { type: `uint32` },
-        min: { type: `uint32` },
-      },
-    },
-  },
-});
-
-export const config = readConfig(path, parse);
+export const config: DatabaseConfig = JSON.parse(
+  (await fs.readFile(path.join(configPath, `database.json`))).toString(`utf-8`)
+);

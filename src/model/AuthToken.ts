@@ -21,10 +21,19 @@ export class AuthToken extends Model {
   @Column(DataType.SMALLINT.UNSIGNED)
   declare uid: number;
 
+  static readonly TOKEN_MIN_LENGTH = 1;
+  static readonly TOKEN_MAX_LENGTH = 128;
+
   @Unique
   @AllowNull(false)
-  @Column(DataType.STRING(128))
+  @Column(DataType.STRING(AuthToken.TOKEN_MAX_LENGTH))
   declare token: string;
+
+  static validateToken(value: string) {
+    const min = AuthToken.TOKEN_MIN_LENGTH;
+    const max = AuthToken.TOKEN_MAX_LENGTH;
+    return value.length >= min && value.length <= max;
+  }
 
   @Unique
   @AllowNull(true)
@@ -40,11 +49,4 @@ export class AuthToken extends Model {
   @Default(false)
   @Column(DataType.BOOLEAN)
   declare isAdminToken: boolean;
-
-  static async findIfAllocable(token: string) {
-    if (token.length < 1 || token.length > 128) return null;
-    const authToken = await AuthToken.findOne({ where: { token } });
-    if (authToken && !authToken.allocedUser) return authToken;
-    else return null;
-  }
 }

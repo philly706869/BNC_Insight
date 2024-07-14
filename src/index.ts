@@ -69,8 +69,12 @@ app.get(
 const categorySchema = Joi.object<{ name: string }>({
   name: Joi.string()
     .external(async (value: string, helper) => {
-      if (Category.validateName(value) !== null) return helper.message({});
-      if ((await Category.findByPk(value)) === null) return helper.message({});
+      const errors = Category.validateName(value);
+      if (errors) return helper.message({});
+
+      const category = await Category.findByPk(value);
+      if (!category) return helper.message({});
+
       return value;
     })
     .required(),
