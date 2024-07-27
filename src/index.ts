@@ -53,7 +53,7 @@ function renderer(options: {
   component: string;
 }) {
   return (req: Request, res: Response) => {
-    res.render(`template`, options);
+    res.render(`template`, { ...options, API_URL: "localhost:3001" });
   };
 }
 
