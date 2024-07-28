@@ -1,21 +1,20 @@
-import { createComponent } from "../../js/component.js";
+import { Component, registerComponent } from "../../js/component.js";
 import {} from "../app.js";
 
-createComponent(
-  (Component) =>
-    class User extends Component {
-      constructor(props) {
-        super(props);
-        const { $this, $shadow } = props;
+class User extends Component {
+  constructor(props) {
+    super(props);
+    const { $this, $shadow } = props;
 
-        $shadow.html(
-          /*html*/
-          `
-          <link href="/static/css/global.css" rel="stylesheet" />
-          <style></style>
-          <x-app></x-app>
-        `
-        );
-      }
-    }
-);
+    $shadow.html(
+      /*html*/
+      `
+      <link href="/static/css/global.css" rel="stylesheet" />
+      <style></style>
+      <x-app></x-app>
+    `
+    );
+  }
+}
+
+registerComponent(User);

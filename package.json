@@ -8,8 +8,6 @@
     "dev": "concurrently -n \"tsc,server\" -p \"<{name}>\" \"nodemon -w \\\"src/model/validator/\\\" -e \\\"ts\\\" -x \\\"tsc -p src/model/validator/tsconfig.json\\\"\" \"nodemon -w \\\"src/\\\" -e \\\"ts\\\" -i \\\"src/model/validator/\\\" -x \\\"tsx src/index.ts\\\"\"",
     "genToken": "tsx test/genToken.ts"
   },
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/express": "^4.17.21",
