@@ -1,9 +1,11 @@
 import path from "path";
 import winston, { transports } from "winston";
 import winstonDRF from "winston-daily-rotate-file";
-import { config } from "../config/server.config.js";
+import { __dirname } from "./__dirname.js";
 
 const { combine, timestamp, label, printf, colorize } = winston.format;
+
+const logDir = path.join(__dirname, "logs");
 
 export const logger = winston.createLogger({
   format: combine(
@@ -22,7 +24,7 @@ export const logger = winston.createLogger({
     new winstonDRF({
       level: `silly`,
       datePattern: `YYYY-MM-DD`,
-      dirname: config.logDir,
+      dirname: logDir,
       filename: `%DATE%.log`,
       maxFiles: 365,
       zippedArchive: true,
@@ -30,7 +32,7 @@ export const logger = winston.createLogger({
     new winstonDRF({
       level: `error`,
       datePattern: `YYYY-MM-DD`,
-      dirname: path.join(config.logDir, `error`),
+      dirname: path.join(logDir, `error`),
       filename: `%DATE%.error.log`,
       maxFiles: 365,
       zippedArchive: true,
