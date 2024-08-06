@@ -1,0 +1,40 @@
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  box-sizing: border-box;
+  padding: 30px;
+  width: 100%;
+  min-width: max-content;
+  height: max-content;
+  min-height: 100vh;
+}
+
+.decoline {
+  flex: 0 0 auto;
+  background: linear-gradient(
+    90deg,
+    #000000 0%,
+    #000000 calc(100% / 3),
+    var(--scarlet) calc(100% / 3),
+    var(--scarlet) calc(100% / 3 * 2),
+    var(--light-silver) calc(100% / 3 * 2),
+    var(--light-silver) 100%
+  );
+  height: 10px;
+}
+
+.container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0 10rem;
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+}

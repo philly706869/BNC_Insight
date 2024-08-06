@@ -93,12 +93,7 @@ class Index extends Component {
         <x-app>
           <div id="body">
             <ul id="category"></ul>
-            <div id="articles">
-              <article id="main"></article>
-              <article id="sub1"></article>
-              <article id="sub2"></article>
-              <article id="sub3"></article>
-            </div>
+            
           </div>
         </x-app>
       `

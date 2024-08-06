@@ -1,19 +1,17 @@
 import path from "path";
 import winston, { transports } from "winston";
 import winstonDRF from "winston-daily-rotate-file";
-import { __dirname } from "./__dirname.js";
+import { __dirname } from "./__dirname";
 
-const { combine, timestamp, label, printf, colorize } = winston.format;
+const { combine, timestamp, printf, colorize } = winston.format;
 
 const logDir = path.join(__dirname, "logs");
 
 export const logger = winston.createLogger({
   format: combine(
     timestamp({ format: `YYYY-MM-DD HH:mm:ss` }),
-    label({ label: `Http Server` }),
     printf(
-      ({ timestamp, label, level, message }) =>
-        `[${timestamp}]-[${label}]-[${level}]: ${message}`
+      ({ timestamp, level, message }) => `[${timestamp}]-[${level}]: ${message}`
     )
   ),
   transports: [
