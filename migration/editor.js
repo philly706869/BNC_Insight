@@ -1,7 +1,7 @@
 import $ from "jquery";
 import { categories } from "../../util/categories.js";
 import { Component, registerComponent } from "../../util/component.js";
-import {} from "../input.js";
+import {} from "./input.js";
 
 class Editor extends Component {
   #$title;

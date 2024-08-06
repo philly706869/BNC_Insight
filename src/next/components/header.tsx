@@ -41,7 +41,6 @@ export default function Header() {
           <>
             <Link href="/signup">Sign Up</Link>
             <Link href="/signin">Sign In</Link>
-            <button onClick={() => {}}>Test</button>
           </>
         )}
       </nav>
