@@ -1,8 +1,8 @@
 "use client";
 
-import { font } from "@/app/font";
 import Link from "next/link";
 import { useState } from "react";
+import { font } from "../app/font";
 
 import styles from "./header.module.css";
 

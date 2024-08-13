@@ -5,7 +5,7 @@ import { router as userRouter } from "./user/route";
 
 export const router = Router();
 
-router.use(articleRouter);
-router.use(userRouter);
-router.use(loginRouter);
-router.use(loginRouter);
+router.use("/article", articleRouter);
+router.use("/user", userRouter);
+router.use("/logout", loginRouter);
+router.use("/login", loginRouter);
