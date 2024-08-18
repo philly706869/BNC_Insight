@@ -1,7 +1,7 @@
 "use client";
+import { User } from "@/session";
 import Link from "next/link";
-import { useState } from "react";
-import { font } from "../app/font";
+import { fonts } from "../app/fonts";
 import styles from "./header.module.css";
 
 const categories = [
@@ -12,21 +12,19 @@ const categories = [
   { name: "Science" },
 ];
 
-// temp
-interface User {
-  name: string;
-}
+type Props = {
+  user?: User;
+};
 
-export default function Header() {
-  const [user, setUser] = useState<User | null>(null);
+export default function Header({ user }: Props) {
   const date = new Date();
 
   return (
-    <header className={`${styles.container} ${font.robotoSlab}`}>
+    <header className={`${styles.container} ${fonts.robotoSlab}`}>
       <time className={styles.time} dateTime={date.toISOString().split(`T`)[0]}>
         {date.toDateString()}
       </time>
-      <Link className={`${styles.logo} ${font.cormorant}`} href="/">
+      <Link className={`${styles.logo} ${fonts.cormorant}`} href="/">
         BNC_Insight
       </Link>
       <nav className={styles.user}>

@@ -4,7 +4,6 @@ import {
   CreateDateColumn,
   Entity,
   Generated,
-  JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -22,7 +21,6 @@ export class User extends BaseEntity {
   declare uuid: string;
 
   @OneToOne((type) => AuthToken, (authToken) => authToken.allocedUser)
-  @JoinColumn()
   declare authToken: AuthToken;
 
   static readonly ID_MIN_LENGTH = 1;
@@ -53,9 +51,10 @@ export class User extends BaseEntity {
 
   static readonly PASSWORD_MIN_LENGTH = 8;
   static readonly PASSWORD_MAX_LENGTH = 72;
+  static readonly PASSWORD_MAX_BYTES = 72; // PASSWORD_MAX_BYTES는 절대로 72를 초과하면 안됨 (bcrypt의 최대 비교 가능 *바이트* 수)
 
   @Column({ type: "binary", length: 60 })
-  declare password: string;
+  declare password: Buffer;
 
   static validatePassword(value: string) {
     const errors: string[] = [];
@@ -67,12 +66,16 @@ export class User extends BaseEntity {
 
     const min = User.PASSWORD_MIN_LENGTH;
     const max = User.PASSWORD_MAX_LENGTH;
+    const byteMax = User.PASSWORD_MAX_BYTES;
     switch (true) {
       case value.length < min:
         errors.push(`Password cannot be shorter than ${min} charaters.`);
         break;
       case value.length > max:
         errors.push(`Password cannot be greater than ${max} charaters.`);
+        break;
+      case Buffer.byteLength(value) > byteMax:
+        errors.push(`Password cannot be greater than ${byteMax} bytes.`);
         break;
     }
 
@@ -105,7 +108,7 @@ export class User extends BaseEntity {
     return errors.length !== 0 ? errors : null;
   }
 
-  @Column({ type: "boolean" })
+  @Column({ type: "boolean", default: false })
   declare isAdmin: boolean;
 
   @OneToMany((type) => Article, (article) => article.uploader)

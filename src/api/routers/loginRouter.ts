@@ -5,8 +5,16 @@ import { User } from "../database/models/User";
 export const loginRouter = Router();
 
 loginRouter.post("/", async (req, res) => {
-  const id = String(req.body.id);
-  const password = String(req.body.password);
+  const { id, password } = req.body;
+  if (typeof id !== "string" || typeof password !== "string") {
+    res.status(400).end();
+    return;
+  }
+
+  if (User.validateId(id) !== null) {
+    res.status(401).end();
+    return;
+  }
 
   const user = await User.findOne({ where: { id } });
   if (!user) {
@@ -14,7 +22,12 @@ loginRouter.post("/", async (req, res) => {
     return;
   }
 
-  if (!bcrypt.compareSync(password, user.password)) {
+  if (User.validatePassword(password) !== null) {
+    res.status(401).end();
+    return;
+  }
+
+  if (!(await bcrypt.compare(password, user.password.toString()))) {
     res.status(401).end();
     return;
   }

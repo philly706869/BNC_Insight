@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
@@ -26,6 +27,7 @@ export class AuthToken extends BaseEntity {
   }
 
   @OneToOne((type) => User, (user) => user.authToken, { nullable: true })
+  @JoinColumn()
   declare allocedUser: User | null;
 
   @Column({ type: "boolean", default: false })

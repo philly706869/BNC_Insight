@@ -1,16 +1,18 @@
 "use client";
-import { ChangeEventHandler, useState } from "react";
+import { LegacyRef, useState } from "react";
 import styles from "./input.module.css";
 
 type Props = {
-  onChange?: ChangeEventHandler;
+  className?: string;
+  ref?: LegacyRef<HTMLInputElement>;
   placeholder?: string;
   hideContent?: boolean;
   error?: boolean;
 };
 
 export default function Input({
-  onChange,
+  className,
+  ref,
   placeholder,
   hideContent,
   error,
@@ -18,21 +20,18 @@ export default function Input({
   const [hold, setHold] = useState(false);
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${className}`}>
       <input
         className={`${styles.input} ${error ? styles.error : ""}`}
         type={hideContent ? "password" : "text"}
-        onChange={onChange}
-        onFocus={({ target }) => setHold(true)}
+        ref={ref}
+        onFocus={() => setHold(true)}
         onBlur={({ target }) => setHold(!!target.value)}
         autoComplete="off"
         spellCheck="false"
         required
       />
-      <label
-        className={`${styles.placeholder} ${hold ? styles.hold : ""}`}
-        htmlFor="input"
-      >
+      <label className={`${styles.placeholder} ${hold ? styles.hold : ""}`}>
         {placeholder || ""}
       </label>
     </div>
