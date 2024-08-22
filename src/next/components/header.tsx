@@ -1,6 +1,8 @@
 "use client";
-import { User } from "@/session";
+import { Session, User } from "@/session";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { fonts } from "../app/fonts";
 import styles from "./header.module.css";
 
@@ -12,12 +14,22 @@ const categories = [
   { name: "Science" },
 ];
 
-type Props = {
-  user?: User;
-};
-
-export default function Header({ user }: Props) {
+export default function Header() {
   const date = new Date();
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>();
+
+  function updateSession() {
+    fetch("/api/session", { cache: "no-cache" })
+      .then((res) => res.json())
+      .then((session: Session) => {
+        setUser(session.user || null);
+      });
+  }
+
+  useEffect(() => {
+    updateSession();
+  }, []);
 
   return (
     <header className={`${styles.container} ${fonts.robotoSlab}`}>
@@ -31,7 +43,15 @@ export default function Header({ user }: Props) {
         {user ? (
           <>
             <Link href="/user">{user.name}</Link>
-            <button onClick={() => {}}>Logout</button>
+            <button
+              onClick={async () => {
+                await fetch("/api/logout", { method: "POST" });
+                updateSession();
+                router.push("/");
+              }}
+            >
+              Logout
+            </button>
           </>
         ) : (
           <>

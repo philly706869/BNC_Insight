@@ -1,6 +1,6 @@
 "use client";
-import "./editor.css";
-import Quill from "./quill";
+import "./Editor.css";
+import Quill from "./Quill";
 
 function imageHandler(this: any) {
   const { tooltip } = this.quill.theme;

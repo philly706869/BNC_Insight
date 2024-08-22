@@ -55,6 +55,7 @@ userRouter.post("/", async (req, res) => {
     id,
     password: Buffer.from(await bcrypt.hash(password, 10)),
     name,
+    isAdmin: token.isAdminToken,
   });
 
   token.allocedUser = user;
