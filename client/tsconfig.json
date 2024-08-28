@@ -11,9 +11,9 @@
     // "disableReferencedProjectLoad": true,
 
     /* Language and Environment */
-    "target": "ESNext",
-    "lib": ["ESNext"],
-    // "jsx": "preserve",
+    "target": "ES5",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "jsx": "react-jsx",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     // "jsxFactory": "",
@@ -77,7 +77,7 @@
     "isolatedModules": true,
     // "verbatimModuleSyntax": true,
     // "isolatedDeclarations": true,
-    // "allowSyntheticDefaultImports": true,
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     // "preserveSymlinks": true,
     "forceConsistentCasingInFileNames": true,
@@ -107,6 +107,6 @@
     // "skipDefaultLibCheck": true,
     "skipLibCheck": true
   },
-  "include": ["./server/**/*"],
-  "exclude": ["./**/node_modules/"]
+  "include": ["./src/**/*"],
+  "exclude": ["../**/node_modules/"]
 }
