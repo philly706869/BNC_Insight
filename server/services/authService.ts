@@ -9,36 +9,27 @@ import { SessionData as ExpressSessionData, Session } from "express-session";
 
 type RequestSession = Session & Partial<ExpressSessionData>;
 
+export class LoginError {
+  declare messages: string[];
+
+  constructor(messages: string[]) {
+    this.messages = messages;
+  }
+}
+
 export async function login(
   session: RequestSession,
   id: string,
-  password: string,
-  callback: (error: string[] | null, session: SessionData | null) => any
-): Promise<void> {
+  password: string
+): Promise<SessionData> {
   const idError = User.validateId(id);
-  if (idError) {
-    callback(idError, null);
-    return;
-  }
-
+  if (idError) throw new LoginError(idError);
   const user = await User.findOne({ where: { id } });
-  if (!user) {
-    callback(["ID does not exists."], null);
-    return;
-  }
-
+  if (!user) throw new LoginError(["ID does not exists."]);
   const passwordError = User.validatePassword(password);
-  if (passwordError) {
-    callback(passwordError, null);
-    return;
-  }
-
+  if (passwordError) throw new LoginError(passwordError);
   const matches = await bcrypt.compare(password, user.password.toString());
-  if (!matches) {
-    callback(["Password does not correct."], null);
-    return;
-  }
-
+  if (!matches) throw new LoginError(["Password does not correct."]);
   const userSessionData: UserSessionData = {
     uid: user.uid,
     uuid: user.uuid,
@@ -47,7 +38,7 @@ export async function login(
     createdAt: user.createdAt,
   };
   session.user = userSessionData;
-  callback(null, { user: userSessionData });
+  return { user: userSessionData };
 }
 
 export async function logout(session: RequestSession): Promise<boolean> {

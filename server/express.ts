@@ -1,6 +1,7 @@
 import { TypeormStore } from "connect-typeorm";
 import Express, { ErrorRequestHandler } from "express";
 import session from "express-session";
+import { env } from "./env";
 import { dataSource } from "./models/dataSource";
 import { Session } from "./models/Session";
 import { api } from "./routers/apiRouter";
@@ -9,7 +10,7 @@ import { logger } from "./utils/logger";
 export const express = Express();
 express.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: env.server.sessionSecret,
     resave: false,
     saveUninitialized: false,
     cookie: {

@@ -57,7 +57,7 @@
     // "sourceMap": true,
     // "inlineSourceMap": true,
     // "outFile": "./",
-    // "outDir": "./",
+    "outDir": "./build",
     // "removeComments": true,
     "noEmit": true,
     // "importHelpers": true,

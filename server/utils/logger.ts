@@ -1,9 +1,8 @@
 import path from "path";
 import { createLogger, format, transports } from "winston";
 import winstonDRF from "winston-daily-rotate-file";
-import { dirname } from "./dirname";
 
-const logDir = path.join(dirname, "logs");
+const logDir = path.resolve("./logs/");
 
 export const logger = createLogger({
   format: format.combine(
@@ -28,7 +27,7 @@ export const logger = createLogger({
     new winstonDRF({
       level: `error`,
       datePattern: `YYYY-MM-DD`,
-      dirname: path.join(logDir, `error`),
+      dirname: path.resolve(logDir, `error`),
       filename: `%DATE%.error.log`,
       maxFiles: 365,
       zippedArchive: true,

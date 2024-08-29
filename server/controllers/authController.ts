@@ -1,4 +1,9 @@
-import { getPublicSessionData, login, logout } from "@/services/authService";
+import {
+  getPublicSessionData,
+  login,
+  LoginError,
+  logout,
+} from "@/services/authService";
 import { RequestHandler } from "express";
 
 export const loginController: RequestHandler = async (req, res) => {
@@ -8,13 +13,16 @@ export const loginController: RequestHandler = async (req, res) => {
     return;
   }
 
-  await login(req.session, id, password, (error, session) => {
-    if (error) {
+  try {
+    const session = await login(req.session, id, password);
+    res.status(201).json(session);
+  } catch (error) {
+    if (error instanceof LoginError) {
       res.status(401).end();
       return;
     }
-    res.status(201).json(session);
-  });
+    throw error;
+  }
 };
 
 export const logoutController: RequestHandler = async (req, res) => {
