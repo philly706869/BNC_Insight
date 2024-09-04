@@ -1,10 +1,8 @@
-"use client";
-import { Session, User } from "@/session";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { fonts } from "../app/fonts";
-import styles from "./header.module.css";
+import { Link, useNavigate } from "react-router-dom";
+import fonts from "../styles/fonts.module.css";
+import styles from "../styles/Header.module.css";
+import { Session, User } from "../types/session";
 
 const categories = [
   { name: "Financial" },
@@ -16,7 +14,7 @@ const categories = [
 
 export default function Header() {
   const date = new Date();
-  const router = useRouter();
+  const navigate = useNavigate();
   const [user, setUser] = useState<User | null>();
 
   function updateSession() {
@@ -36,18 +34,18 @@ export default function Header() {
       <time className={styles.time} dateTime={date.toISOString().split(`T`)[0]}>
         {date.toDateString()}
       </time>
-      <Link className={`${styles.logo} ${fonts.cormorant}`} href="/">
+      <Link className={`${styles.logo} ${fonts.cormorant}`} to="/">
         BNC_Insight
       </Link>
       <nav className={styles.user}>
         {user ? (
           <>
-            <Link href="/user">{user.name}</Link>
+            <Link to="/user">{user.name}</Link>
             <button
               onClick={async () => {
                 await fetch("/api/logout", { method: "POST" });
                 updateSession();
-                router.push("/");
+                navigate("/");
               }}
             >
               Logout
@@ -55,14 +53,14 @@ export default function Header() {
           </>
         ) : (
           <>
-            <Link href="/signup">Create Account</Link>
-            <Link href="/login">Login</Link>
+            <Link to="/signup">Create Account</Link>
+            <Link to="/login">Login</Link>
           </>
         )}
       </nav>
       <nav className={styles.categories}>
         {categories.map(({ name: category }) => (
-          <Link key={category} href={`/category/${category}`}>
+          <Link key={category} to={`/category/${category}`}>
             {category}
           </Link>
         ))}

@@ -1,8 +1,10 @@
-"use client";
-import { useRef2 } from "@/hooks/useRef2";
+import katex from "katex";
+import { useRef } from "react";
 import ReactQuill from "react-quill";
-import "./Editor.css";
-import Quill from "./Quill";
+import "react-quill/dist/quill.snow.css";
+import "../styles/Editor.css";
+
+window.katex = katex;
 
 function imageHandler(this: any) {
   const { tooltip } = this.quill.theme;
@@ -24,11 +26,12 @@ function imageHandler(this: any) {
 }
 
 export default function Editor() {
-  const [quill, quillRef] = useRef2<ReactQuill>(null);
+  const quillRef = useRef<ReactQuill>(null);
+
   return (
     <>
-      <Quill
-        forwardedRef={quillRef}
+      <ReactQuill
+        ref={quillRef}
         theme="snow"
         modules={{
           toolbar: {
@@ -66,7 +69,8 @@ export default function Editor() {
       />
       <button
         onClick={() => {
-          const editor = quill!.getEditor();
+          const quill = quillRef.current!;
+          const editor = quill.getEditor();
           const content = editor.getContents();
           console.log(content);
           editor.setContents(content);

@@ -1,4 +1,3 @@
-"use client";
 import { ReactNode } from "react";
 import styles from "../styles/Slider.module.css";
 
