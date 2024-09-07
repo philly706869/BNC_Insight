@@ -1,78 +1,59 @@
-import katex from "katex";
-import { useRef } from "react";
+import { TextField, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { useRef, useState } from "react";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import "../styles/Editor.css";
+import Quill from "./Quill";
 
-window.katex = katex;
+type Props = {
+  categories: string[];
+};
 
-function imageHandler(this: any) {
-  const { tooltip } = this.quill.theme;
-  const { save: originalSave, hide: originalHide } = tooltip;
-  tooltip.save = function () {
-    const range = this.quill.getSelection(true);
-    const value = this.textbox.value;
-    if (value) {
-      this.quill.insertEmbed(range.index, `image`, value, `user`);
-    }
-  };
-  tooltip.hide = function () {
-    this.save = originalSave;
-    this.hide = originalHide;
-    this.hide();
-  };
-  tooltip.edit(`image`);
-  tooltip.textbox.placeholder = `Embed URL`;
-}
-
-export default function Editor() {
+export default function Editor({ categories }: Props) {
+  const [category, setCategory] = useState<string | undefined>(categories[0]);
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  const [titleHelperText, setTitleHelperText] = useState("");
+  const subtitleInputRef = useRef<HTMLInputElement>(null);
+  const [subtitleHelperText, setSubtitleHelperText] = useState("");
   const quillRef = useRef<ReactQuill>(null);
 
   return (
     <>
-      <ReactQuill
-        ref={quillRef}
-        theme="snow"
-        modules={{
-          toolbar: {
-            container: [
-              { font: [] },
-              { header: [1, 2, 3, 4, 5, 6, false] },
-              { size: [`small`, false, `large`, `huge`, `10pt`] },
-              `bold`,
-              `italic`,
-              `underline`,
-              `strike`,
-              `blockquote`,
-              `code-block`,
-              `link`,
-              `image`,
-              `video`,
-              `formula`,
-              { list: `ordered` },
-              { list: `bullet` },
-              { list: `check` },
-              { script: `sub` },
-              { script: `super` },
-              { indent: `-1` },
-              { indent: `+1` },
-              { color: [] },
-              { background: [] },
-              { align: [] },
-              `clean`,
-            ],
-            handlers: {
-              image: imageHandler,
-            },
-          },
+      <ToggleButtonGroup
+        value={category}
+        onChange={(event: React.MouseEvent<HTMLElement>, category: string) => {
+          setCategory(category);
         }}
+        exclusive
+      >
+        {categories.map((category) => (
+          <ToggleButton value={category}>{category}</ToggleButton>
+        ))}
+      </ToggleButtonGroup>
+      <TextField
+        label="Title"
+        fullWidth
+        inputRef={titleInputRef}
+        helperText={titleHelperText}
+        error={titleHelperText.length > 0}
+        autoComplete="off"
+        spellCheck="false"
       />
+      <TextField
+        label="Subtitle"
+        fullWidth
+        inputRef={subtitleInputRef}
+        helperText={subtitleHelperText}
+        error={subtitleHelperText.length > 0}
+        autoComplete="off"
+        spellCheck="false"
+      />
+      <Quill />
       <button
         onClick={() => {
           const quill = quillRef.current!;
           const editor = quill.getEditor();
           const content = editor.getContents();
           console.log(content);
+          console.log(JSON.stringify(content));
           editor.setContents(content);
         }}
       >

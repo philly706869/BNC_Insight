@@ -1,9 +1,8 @@
 import {
-  getOwnUserData,
   login,
-  LoginError,
+  LoginException,
   logout,
-} from "@/services/authService";
+} from "@/services/authenticationService";
 import { RequestHandler } from "express";
 
 export const loginController: RequestHandler = async (req, res) => {
@@ -17,8 +16,10 @@ export const loginController: RequestHandler = async (req, res) => {
     const session = await login(req.session, id, password);
     res.status(201).json(session);
   } catch (error) {
-    if (error instanceof LoginError) {
-      res.status(401).end();
+    if (error instanceof LoginException) {
+      res.status(401).json({
+        error,
+      });
       return;
     }
     throw error;
@@ -28,9 +29,4 @@ export const loginController: RequestHandler = async (req, res) => {
 export const logoutController: RequestHandler = async (req, res) => {
   await logout(req.session);
   res.status(201).end();
-};
-
-export const getOwnUserDataController: RequestHandler = async (req, res) => {
-  const userData = await getOwnUserData(req.session);
-  res.status(200).json(userData);
 };

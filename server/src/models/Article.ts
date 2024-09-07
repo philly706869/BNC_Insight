@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import {
   BaseEntity,
   Column,
@@ -8,6 +9,8 @@ import {
 } from "typeorm";
 import { Category } from "./Category";
 import { User } from "./User";
+
+const { title: titleMeta, subtitle: subtitleMeta } = env.database.model.article;
 
 @Entity("articles")
 export class Article extends BaseEntity {
@@ -20,16 +23,10 @@ export class Article extends BaseEntity {
   @ManyToOne((type) => Category, (category) => category.articles)
   declare category: Category;
 
-  static readonly TITLE_MIN_LENGTH = 1;
-  static readonly TITLE_MAX_LENGTH = 64;
-
-  @Column({ type: "varchar", length: Article.TITLE_MAX_LENGTH })
+  @Column({ type: "varchar", length: titleMeta.max })
   declare title: string;
 
-  static readonly SUBTITLE_MIN_LENGTH = 0;
-  static readonly SUBTITLE_MAX_LENGTH = 128;
-
-  @Column({ type: "varchar", length: Article.SUBTITLE_MAX_LENGTH })
+  @Column({ type: "varchar", length: subtitleMeta.max })
   declare subtitle: string;
 
   @Column({ type: "json" })

@@ -1,5 +1,10 @@
 import rawEnv from "../env.json";
 
+type MinMax = {
+  min: number;
+  max: number;
+};
+
 export type Env = {
   server: {
     port: number;
@@ -12,6 +17,12 @@ export type Env = {
     password: string;
     name: string;
     poolSize: number;
+    model: {
+      authToken: Record<"token", MinMax>;
+      user: Record<"id" | "password" | "name", MinMax>;
+      article: Record<"title" | "subtitle", MinMax>;
+      category: Record<"name", MinMax>;
+    };
   };
 };
 
