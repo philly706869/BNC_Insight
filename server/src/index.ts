@@ -1,7 +1,7 @@
 import { exit } from "process";
+import { dataSource } from "./database/models/dataSource";
 import { env } from "./env";
 import { express } from "./express";
-import { dataSource } from "./models/dataSource";
 import { logger } from "./utils/logger";
 
 try {

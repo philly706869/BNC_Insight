@@ -15,11 +15,11 @@ export type Env = {
     port: number;
     username: string;
     password: string;
-    name: string;
+    dbname: string;
     poolSize: number;
     model: {
       authToken: Record<"token", MinMax>;
-      user: Record<"id" | "password" | "name", MinMax>;
+      user: Record<"username" | "password" | "name", MinMax>;
       article: Record<"title" | "subtitle", MinMax>;
       category: Record<"name", MinMax>;
     };
@@ -31,3 +31,5 @@ export const env = rawEnv satisfies Env;
 export type NODE_ENV = "development" | "production";
 export const NODE_ENV: NODE_ENV =
   process.env.NODE_ENV === "production" ? "production" : "development";
+
+export const isDev = NODE_ENV === "development";

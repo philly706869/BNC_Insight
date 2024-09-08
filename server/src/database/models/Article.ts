@@ -1,11 +1,11 @@
 import { env } from "@/env";
 import {
-  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { Category } from "./Category";
 import { User } from "./User";
@@ -13,9 +13,9 @@ import { User } from "./User";
 const { title: titleMeta, subtitle: subtitleMeta } = env.database.model.article;
 
 @Entity("articles")
-export class Article extends BaseEntity {
+export class Article {
   @PrimaryGeneratedColumn({ type: "smallint", unsigned: true })
-  declare uid: number;
+  declare id: number;
 
   @ManyToOne((type) => User, (user) => user.articles)
   declare uploader: User;
@@ -37,4 +37,7 @@ export class Article extends BaseEntity {
 
   @CreateDateColumn()
   declare createdAt: Date;
+
+  @UpdateDateColumn()
+  declare updatedAt: Date;
 }

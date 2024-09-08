@@ -1,4 +1,4 @@
-import type { User } from "@/models/User";
+import type { User } from "@/database/models/User";
 import "express-session";
 
 declare module "express-session" {

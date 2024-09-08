@@ -1,20 +1,17 @@
 import { env } from "@/env";
 import {
-  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
+  UpdateDateColumn,
 } from "typeorm";
 
 const { token: tokenMeta } = env.database.model.authToken;
 
 @Entity("auth_tokens")
-export class AuthToken extends BaseEntity {
-  @PrimaryGeneratedColumn({ type: "smallint", unsigned: true })
-  declare uid: number;
-
-  @Column({ type: "varchar", length: tokenMeta.max })
+export class AuthToken {
+  @PrimaryColumn({ type: "varchar", length: tokenMeta.max })
   declare token: string;
 
   @Column({ type: "boolean", default: false })
@@ -22,4 +19,7 @@ export class AuthToken extends BaseEntity {
 
   @CreateDateColumn()
   declare createdAt: Date;
+
+  @UpdateDateColumn()
+  declare updatedAt: Date;
 }

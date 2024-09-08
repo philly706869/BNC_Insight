@@ -1,9 +1,8 @@
 import { TypeormStore } from "connect-typeorm";
 import Express, { ErrorRequestHandler } from "express";
 import session from "express-session";
+import { sessionRepository } from "./database/repositories";
 import { env, NODE_ENV } from "./env";
-import { dataSource } from "./models/dataSource";
-import { Session } from "./models/Session";
 import { api } from "./routers/apiRouter";
 import { logger } from "./utils/logger";
 
@@ -17,7 +16,7 @@ express.use(
     cookie: {
       maxAge: 30 * 24 * 60 * 1000,
     },
-    store: new TypeormStore().connect(dataSource.getRepository(Session)),
+    store: new TypeormStore().connect(sessionRepository),
   })
 );
 

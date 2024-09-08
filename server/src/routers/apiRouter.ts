@@ -1,9 +1,11 @@
+import cors from "cors";
 import { json, Router } from "express";
 import { articleRouter } from "./articleRouter";
 import { authRouter } from "./authRouter";
 import { userRouter } from "./userRouter";
 
 export const api = Router();
+api.use(cors());
 api.use(json());
 api.use("/auth", authRouter);
 api.use("/user", userRouter);

@@ -1,33 +1,28 @@
 import { env } from "@/env";
 import {
-  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
-  Generated,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { Article } from "./Article";
 
-const { id: idMeta, name: nameMeta } = env.database.model.user;
+const metadata = env.database.model.user;
 
 @Entity("users")
-export class User extends BaseEntity {
+export class User {
   @PrimaryGeneratedColumn({ type: "smallint", unsigned: true })
   declare uid: number;
 
-  @Column({ type: "uuid", unique: true })
-  @Generated("uuid")
-  declare uuid: string;
-
-  @Column({ type: "varchar", length: idMeta.max, unique: true })
-  declare id: string;
+  @Column({ type: "varchar", length: metadata.username.max, unique: true })
+  declare username: string;
 
   @Column({ type: "binary", length: 60 /* bcrypt 해시값 고정 길이 */ })
   declare passwordHash: Buffer;
 
-  @Column({ type: "varchar", length: nameMeta.max })
+  @Column({ type: "varchar", length: metadata.name.max })
   declare name: string;
 
   @Column({ type: "boolean", default: false })
@@ -38,4 +33,7 @@ export class User extends BaseEntity {
 
   @CreateDateColumn()
   declare createdAt: Date;
+
+  @UpdateDateColumn()
+  declare updatedAt: Date;
 }

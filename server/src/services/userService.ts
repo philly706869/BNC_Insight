@@ -1,128 +1,44 @@
-import { User } from "@/models/User";
-import { hash } from "bcrypt";
+import { User } from "@/database/models/User";
+import { userRepository } from "@/database/repositories";
+import { UserName } from "@/valueObjects/userValueObjects";
 import { SessionData } from "express-session";
-import { AuthTokenFindException, findAuthToken } from "./authTokenService";
-import {
-  UserIdVerificationErrorCode,
-  UserNameVerificationErrorCode,
-  UserPasswordVerificationErrorCode,
-  verifyUserIdFormat,
-  verifyUserNameFormat,
-  verifyUserPasswordFormat,
-} from "./verificationService";
+import { FindOneOptions } from "typeorm";
 
-type UserCreationError<ErrorCode extends string, DetailCode extends string> = {
-  errorCode: ErrorCode;
-  detailCode: DetailCode;
-};
-
-type UserCreationErrors =
-  | UserCreationError<"INVALID_AUTH_TOKEN", "INVALID_AUTH_TOKEN">
-  | UserCreationError<"INVALID_ID", UserIdVerificationErrorCode | "ID_EXISTS">
-  | UserCreationError<"INVALID_PASSWORD", UserPasswordVerificationErrorCode>
-  | UserCreationError<"INVALID_NAME", UserNameVerificationErrorCode>;
-
-export class UserCreationException {
-  declare error: UserCreationErrors;
-  constructor(error: UserCreationErrors) {
-    this.error = error;
-  }
-}
-
-export async function createUser(
-  token: string,
-  id: string,
-  password: string,
-  name: string,
-  isAdmin: boolean = false
+export async function findUserByUid(
+  uid: number,
+  options?: FindOneOptions<User>
 ): Promise<User | null> {
-  try {
-    const authToken = await findAuthToken(token);
-    if (!authToken)
-      throw new UserCreationException({
-        errorCode: "INVALID_AUTH_TOKEN",
-        detailCode: "INVALID_AUTH_TOKEN",
-      });
-
-    if (await findUserById(id))
-      throw new UserCreationException({
-        errorCode: "INVALID_ID",
-        detailCode: "ID_EXISTS",
-      });
-
-    const passwordVerificationResult = verifyUserPasswordFormat(password);
-    if (passwordVerificationResult.error)
-      throw new UserCreationException({
-        errorCode: "INVALID_PASSWORD",
-        detailCode: passwordVerificationResult.errorCode,
-      });
-
-    const nameVerificationResult = verifyUserNameFormat(name);
-    if (nameVerificationResult.error)
-      throw new UserCreationException({
-        errorCode: "INVALID_NAME",
-        detailCode: nameVerificationResult.errorCode,
-      });
-
-    await authToken.remove();
-    const user = new User();
-    user.id = id;
-    user.passwordHash = Buffer.from(await hash(password, 10));
-    user.name = name;
-    user.isAdmin = isAdmin;
-    return await user.save();
-  } catch (error) {
-    if (error instanceof AuthTokenFindException)
-      throw new UserCreationException({
-        errorCode: "INVALID_AUTH_TOKEN",
-        detailCode: "INVALID_AUTH_TOKEN",
-      });
-    if (error instanceof UserFindException)
-      throw new UserCreationException({
-        errorCode: "INVALID_ID",
-        detailCode: error.errorCode,
-      });
-    throw error;
-  }
+  return await userRepository.findOne({ ...options, where: { uid } });
 }
 
-export async function findUserByUid(uid: number): Promise<User | null> {
-  return await User.findOne({ where: { uid } });
+export async function findUserByUsername(
+  username: UserName,
+  options?: FindOneOptions<User>
+): Promise<User | null> {
+  return await userRepository.findOne({
+    ...options,
+    where: { username: username.value },
+  });
 }
 
-export async function findUserByUuid(uuid: string): Promise<User | null> {
-  return await User.findOne({ where: { uuid } });
-}
-
-export class UserFindException {
-  declare errorCode: UserIdVerificationErrorCode;
-  constructor(errorCode: UserIdVerificationErrorCode) {
-    this.errorCode = errorCode;
-  }
-}
-
-export async function findUserById(id: string): Promise<User | null> {
-  const idVerificationResult = verifyUserIdFormat(id);
-  if (idVerificationResult.error)
-    throw new UserFindException(idVerificationResult.errorCode);
-  return await User.findOne({ where: { id } });
-}
-
-export type CurrentUser = Pick<
-  User,
-  "uuid" | "id" | "name" | "isAdmin" | "createdAt"
->;
-
-export async function getCurrentUser(
+export async function getUserFromSession(
   session: Partial<SessionData>
-): Promise<CurrentUser | null> {
+): Promise<User | null> {
   const { userUid } = session;
   if (!userUid) return null;
   const user = await findUserByUid(userUid);
   if (!user) return null;
+  return user;
+}
+
+export type CurrentUser = Pick<
+  User,
+  "username" | "name" | "isAdmin" | "createdAt"
+>;
+
+export function extractCurrentUser(user: User): CurrentUser {
   return {
-    uuid: user.uuid,
-    id: user.id,
+    username: user.username,
     name: user.name,
     isAdmin: user.isAdmin,
     createdAt: user.createdAt,

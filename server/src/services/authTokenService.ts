@@ -1,21 +1,11 @@
-import { AuthToken } from "@/models/AuthToken";
-import {
-  AuthTokenVerificationErrorCode,
-  verifyAuthTokenFormat,
-} from "./verificationService";
+import { AuthToken } from "@/database/models/AuthToken";
+import { authTokenRepository } from "@/database/repositories";
+import { AuthTokenToken } from "@/valueObjects/authTokenValueObjects";
 
-export class AuthTokenFindException {
-  declare errorCode: AuthTokenVerificationErrorCode;
-  constructor(errorCode: AuthTokenVerificationErrorCode) {
-    this.errorCode = errorCode;
-  }
-}
-
-export async function findAuthToken(token: string): Promise<AuthToken | null> {
-  const authTokenVerificationResult = verifyAuthTokenFormat(token);
-  if (authTokenVerificationResult.error)
-    throw new AuthTokenFindException(authTokenVerificationResult.errorCode);
-  return await AuthToken.findOne({
-    where: { token },
+export async function findAuthToken(
+  token: AuthTokenToken
+): Promise<AuthToken | null> {
+  return await authTokenRepository.findOne({
+    where: { token: token.value },
   });
 }

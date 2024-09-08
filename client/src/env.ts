@@ -8,7 +8,7 @@ type MinMax = {
 export type Env = {
   verification: {
     authToken: Record<"token", MinMax>;
-    user: Record<"id" | "password" | "name", MinMax>;
+    user: Record<"username" | "password" | "name", MinMax>;
     article: Record<"title" | "subtitle", MinMax>;
     category: Record<"name", MinMax>;
   };

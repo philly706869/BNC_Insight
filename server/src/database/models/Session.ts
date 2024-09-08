@@ -1,10 +1,12 @@
 import { ISession } from "connect-typeorm";
 import {
   Column,
+  CreateDateColumn,
   DeleteDateColumn,
   Entity,
   Index,
   PrimaryColumn,
+  UpdateDateColumn,
 } from "typeorm";
 
 @Entity()
@@ -18,6 +20,12 @@ export class Session implements ISession {
 
   @Column("text")
   public json = "";
+
+  @CreateDateColumn()
+  declare createdAt: Date;
+
+  @UpdateDateColumn()
+  declare updatedAt: Date;
 
   @DeleteDateColumn()
   public destroyedAt?: Date;
