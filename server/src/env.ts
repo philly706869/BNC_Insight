@@ -21,7 +21,8 @@ export type Env = {
     model: {
       authToken: Record<"token", MinMax>;
       user: Record<"username" | "password" | "name", MinMax>;
-      article: Record<"title" | "subtitle", MinMax>;
+      article: Record<"title" | "subtitle", MinMax> &
+        Record<"thumbnailUrl", { max: number }>;
       category: Record<"name", MinMax>;
     };
   };

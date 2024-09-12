@@ -8,11 +8,11 @@ import {
 } from "typeorm";
 import { Article } from "./Article";
 
-const { name: nameMeta } = env.database.model.category;
+const metadata = env.database.model.category;
 
 @Entity("categories")
 export class Category {
-  @PrimaryColumn({ type: "varchar", length: nameMeta.max })
+  @PrimaryColumn({ type: "varchar", length: metadata.name.max })
   declare name: string;
 
   @OneToMany((type) => Article, (article) => article.category)

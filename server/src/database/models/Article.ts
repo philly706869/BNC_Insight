@@ -10,7 +10,7 @@ import {
 import { Category } from "./Category";
 import { User } from "./User";
 
-const { title: titleMeta, subtitle: subtitleMeta } = env.database.model.article;
+const metadata = env.database.model.article;
 
 @Entity("articles")
 export class Article {
@@ -23,10 +23,13 @@ export class Article {
   @ManyToOne((type) => Category, (category) => category.articles)
   declare category: Category;
 
-  @Column({ type: "varchar", length: titleMeta.max })
+  @Column({ type: "varchar", length: metadata.thumbnailUrl.max })
+  declare thumbnailUrl: string;
+
+  @Column({ type: "varchar", length: metadata.title.max })
   declare title: string;
 
-  @Column({ type: "varchar", length: subtitleMeta.max })
+  @Column({ type: "varchar", length: metadata.subtitle.max })
   declare subtitle: string;
 
   @Column({ type: "json" })
