@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nodemon --exec \"tsc && cross-env NODE_ENV=development tsx server/index.ts\"",
-    "start": "tsc && cross-env NODE_ENV=production tsx server/index.ts"
+    "dev": "nodemon --exec \"tsc && cross-env NODE_ENV=development tsx src/index.ts\"",
+    "start": "tsc && cross-env NODE_ENV=production tsx src/index.ts"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

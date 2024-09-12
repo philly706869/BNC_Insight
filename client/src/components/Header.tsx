@@ -1,11 +1,14 @@
 import { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { CurrentUserContext } from "../contexts/MeContext";
+import { CategoryContext } from "../contexts/CategoryContext";
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import { signout } from "../services/authService";
 import fonts from "../styles/fonts.module.css";
 import styles from "../styles/Header.module.css";
 
 export default function Header() {
   const currentUser = useContext(CurrentUserContext);
+  const categories = useContext(CategoryContext);
   const date = new Date();
   const navigate = useNavigate();
 
@@ -18,38 +21,36 @@ export default function Header() {
         BNC_Insight
       </Link>
       <nav className={styles.user}>
-        {(() => {
-          switch (currentUser) {
-            case undefined:
-              return <></>;
-            case null:
-              return (
-                <>
-                  <Link to="/signup">Create Account</Link>
-                  <Link to="/login">Login</Link>
-                </>
-              );
-            default:
-              <>
-                <Link to="/user">{currentUser.name}</Link>
-                <button
-                  onClick={async () => {
-                    await fetch("/api/logout", { method: "POST" });
-                    navigate("/");
-                  }}
-                >
-                  Logout
-                </button>
-              </>;
-          }
-        })()}
+        {currentUser.isInitialized ? (
+          currentUser.data ? (
+            <>
+              <Link to="/myaccount">{currentUser.data.name}</Link>
+              <button
+                onClick={async () => {
+                  await signout();
+                  navigate("/");
+                }}
+              >
+                Logout
+              </button>
+              <Link to="/myarticles">My Articles</Link>
+            </>
+          ) : (
+            <>
+              <Link to="/signup">Sign up</Link>
+              <Link to="/signin">Sign in</Link>
+            </>
+          )
+        ) : null}
       </nav>
       <nav className={styles.categories}>
-        {categories.map(({ name: category }) => (
-          <Link key={category} to={`/category/${category}`}>
-            {category}
-          </Link>
-        ))}
+        {categories.isInitialized
+          ? categories.data.map((category) => (
+              <Link key={category} to={`/category/${category}`}>
+                {category}
+              </Link>
+            ))
+          : null}
       </nav>
     </header>
   );

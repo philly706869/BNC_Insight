@@ -5,13 +5,16 @@ import {
   signup,
   SignupError,
 } from "@/services/authService";
-import { extractCurrentUser, getUserFromSession } from "@/services/userService";
+import {
+  extractProtectedUserData,
+  getUserFromSession,
+} from "@/services/userService";
 import { RequestHandler } from "express";
 
-export const signupController: RequestHandler = async (req, res) => {
-  const { token, username, password, name } = req.body;
+export const signupHandler: RequestHandler = async (req, res) => {
+  const { authToken, username, password, name } = req.body;
   if (
-    typeof token !== "string" ||
+    typeof authToken !== "string" ||
     typeof username !== "string" ||
     typeof password !== "string" ||
     typeof name !== "string"
@@ -21,9 +24,9 @@ export const signupController: RequestHandler = async (req, res) => {
   }
 
   try {
-    const user = await signup(token, username, password, name);
+    const user = await signup(authToken, username, password, name);
     req.session.userUid = user.uid;
-    const currentUser = extractCurrentUser(user);
+    const currentUser = extractProtectedUserData(user);
     res.status(201).json(currentUser);
   } catch (error) {
     if (error instanceof SignupError) {
@@ -34,7 +37,7 @@ export const signupController: RequestHandler = async (req, res) => {
   }
 };
 
-export const signinController: RequestHandler = async (req, res) => {
+export const signinHandler: RequestHandler = async (req, res) => {
   const { username, password } = req.body;
   if (typeof username !== "string" || typeof password !== "string") {
     res.status(400).end();
@@ -43,7 +46,7 @@ export const signinController: RequestHandler = async (req, res) => {
 
   try {
     const user = await signin(req.session, username, password);
-    const currentUser = extractCurrentUser(user);
+    const currentUser = extractProtectedUserData(user);
     res.status(201).json(currentUser);
   } catch (error) {
     if (error instanceof SigninError) {
@@ -54,17 +57,17 @@ export const signinController: RequestHandler = async (req, res) => {
   }
 };
 
-export const signoutController: RequestHandler = async (req, res) => {
+export const signoutHandler: RequestHandler = async (req, res) => {
   await signout(req.session);
   res.status(201).end();
 };
 
-export const currentUserController: RequestHandler = async (req, res) => {
+export const getCurrentUserHandler: RequestHandler = async (req, res) => {
   const user = await getUserFromSession(req.session);
   if (!user) {
     res.status(200).json(null);
     return;
   }
-  const currentUser = extractCurrentUser(user);
+  const currentUser = extractProtectedUserData(user);
   res.status(200).json(currentUser);
 };

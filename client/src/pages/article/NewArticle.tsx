@@ -1,10 +1,10 @@
 import { TextField, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useContext, useRef, useState } from "react";
 import ReactQuill from "react-quill";
-import { CategoryContext } from "../contexts/CategoryContext";
-import Quill from "./Quill";
+import Quill from "../../components/Quill";
+import { CategoryContext } from "../../contexts/CategoryContext";
 
-export default function Editor() {
+export default function NewArticle() {
   const categories = useContext(CategoryContext);
   const [category, setCategory] = useState<string | null>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
@@ -12,6 +12,7 @@ export default function Editor() {
   const subtitleInputRef = useRef<HTMLInputElement>(null);
   const [subtitleHelperText, setSubtitleHelperText] = useState("");
   const quillRef = useRef<ReactQuill>(null);
+  const categoryRef = useRef<HTMLDivElement>(null);
 
   return (
     <>
@@ -21,6 +22,7 @@ export default function Editor() {
           setCategory(category);
         }}
         exclusive
+        ref={categoryRef}
       >
         {categories.isInitialized
           ? categories.data.map((category) => (
@@ -46,7 +48,7 @@ export default function Editor() {
         autoComplete="off"
         spellCheck="false"
       />
-      <Quill />
+      <Quill forwaredRef={quillRef} />
       <button
         onClick={() => {
           const quill = quillRef.current!;
@@ -54,7 +56,10 @@ export default function Editor() {
           const content = editor.getContents();
           console.log(content);
           console.log(JSON.stringify(content));
-          editor.setContents(content);
+          if (!category) {
+            categoryRef.current!.focus();
+            console.log(categoryRef);
+          }
         }}
       >
         Upload

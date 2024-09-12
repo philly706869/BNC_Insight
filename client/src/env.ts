@@ -14,4 +14,4 @@ export type Env = {
   };
 };
 
-export const env = rawEnv satisfies Env;
+export const env = rawEnv satisfies Env; // 이 부분에서 오류 발생 시 ../env.json 관리 필요

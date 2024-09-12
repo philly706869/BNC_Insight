@@ -1,5 +1,5 @@
 import { env } from "@/env";
-import { BCRYPT_MAX_BYTE_LENGTH } from "@/utils/const";
+import { BCRYPT_MAX_BYTE_LENGTH } from "@/utils/constants";
 
 const metadata = env.database.model.user;
 

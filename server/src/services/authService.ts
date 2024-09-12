@@ -14,8 +14,8 @@ import {
 } from "@/valueObjects/userValueObjects";
 import { compare, hash } from "bcrypt";
 import { Session, SessionData } from "express-session";
-import { findAuthToken } from "./authTokenService";
-import { findUserByUsername } from "./userService";
+import { getAuthToken } from "./authTokenService";
+import { getUserByUsername } from "./userService";
 
 export type SignupErrorCodes =
   | "USERNAME_EXISTS"
@@ -41,13 +41,13 @@ export async function signup(
   const authTokenToken = AuthTokenToken.verify(token);
   if (authTokenToken instanceof AuthTokenTokenVerifyError)
     throw new SignupError("INVALID_AUTH_TOKEN");
-  const authToken = await findAuthToken(authTokenToken);
+  const authToken = await getAuthToken(authTokenToken);
   if (!authToken) throw new SignupError("INVALID_AUTH_TOKEN");
 
   const userUsername = UserUsername.verify(username);
   if (userUsername instanceof UserUsernameVerifyError)
     throw new SignupError("INVALID_USERNAME");
-  if (await findUserByUsername(userUsername))
+  if (await getUserByUsername(userUsername))
     throw new SignupError("USERNAME_EXISTS");
 
   const userPassword = UserPassword.verify(password);
@@ -84,7 +84,7 @@ export async function signin(
   const userUsername = UserUsername.verify(username);
   if (userUsername instanceof UserUsernameVerifyError)
     throw new SigninError("INVALID_USERNAME");
-  const user = await findUserByUsername(userUsername);
+  const user = await getUserByUsername(userUsername);
   if (!user) throw new SigninError("INVALID_USERNAME");
 
   const userPassword = UserPassword.verify(password);

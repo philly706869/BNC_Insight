@@ -1,13 +1,13 @@
 import { exit } from "process";
-import { dataSource } from "./database/models/dataSource";
+import { dataSource } from "./database/dataSource";
 import { env } from "./env";
 import { express } from "./express";
 import { logger } from "./utils/logger";
 
 try {
-  logger.info("Initializing data source...");
+  logger.info("Connecting database...");
   await dataSource.initialize();
-  logger.info("Completed initializing data source");
+  logger.info("Completed connecting database");
 
   logger.info("Starting express server...");
   const { port } = env.server;

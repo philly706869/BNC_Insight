@@ -2,7 +2,7 @@ import { TypeormStore } from "connect-typeorm";
 import Express, { ErrorRequestHandler } from "express";
 import session from "express-session";
 import { sessionRepository } from "./database/repositories";
-import { env, NODE_ENV } from "./env";
+import { env, isProduction } from "./env";
 import { api } from "./routers/apiRouter";
 import { logger } from "./utils/logger";
 
@@ -22,18 +22,11 @@ express.use(
 
 express.use("/api", api);
 
-const pageHandler = (() => {
-  switch (NODE_ENV) {
-    case "development":
-      break;
-    case "production":
-      break;
-  }
-})();
-
-express.use("*", (req, res) => {
-  res.status(200).end();
-});
+if (isProduction) {
+  express.use("*", (req, res) => {
+    res.status(200).end();
+  });
+}
 
 express.use(((err, req, res, next) => {
   logger.error(err);

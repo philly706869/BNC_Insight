@@ -1,9 +1,11 @@
 import {
-  deleteUserController,
-  findUserController,
+  deleteUserHandler,
+  getUserHandler,
+  patchUserHandler,
 } from "@/controllers/userController";
 import { Router } from "express";
 
 export const userRouter = Router();
-userRouter.get("/", findUserController);
-userRouter.delete("/", deleteUserController);
+userRouter.get("/:username", getUserHandler);
+userRouter.patch("/", patchUserHandler);
+userRouter.delete("/", deleteUserHandler);

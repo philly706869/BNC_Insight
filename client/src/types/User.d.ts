@@ -1,10 +1,12 @@
 export type CurrentUser = {
-  id: string;
+  username: string;
   name: string;
   isAdmin: boolean;
+  createdAt: Date;
 };
 
 export type User = {
+  username: string;
   name: string;
-  isAdmin: boolean;
+  createdAt: Date;
 };

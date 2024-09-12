@@ -1,4 +1,5 @@
 import { env } from "@/env";
+import { BCRYPT_HASH_LENGTH } from "@/utils/constants";
 import {
   Column,
   CreateDateColumn,
@@ -19,7 +20,7 @@ export class User {
   @Column({ type: "varchar", length: metadata.username.max, unique: true })
   declare username: string;
 
-  @Column({ type: "binary", length: 60 /* bcrypt 해시값 고정 길이 */ })
+  @Column({ type: "binary", length: BCRYPT_HASH_LENGTH })
   declare passwordHash: Buffer;
 
   @Column({ type: "varchar", length: metadata.name.max })

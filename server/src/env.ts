@@ -7,6 +7,7 @@ type MinMax = {
 
 export type Env = {
   server: {
+    url: string;
     port: number;
     sessionSecret: string;
   };
@@ -26,10 +27,11 @@ export type Env = {
   };
 };
 
-export const env = rawEnv satisfies Env;
+export const env = rawEnv satisfies Env; // 이 부분에서 오류 발생 시 ../env.json 관리 필요
 
 export type NODE_ENV = "development" | "production";
 export const NODE_ENV: NODE_ENV =
   process.env.NODE_ENV === "production" ? "production" : "development";
 
 export const isDev = NODE_ENV === "development";
+export const isProduction = NODE_ENV === "production";

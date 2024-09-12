@@ -2,21 +2,15 @@ import { User } from "@/database/models/User";
 import { userRepository } from "@/database/repositories";
 import { UserName } from "@/valueObjects/userValueObjects";
 import { SessionData } from "express-session";
-import { FindOneOptions } from "typeorm";
 
-export async function findUserByUid(
-  uid: number,
-  options?: FindOneOptions<User>
-): Promise<User | null> {
-  return await userRepository.findOne({ ...options, where: { uid } });
+export async function getUserByUid(uid: number): Promise<User | null> {
+  return await userRepository.findOne({ where: { uid } });
 }
 
-export async function findUserByUsername(
-  username: UserName,
-  options?: FindOneOptions<User>
+export async function getUserByUsername(
+  username: UserName
 ): Promise<User | null> {
   return await userRepository.findOne({
-    ...options,
     where: { username: username.value },
   });
 }
@@ -26,17 +20,27 @@ export async function getUserFromSession(
 ): Promise<User | null> {
   const { userUid } = session;
   if (!userUid) return null;
-  const user = await findUserByUid(userUid);
+  const user = await getUserByUid(userUid);
   if (!user) return null;
   return user;
 }
 
-export type CurrentUser = Pick<
+export type PublicUserData = Pick<User, "username" | "name" | "createdAt">;
+
+export function extractPublicUserData(user: User): PublicUserData {
+  return {
+    username: user.username,
+    name: user.name,
+    createdAt: user.createdAt,
+  };
+}
+
+export type ProtectedUserData = Pick<
   User,
   "username" | "name" | "isAdmin" | "createdAt"
 >;
 
-export function extractCurrentUser(user: User): CurrentUser {
+export function extractProtectedUserData(user: User): ProtectedUserData {
   return {
     username: user.username,
     name: user.name,
