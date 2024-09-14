@@ -2,7 +2,7 @@ export type CurrentUser = {
   username: string;
   name: string;
   isAdmin: boolean;
-  createdAt: Date;
+  createdAt: string;
 };
 
 export type User = {

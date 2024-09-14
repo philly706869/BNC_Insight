@@ -1,15 +1,12 @@
 import { AuthToken } from "@/database/models/AuthToken";
 import { authTokenRepository } from "@/database/repositories";
-import { AuthTokenToken } from "@/valueObjects/authTokenValueObjects";
 
-export async function getAuthToken(
-  token: AuthTokenToken
-): Promise<AuthToken | null> {
+export async function findAuthToken(token: string): Promise<AuthToken | null> {
   return await authTokenRepository.findOne({
-    where: { token: token.value },
+    where: { token },
   });
 }
 
-export async function createAuthToken(
-  token: AuthTokenToken
-): Promise<AuthToken> {}
+export async function createAuthToken(token: string): Promise<AuthToken> {
+  throw {};
+}

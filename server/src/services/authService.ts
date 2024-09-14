@@ -1,33 +1,15 @@
+import { AuthToken } from "@/database/models/AuthToken";
 import { User } from "@/database/models/User";
 import { authTokenRepository, userRepository } from "@/database/repositories";
-import {
-  AuthTokenToken,
-  AuthTokenTokenVerifyError,
-} from "@/valueObjects/authTokenValueObjects";
-import {
-  UserName,
-  UserNameVerifyError,
-  UserPassword,
-  UserPasswordVerifyError,
-  UserUsername,
-  UserUsernameVerifyError,
-} from "@/valueObjects/userValueObjects";
 import { compare, hash } from "bcrypt";
 import { Session, SessionData } from "express-session";
-import { getAuthToken } from "./authTokenService";
-import { getUserByUsername } from "./userService";
-
-export type SignupErrorCodes =
-  | "USERNAME_EXISTS"
-  | "INVALID_AUTH_TOKEN"
-  | "INVALID_USERNAME"
-  | "INVALID_PASSWORD"
-  | "INVALID_NAME";
+import { findAuthToken } from "./authTokenService";
+import { findUserByUsername } from "./userService";
 
 export class SignupError {
-  declare errorCode: SignupErrorCodes;
-  constructor(errorCode: SignupErrorCodes) {
-    this.errorCode = errorCode;
+  declare error: string;
+  constructor(error: string) {
+    this.error = error;
   }
 }
 
@@ -38,25 +20,22 @@ export async function signup(
   name: string,
   isAdmin: boolean = false
 ): Promise<User> {
-  const authTokenToken = AuthTokenToken.verify(token);
-  if (authTokenToken instanceof AuthTokenTokenVerifyError)
-    throw new SignupError("INVALID_AUTH_TOKEN");
-  const authToken = await getAuthToken(authTokenToken);
-  if (!authToken) throw new SignupError("INVALID_AUTH_TOKEN");
+  const authTokenErrorMessage = "Auth token is not valid";
+  if (!AuthToken.verifyToken(token))
+    throw new SignupError(authTokenErrorMessage);
+  const authToken = await findAuthToken(token);
+  if (!authToken) throw new SignupError(authTokenErrorMessage);
 
-  const userUsername = UserUsername.verify(username);
-  if (userUsername instanceof UserUsernameVerifyError)
-    throw new SignupError("INVALID_USERNAME");
-  if (await getUserByUsername(userUsername))
-    throw new SignupError("USERNAME_EXISTS");
+  const usernameError = User.verifyUsername(username);
+  if (usernameError) throw new SignupError(usernameError);
+  if (await findUserByUsername(username))
+    throw new SignupError(`${username} is already taken.`);
 
-  const userPassword = UserPassword.verify(password);
-  if (userPassword instanceof UserPasswordVerifyError)
-    throw new SignupError("INVALID_PASSWORD");
+  const passwordError = User.verifyPassword(password);
+  if (passwordError) throw new SignupError(passwordError);
 
-  const userName = UserName.verify(name);
-  if (userName instanceof UserNameVerifyError)
-    throw new SignupError("INVALID_NAME");
+  const nameError = User.verifyName(name);
+  if (nameError) throw new SignupError(nameError);
 
   await authTokenRepository.remove(authToken);
   const user = new User();
@@ -67,12 +46,10 @@ export async function signup(
   return await userRepository.save(user);
 }
 
-export type SigninErrorCodes = "INVALID_USERNAME" | "INVALID_PASSWORD";
-
 export class SigninError {
-  declare errorCode: SigninErrorCodes;
-  constructor(error: SigninErrorCodes) {
-    this.errorCode = error;
+  declare error: string;
+  constructor(error: string) {
+    this.error = error;
   }
 }
 
@@ -81,20 +58,21 @@ export async function signin(
   username: string,
   password: string
 ): Promise<User> {
-  const userUsername = UserUsername.verify(username);
-  if (userUsername instanceof UserUsernameVerifyError)
-    throw new SigninError("INVALID_USERNAME");
-  const user = await getUserByUsername(userUsername);
-  if (!user) throw new SigninError("INVALID_USERNAME");
+  const usernameErrorMessage = "Invalid username.";
+  const passwordErrorMessage = "Invalid password.";
 
-  const userPassword = UserPassword.verify(password);
-  if (userPassword instanceof UserPasswordVerifyError)
-    throw new SigninError("INVALID_PASSWORD");
+  const usernameError = User.verifyUsername(username);
+  if (usernameError) throw new SigninError(usernameErrorMessage);
+  const user = await findUserByUsername(username);
+  if (!user) throw new SigninError(usernameErrorMessage);
+
+  const passwordError = User.verifyPassword(password);
+  if (passwordError) throw new SigninError(passwordErrorMessage);
   const isPasswordCorrect = await compare(
-    userPassword.value,
+    password,
     user.passwordHash.toString()
   );
-  if (!isPasswordCorrect) throw new SigninError("INVALID_PASSWORD");
+  if (!isPasswordCorrect) throw new SigninError(passwordErrorMessage);
 
   session.userUid = user.uid;
 

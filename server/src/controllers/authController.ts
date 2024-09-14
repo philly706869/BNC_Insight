@@ -1,3 +1,4 @@
+import { AuthToken } from "@/database/models/AuthToken";
 import {
   signin,
   SigninError,
@@ -5,11 +6,20 @@ import {
   signup,
   SignupError,
 } from "@/services/authService";
+import { findAuthToken } from "@/services/authTokenService";
 import {
   extractProtectedUserData,
   getUserFromSession,
 } from "@/services/userService";
 import { RequestHandler } from "express";
+
+export const verifyAuthTokenHandler: RequestHandler = async (req, res) => {
+  const { authToken } = req.body;
+  if (typeof authToken !== "string") res.status(400).end();
+  else if (!AuthToken.verifyToken(authToken)) res.status(400).end();
+  else if ((await findAuthToken(authToken)) === null) res.status(400).end();
+  else res.status(200).end();
+};
 
 export const signupHandler: RequestHandler = async (req, res) => {
   const { authToken, username, password, name } = req.body;
@@ -31,7 +41,7 @@ export const signupHandler: RequestHandler = async (req, res) => {
   } catch (error) {
     if (error instanceof SignupError) {
       res.status(422).json({
-        error: error.errorCode,
+        error: error.error,
       });
     } else throw error;
   }
@@ -51,7 +61,7 @@ export const signinHandler: RequestHandler = async (req, res) => {
   } catch (error) {
     if (error instanceof SigninError) {
       res.status(401).json({
-        error: error.errorCode,
+        error: error.error,
       });
     } else throw error;
   }

@@ -23,4 +23,21 @@ export class Category {
 
   @UpdateDateColumn()
   declare updatedAt: Date;
+
+  private static nameRegex = /^[^\n]*$/;
+  static verifyName(value: string): string | null {
+    const errors: string[] = [];
+
+    if (!Category.nameRegex.test(value))
+      errors.push("Name cannot contain line breaks.");
+
+    const { min, max } = metadata.name;
+    if (value.length < min)
+      errors.push(`Name cannot be shorter than ${min} characters.`);
+    else if (value.length > max)
+      errors.push(`Name cannot be greater than ${max} characters.`);
+
+    if (errors.length) return errors.join(" ");
+    return null;
+  }
 }

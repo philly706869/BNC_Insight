@@ -1,17 +1,16 @@
 import { User } from "@/database/models/User";
 import { userRepository } from "@/database/repositories";
-import { UserName } from "@/valueObjects/userValueObjects";
 import { SessionData } from "express-session";
 
-export async function getUserByUid(uid: number): Promise<User | null> {
+export async function findUserByUid(uid: number): Promise<User | null> {
   return await userRepository.findOne({ where: { uid } });
 }
 
-export async function getUserByUsername(
-  username: UserName
+export async function findUserByUsername(
+  username: string
 ): Promise<User | null> {
   return await userRepository.findOne({
-    where: { username: username.value },
+    where: { username },
   });
 }
 
@@ -20,7 +19,7 @@ export async function getUserFromSession(
 ): Promise<User | null> {
   const { userUid } = session;
   if (!userUid) return null;
-  const user = await getUserByUid(userUid);
+  const user = await findUserByUid(userUid);
   if (!user) return null;
   return user;
 }

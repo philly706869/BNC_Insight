@@ -22,4 +22,12 @@ export class AuthToken {
 
   @UpdateDateColumn()
   declare updatedAt: Date;
+
+  static verifyToken(value: string): boolean {
+    const { min, max } = metadata.token;
+    if (value.length < min) return false;
+    else if (value.length > max) return false;
+
+    return true;
+  }
 }
