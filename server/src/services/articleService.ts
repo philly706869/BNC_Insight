@@ -36,7 +36,6 @@ export async function findArticles(
 
 export type ArticlePostErrorDetails = {
   field: "categoryName" | "thumbnailUrl" | "title" | "subtitle" | "content";
-  message: string;
 }[];
 
 export class ArticlePostError {
@@ -60,7 +59,6 @@ export async function postArticle(
     ? (() => {
         errors.push({
           field: "categoryName",
-          message: categoryError,
         });
         return null;
       })()
@@ -68,27 +66,23 @@ export async function postArticle(
   if (!category)
     errors.push({
       field: "categoryName",
-      message: "Category is not found.",
     });
 
   if (thumbnailUrl) {
     const thumbnailUrlError = Article.verifyThumbnailUrl(thumbnailUrl);
-    if (thumbnailUrlError)
-      errors.push({ field: "thumbnailUrl", message: thumbnailUrlError });
+    if (thumbnailUrlError) errors.push({ field: "thumbnailUrl" });
   }
 
   const titleError = Article.verifyTitle(title);
   if (titleError)
     errors.push({
       field: "title",
-      message: titleError,
     });
 
   const subtitleError = Article.verifySubtitle(subtitle);
   if (subtitleError)
     errors.push({
       field: "subtitle",
-      message: subtitleError,
     });
 
   if (errors.length) throw new ArticlePostError(errors);
