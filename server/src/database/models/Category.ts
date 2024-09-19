@@ -10,34 +10,42 @@ import { Article } from "./Article";
 
 const metadata = env.database.model.category;
 
+export namespace Category {
+  export class Name {
+    private static readonly regex = /^[^\n]*$/;
+    public static readonly min = metadata.name.min;
+    public static readonly max = metadata.name.max;
+
+    private constructor(public readonly value: string) {}
+
+    public static verify(value: string): Name | { error: string } {
+      const { regex, min, max } = Name;
+      const errors: string[] = [];
+
+      if (!regex.test(value)) errors.push("Name cannot contain line breaks.");
+
+      if (value.length < min)
+        errors.push(`Name cannot be shorter than ${min} characters.`);
+      else if (value.length > max)
+        errors.push(`Name cannot be greater than ${max} characters.`);
+
+      if (errors.length) return { error: errors.join(" ") };
+
+      return new Name(value);
+    }
+  }
+}
 @Entity("categories")
 export class Category {
-  @PrimaryColumn({ type: "varchar", length: metadata.name.max })
-  declare name: string;
+  @PrimaryColumn({ type: "varchar", length: Category.Name.max })
+  public declare name: string;
 
   @OneToMany((type) => Article, (article) => article.category)
-  declare articles: Article[];
+  public declare articles: Article[];
 
   @CreateDateColumn()
-  declare createdAt: Date;
+  public declare createdAt: Date;
 
   @UpdateDateColumn()
-  declare updatedAt: Date;
-
-  private static nameRegex = /^[^\n]*$/;
-  static verifyName(value: string): string | null {
-    const errors: string[] = [];
-
-    if (!Category.nameRegex.test(value))
-      errors.push("Name cannot contain line breaks.");
-
-    const { min, max } = metadata.name;
-    if (value.length < min)
-      errors.push(`Name cannot be shorter than ${min} characters.`);
-    else if (value.length > max)
-      errors.push(`Name cannot be greater than ${max} characters.`);
-
-    if (errors.length) return errors.join(" ");
-    return null;
-  }
+  public declare updatedAt: Date;
 }

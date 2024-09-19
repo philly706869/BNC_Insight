@@ -16,84 +16,106 @@ const metadata = env.database.model.article;
 @Entity("articles")
 export class Article {
   @PrimaryGeneratedColumn({ type: "smallint", unsigned: true })
-  declare id: number;
+  public declare id: number;
 
   @ManyToOne((type) => User, (user) => user.articles)
-  declare uploader: User;
+  public declare uploader: User;
 
   @ManyToOne((type) => Category, (category) => category.articles)
-  declare category: Category;
+  public declare category: Category;
 
   @Column({
     type: "varchar",
     length: metadata.thumbnailUrl.max,
     nullable: true,
   })
-  declare thumbnailUrl: string | null;
+  public declare thumbnailUrl: string | null;
 
   @Column({ type: "varchar", length: metadata.title.max })
-  declare title: string;
+  public declare title: string;
 
   @Column({ type: "varchar", length: metadata.subtitle.max })
-  declare subtitle: string;
+  public declare subtitle: string;
 
   @Column({ type: "json" })
-  declare content: any;
+  public declare content: any;
 
   @Column({ type: "smallint", unsigned: true, default: 0 })
-  declare views: number;
+  public declare views: number;
 
   @CreateDateColumn()
-  declare createdAt: Date;
+  public declare createdAt: Date;
 
   @UpdateDateColumn()
-  declare updatedAt: Date;
+  public declare updatedAt: Date;
 
-  static verifyThumbnailUrl(value: string): string | null {
-    const errors: string[] = [];
+  public static readonly ThumbnailUrl = class ThumbnailUrl {
+    public static readonly max = metadata.thumbnailUrl.max;
 
-    if (!validator.isURL(value, { protocols: ["http", "https"] }))
-      errors.push("Thumbnail url is invalid.");
+    private constructor(public readonly value: string) {}
 
-    const { max } = metadata.thumbnailUrl;
-    if (value.length > max)
-      errors.push(`Thumbnail url cannot be greater than ${max} characters.`);
+    public static verify(value: string): ThumbnailUrl | { error: string } {
+      const { max } = ThumbnailUrl;
+      const errors: string[] = [];
 
-    if (errors.length) return errors.join(" ");
-    return null;
-  }
+      if (!validator.isURL(value, { protocols: ["http", "https"] }))
+        errors.push("Thumbnail url is invalid.");
 
-  private static titleRegex = /^[^\n]*$/;
-  static verifyTitle(value: string): string | null {
-    const errors: string[] = [];
+      if (value.length > max)
+        errors.push(`Thumbnail url cannot be greater than ${max} characters.`);
 
-    if (!Article.titleRegex.test(value))
-      errors.push("Title cannot contain line breaks.");
+      if (errors.length) return { error: errors.join(" ") };
 
-    const { min, max } = metadata.title;
-    if (value.length < min)
-      errors.push(`Title cannot be shorter than ${min} characters.`);
-    else if (value.length > max)
-      errors.push(`Title cannot be greater than ${max} characters.`);
+      return new ThumbnailUrl(value);
+    }
+  };
 
-    if (errors.length) return errors.join(" ");
-    return null;
-  }
+  public static readonly Title = class Title {
+    private static readonly regex = /^[^\n]*$/;
+    public static readonly min = metadata.title.min;
+    public static readonly max = metadata.title.max;
 
-  private static subtitleRegex = /^[^\n]*$/;
-  static verifySubtitle(value: string): string | null {
-    const errors: string[] = [];
+    private constructor(public readonly value: string) {}
 
-    if (!Article.subtitleRegex.test(value))
-      errors.push("Subtitle cannot contain line breaks.");
+    public static verify(value: string): Title | { error: string } {
+      const { regex, min, max } = Title;
+      const errors: string[] = [];
 
-    const { min, max } = metadata.subtitle;
-    if (value.length < min)
-      errors.push(`Subtitle cannot be shorter than ${min} characters.`);
-    else if (value.length > max)
-      errors.push(`Subtitle cannot be greater than ${max} characters.`);
+      if (!regex.test(value)) errors.push("Title cannot contain line breaks.");
 
-    if (errors.length) return errors.join(" ");
-    return null;
-  }
+      if (value.length < min)
+        errors.push(`Title cannot be shorter than ${min} characters.`);
+      else if (value.length > max)
+        errors.push(`Title cannot be greater than ${max} characters.`);
+
+      if (errors.length) return { error: errors.join(" ") };
+
+      return new Title(value);
+    }
+  };
+
+  public static readonly Subtitle = class Subtitle {
+    private static readonly regex = /^[^\n]*$/;
+    public static readonly min = metadata.subtitle.min;
+    public static readonly max = metadata.subtitle.max;
+
+    private constructor(public readonly value: string) {}
+
+    public static verify(value: string): Subtitle | { error: string } {
+      const { regex, min, max } = Subtitle;
+      const errors: string[] = [];
+
+      if (!regex.test(value))
+        errors.push("Subtitle cannot contain line breaks.");
+
+      if (value.length < min)
+        errors.push(`Subtitle cannot be shorter than ${min} characters.`);
+      else if (value.length > max)
+        errors.push(`Subtitle cannot be greater than ${max} characters.`);
+
+      if (errors.length) return { error: errors.join(" ") };
+
+      return new Subtitle(value);
+    }
+  };
 }
