@@ -49,73 +49,28 @@ export class Article {
   @UpdateDateColumn()
   public declare updatedAt: Date;
 
-  public static readonly ThumbnailUrl = class ThumbnailUrl {
-    public static readonly max = metadata.thumbnailUrl.max;
+  public static verifyThumbnailUrl(value: string): boolean {
+    if (!validator.isURL(value, { protocols: ["http", "https"] })) return false;
+    const { max } = metadata.thumbnailUrl;
+    if (value.length > max) return false;
+    return true;
+  }
 
-    private constructor(public readonly value: string) {}
+  private static readonly titleRegex = /^[^\n]*$/;
+  public static verifyTitle(value: string): boolean {
+    if (!Article.titleRegex.test(value)) return false;
+    const { min, max } = metadata.title;
+    if (value.length < min) return false;
+    if (value.length > max) return false;
+    return true;
+  }
 
-    public static verify(value: string): ThumbnailUrl | { error: string } {
-      const { max } = ThumbnailUrl;
-      const errors: string[] = [];
-
-      if (!validator.isURL(value, { protocols: ["http", "https"] }))
-        errors.push("Thumbnail url is invalid.");
-
-      if (value.length > max)
-        errors.push(`Thumbnail url cannot be greater than ${max} characters.`);
-
-      if (errors.length) return { error: errors.join(" ") };
-
-      return new ThumbnailUrl(value);
-    }
-  };
-
-  public static readonly Title = class Title {
-    private static readonly regex = /^[^\n]*$/;
-    public static readonly min = metadata.title.min;
-    public static readonly max = metadata.title.max;
-
-    private constructor(public readonly value: string) {}
-
-    public static verify(value: string): Title | { error: string } {
-      const { regex, min, max } = Title;
-      const errors: string[] = [];
-
-      if (!regex.test(value)) errors.push("Title cannot contain line breaks.");
-
-      if (value.length < min)
-        errors.push(`Title cannot be shorter than ${min} characters.`);
-      else if (value.length > max)
-        errors.push(`Title cannot be greater than ${max} characters.`);
-
-      if (errors.length) return { error: errors.join(" ") };
-
-      return new Title(value);
-    }
-  };
-
-  public static readonly Subtitle = class Subtitle {
-    private static readonly regex = /^[^\n]*$/;
-    public static readonly min = metadata.subtitle.min;
-    public static readonly max = metadata.subtitle.max;
-
-    private constructor(public readonly value: string) {}
-
-    public static verify(value: string): Subtitle | { error: string } {
-      const { regex, min, max } = Subtitle;
-      const errors: string[] = [];
-
-      if (!regex.test(value))
-        errors.push("Subtitle cannot contain line breaks.");
-
-      if (value.length < min)
-        errors.push(`Subtitle cannot be shorter than ${min} characters.`);
-      else if (value.length > max)
-        errors.push(`Subtitle cannot be greater than ${max} characters.`);
-
-      if (errors.length) return { error: errors.join(" ") };
-
-      return new Subtitle(value);
-    }
-  };
+  private static readonly subtitleRegex = /^[^\n]*$/;
+  public static verifySubtitle(value: string): boolean {
+    if (!Article.subtitleRegex.test(value)) return false;
+    const { min, max } = metadata.subtitle;
+    if (value.length < min) return false;
+    if (value.length > max) return false;
+    return true;
+  }
 }

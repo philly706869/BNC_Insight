@@ -1,6 +1,6 @@
 import { Article } from "@/database/models/Article";
 import { Category } from "@/database/models/Category";
-import { articleRepository } from "@/database/repositories";
+import { articleRepository, categoryRepository } from "@/database/repositories";
 import { findCategoryByName } from "./categoryService";
 
 export async function findArticleById(id: number): Promise<Article | null> {
@@ -8,11 +8,15 @@ export async function findArticleById(id: number): Promise<Article | null> {
 }
 
 export async function findArticles(
-  category: string,
+  categoryName: string,
   offset: number,
   limit: number
 ): Promise<Article[]> {
   limit = Math.min(limit, 30);
+  const category = await categoryRepository.findOne({
+    where: { name: categoryName },
+  });
+  if (!category) return [];
   return await articleRepository.find({
     select: [
       "id",
@@ -24,6 +28,7 @@ export async function findArticles(
       "createdAt",
       "views",
     ],
+    where: { category },
     skip: offset,
     take: limit,
   });
