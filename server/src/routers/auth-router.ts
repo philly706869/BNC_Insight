@@ -3,7 +3,7 @@ import {
   signinHandler,
   signoutHandler,
   signupHandler,
-} from "@/controllers/authController";
+} from "@/controllers/auth-controller";
 import { Router } from "express";
 
 export const authRouter = Router();

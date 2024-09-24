@@ -1,8 +1,5 @@
-import { User } from "@/database/models/User";
-import {
-  extractPublicUserData,
-  findUserByUsername,
-} from "@/services/userService";
+import { User } from "@/database/entities/User";
+import { findUserByUsername } from "@/services/user-service";
 import { RequestHandler } from "express";
 
 export const getUserHandler: RequestHandler = async (req, res) => {

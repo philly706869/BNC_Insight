@@ -1,5 +1,5 @@
 import { exit } from "process";
-import { dataSource } from "./database/dataSource";
+import { dataSource } from "./database/data-source";
 import { env } from "./env";
 import { express } from "./express";
 import { logger } from "./utils/logger";

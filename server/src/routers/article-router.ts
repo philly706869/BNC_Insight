@@ -1,4 +1,4 @@
-import { getArticlesHandler } from "@/controllers/articleController";
+import { getArticlesHandler } from "@/controllers/article-controller";
 import { Router } from "express";
 
 export const articleRouter = Router();

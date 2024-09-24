@@ -3,7 +3,7 @@ import Express, { ErrorRequestHandler } from "express";
 import session from "express-session";
 import { sessionRepository } from "./database/repositories";
 import { env, isProduction } from "./env";
-import { api } from "./routers/apiRouter";
+import { api } from "./routers/api-router";
 import { logger } from "./utils/logger";
 
 export const express = Express();

@@ -1,11 +1,11 @@
-import { env, NODE_ENV } from "@/env";
+import { env, isDev } from "@/env";
 import "reflect-metadata";
 import { DataSource } from "typeorm";
-import { Article } from "./models/Article";
-import { AuthToken } from "./models/AuthToken";
-import { Category } from "./models/Category";
-import { Session } from "./models/Session";
-import { User } from "./models/User";
+import { Article } from "./entities/Article";
+import { AuthToken } from "./entities/AuthToken";
+import { Category } from "./entities/Category";
+import { Session } from "./entities/Session";
+import { User } from "./entities/User";
 
 export const dataSource = new DataSource({
   type: "mysql",
@@ -16,7 +16,7 @@ export const dataSource = new DataSource({
   database: env.database.dbname,
   poolSize: env.database.poolSize,
   entities: [Article, AuthToken, Category, User, Session],
-  synchronize: NODE_ENV === "development",
+  synchronize: isDev,
   logging: false,
   timezone: "+09:00",
 });

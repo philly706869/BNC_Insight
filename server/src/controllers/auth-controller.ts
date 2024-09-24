@@ -1,16 +1,13 @@
-import { AuthToken } from "@/database/models/AuthToken";
+import { AuthToken } from "@/database/entities/AuthToken";
 import {
   signin,
   SigninError,
   signout,
   signup,
   SignupError,
-} from "@/services/authService";
-import { findAuthToken } from "@/services/authTokenService";
-import {
-  extractProtectedUserData,
-  getUserFromSession,
-} from "@/services/userService";
+} from "@/services/auth-service";
+import { findAuthToken } from "@/services/auth-token-service";
+import { getUserFromSession } from "@/services/user-service";
 import { RequestHandler } from "express";
 
 export const verifyAuthTokenHandler: RequestHandler = async (req, res) => {

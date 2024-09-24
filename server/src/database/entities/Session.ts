@@ -11,6 +11,8 @@ import {
 
 @Entity()
 export class Session implements ISession {
+  private constructor() {}
+
   @Index()
   @Column("bigint")
   public expiredAt = Date.now();

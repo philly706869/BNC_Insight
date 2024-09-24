@@ -11,6 +11,8 @@ const metadata = env.database.model.authToken;
 
 @Entity("auth_tokens")
 export class AuthToken {
+  private constructor() {}
+
   @PrimaryColumn({ type: "varchar", length: metadata.token.max })
   public declare token: string;
 
@@ -22,11 +24,4 @@ export class AuthToken {
 
   @UpdateDateColumn()
   public declare updatedAt: Date;
-
-  public static verifyToken(value: string): boolean {
-    const { min, max } = metadata.token;
-    if (value.length < min) return false;
-    if (value.length > max) return false;
-    return true;
-  }
 }

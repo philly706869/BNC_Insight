@@ -12,6 +12,8 @@ const metadata = env.database.model.category;
 
 @Entity("categories")
 export class Category {
+  private constructor() {}
+
   @PrimaryColumn({ type: "varchar", length: metadata.name.max })
   public declare name: string;
 
@@ -23,13 +25,4 @@ export class Category {
 
   @UpdateDateColumn()
   public declare updatedAt: Date;
-
-  private static readonly nameRegex = /^[^\n]*$/;
-  public static verifyName(value: string): boolean {
-    if (!Category.nameRegex.test(value)) return false;
-    const { min, max } = metadata.name;
-    if (value.length < min) return false;
-    if (value.length > max) return false;
-    return true;
-  }
 }

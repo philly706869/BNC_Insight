@@ -1,4 +1,4 @@
-import { AuthToken } from "@/database/models/AuthToken";
+import { AuthToken } from "@/database/entities/AuthToken";
 import { authTokenRepository } from "@/database/repositories";
 
 export async function findAuthToken(token: string): Promise<AuthToken | null> {

@@ -1,9 +1,9 @@
-import { dataSource } from "./dataSource";
-import { Article } from "./models/Article";
-import { AuthToken } from "./models/AuthToken";
-import { Category } from "./models/Category";
-import { Session } from "./models/Session";
-import { User } from "./models/User";
+import { dataSource } from "./data-source";
+import { Article } from "./entities/Article";
+import { AuthToken } from "./entities/AuthToken";
+import { Category } from "./entities/Category";
+import { Session } from "./entities/Session";
+import { User } from "./entities/User";
 
 export const sessionRepository = dataSource.getRepository(Session);
 export const authTokenRepository = dataSource.getRepository(AuthToken);
