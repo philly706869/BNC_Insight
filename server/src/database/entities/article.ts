@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Category } from "./Category";
-import { User } from "./User";
+import { Category } from "./category";
+import { User } from "./user";
 
 const metadata = env.database.model.article;
 

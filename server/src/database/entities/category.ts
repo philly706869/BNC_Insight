@@ -6,7 +6,7 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Article } from "./Article";
+import { Article } from "./article";
 
 const metadata = env.database.model.category;
 
