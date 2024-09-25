@@ -1,12 +1,12 @@
 import { dataSource } from "@/database/data-source";
 import { AuthToken } from "@/database/entities/auth-token";
 import { User } from "@/database/entities/user";
+import { authTokenRepository, userRepository } from "@/database/repositories";
 import { AuthTokenValue } from "@/database/values/auth-token-values";
 import { UserValue } from "@/database/values/user-values";
+import { ProtectedUserDTO } from "@/dto/protected-user-dto";
 import { compare, hash } from "bcrypt";
 import { Session, SessionData } from "express-session";
-import { findAuthToken } from "./auth-token-service";
-import { findUserByUsername } from "./user-service";
 
 export class SignupError {
   declare error: string;
@@ -19,25 +19,29 @@ export async function signup(
   token: AuthTokenValue.Token,
   username: UserValue.Username,
   password: UserValue.Password,
-  name: UserValue.Name,
-  isAdmin: boolean = false
-): Promise<User> {
-  const authToken = await findAuthToken(token.value);
+  name: UserValue.Name
+): Promise<ProtectedUserDTO> {
+  const authToken = await authTokenRepository.findOne({
+    where: { token: token.value },
+    select: { token: true, isAdminToken: true },
+  });
   if (!authToken) throw new SignupError("Auth token is not valid");
 
-  if (await findUserByUsername(username.value))
+  if (await userRepository.exists({ where: { username: username.value } }))
     throw new SignupError(`${username.value} is already taken.`);
 
-  return await dataSource.transaction(async (manager) => {
+  const user = await dataSource.transaction(async (manager) => {
     await manager.delete(AuthToken, authToken);
     const user = manager.create(User, {
       username: username.value,
       passwordHash: Buffer.from(await hash(password.value, 10)),
       name: name.value,
-      isAdmin,
+      isAdmin: authToken.isAdminToken,
     });
     return await manager.save(user);
   });
+
+  return ProtectedUserDTO.from(user);
 }
 
 export class SigninError {
@@ -51,8 +55,11 @@ export async function signin(
   session: Partial<SessionData>,
   username: UserValue.Username,
   password: UserValue.Password
-): Promise<User> {
-  const user = await findUserByUsername(username.value);
+): Promise<ProtectedUserDTO> {
+  const user = await userRepository.findOne({
+    where: { username: username.value },
+    select: { uid: true, passwordHash: true },
+  });
   if (!user) throw new SigninError("Invalid username.");
 
   const isPasswordCorrect = await compare(
@@ -63,7 +70,7 @@ export async function signin(
 
   session.userUid = user.uid;
 
-  return user;
+  return ProtectedUserDTO.from(user);
 }
 
 export async function signout(

@@ -1,35 +1,28 @@
 import { Article } from "@/database/entities/article";
 import { ClassToObject } from "@/types/utils";
 import { FindOptionsSelect } from "typeorm";
-import { categoryNameFindSelection } from "./category-name-dto";
-import {
-  PublicUserDTO,
-  PublicUserDTOProps,
-  publicUserFindSelection,
-} from "./public-user-dto";
+import { PublicUserDTO, PublicUserDTOProps } from "./public-user-dto";
 
-export type ArticleDTOProps = ClassToObject<ArticleDTO>;
+export type ArticleDTOProps = ClassToObject<ContentlessArticleDTO>;
 
-export const articleFindSelection = {
+export const contentlessArticleFindSelection = {
   id: true,
-  category: categoryNameFindSelection,
+  category: { name: true },
   thumbnailUrl: true,
   title: true,
   subtitle: true,
-  content: true,
-  uploader: publicUserFindSelection,
+  uploader: { username: true, name: true },
   createdAt: true,
   updatedAt: true,
 } satisfies Readonly<FindOptionsSelect<Article>>;
 
-export class ArticleDTO {
+export class ContentlessArticleDTO {
   public id: number;
   public uploader: PublicUserDTOProps;
   public categoryName: string;
   public thumbnailUrl: string;
   public title: string;
   public subtitle: string;
-  public content: any;
   public createdAt: string;
   public updatedAt: string;
 
@@ -40,13 +33,12 @@ export class ArticleDTO {
     this.thumbnailUrl = props.thumbnailUrl;
     this.title = props.title;
     this.subtitle = props.subtitle;
-    this.content = props.content;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
   }
 
-  public static from(article: Article): ArticleDTO {
-    return new ArticleDTO({
+  public static from(article: Article): ContentlessArticleDTO {
+    return new ContentlessArticleDTO({
       ...article,
       uploader: new PublicUserDTO(article.uploader),
       categoryName: article.category.name,

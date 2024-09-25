@@ -1,7 +1,13 @@
 import { User } from "@/database/entities/user";
 import { ClassToObject } from "@/types/utils";
+import { FindOptionsSelect } from "typeorm";
 
 export type PublicUserDTOProps = ClassToObject<PublicUserDTO>;
+
+export const publicUserFindSelection = {
+  username: true,
+  name: true,
+} satisfies Readonly<FindOptionsSelect<User>>;
 
 export class PublicUserDTO {
   public username: string;

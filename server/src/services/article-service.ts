@@ -1,4 +1,3 @@
-import { Article } from "@/database/entities/article";
 import { Category } from "@/database/entities/category";
 import {
   articleRepository,
@@ -7,50 +6,33 @@ import {
 } from "@/database/repositories";
 import { ArticleValue } from "@/database/values/article-values";
 import { CategoryValue } from "@/database/values/category-values";
-import { FindOptionsSelect } from "typeorm";
+import { ArticleDTO, articleFindSelection } from "@/dto/article-dto";
+import {
+  ContentlessArticleDTO,
+  contentlessArticleFindSelection,
+} from "@/dto/contentless-article-dto";
 
-const getArticleSelection: FindOptionsSelect<Article> = {
-  id: true,
-  category: { name: true },
-  thumbnailUrl: true,
-  title: true,
-  subtitle: true,
-  content: true,
-  uploader: { username: true, name: true },
-  createdAt: true,
-  updatedAt: true,
-};
-
-export async function getArticle(id: number): Promise<Article | null> {
-  return await articleRepository.findOne({
+export async function getArticle(id: number): Promise<ArticleDTO | null> {
+  const article = await articleRepository.findOne({
     where: { id },
-    select: getArticleSelection,
+    select: articleFindSelection,
   });
+  return article ? ArticleDTO.from(article) : null;
 }
-
-const getArticlesSelection: FindOptionsSelect<Article> = {
-  id: true,
-  category: { name: true },
-  thumbnailUrl: true,
-  title: true,
-  subtitle: true,
-  uploader: { username: true, name: true },
-  createdAt: true,
-  updatedAt: true,
-};
 
 export async function getArticles(
   category: Category,
   offset: number,
   limit: number
-): Promise<Article[]> {
+): Promise<ContentlessArticleDTO[]> {
   limit = Math.min(limit, 30);
-  return await articleRepository.find({
+  const articles = await articleRepository.find({
     where: { category },
-    select: getArticlesSelection,
+    select: contentlessArticleFindSelection,
     skip: offset,
     take: limit,
   });
+  return articles.map((article) => ContentlessArticleDTO.from(article));
 }
 
 export async function postArticle(
@@ -60,7 +42,7 @@ export async function postArticle(
   title: ArticleValue.Title,
   subtitle: ArticleValue.Subtitle,
   content: ArticleValue.Content
-): Promise<Article> {
+): Promise<ContentlessArticleDTO> {
   const uploader = await userRepository.findOne({
     where: { uid: uploaderUid },
     select: { uid: true },
@@ -82,5 +64,5 @@ export async function postArticle(
     content: content.value,
   });
 
-  return await articleRepository.save(article);
+  return ContentlessArticleDTO.from(await articleRepository.save(article));
 }
