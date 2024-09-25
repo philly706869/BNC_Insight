@@ -1,6 +1,6 @@
-import { Article } from "@/database/entities/Article";
+import { Article } from "@/database/entities/article";
 import { ClassToObject } from "@/types/utils";
-import { PublicUserDTO, PublicUserDTOProps } from "./PublicUserDTO";
+import { PublicUserDTO, PublicUserDTOProps } from "./public-user-dto";
 
 export type ArticleDTOProps = ClassToObject<ArticleDTO>;
 

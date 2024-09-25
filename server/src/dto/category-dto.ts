@@ -1,4 +1,4 @@
-import { Category } from "@/database/entities/Category";
+import { Category } from "@/database/entities/category";
 import { ClassToObject } from "@/types/utils";
 
 export type CategoryDTOProps = ClassToObject<CategoryDTO>;

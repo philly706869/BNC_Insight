@@ -1,6 +1,6 @@
 import { dataSource } from "@/database/data-source";
-import { AuthToken } from "@/database/entities/AuthToken";
-import { User } from "@/database/entities/User";
+import { AuthToken } from "@/database/entities/auth-token";
+import { User } from "@/database/entities/user";
 import { AuthTokenValue } from "@/database/values/auth-token-values";
 import { UserValue } from "@/database/values/user-values";
 import { compare, hash } from "bcrypt";

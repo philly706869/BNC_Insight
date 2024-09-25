@@ -1,5 +1,5 @@
-import { Article } from "@/database/entities/Article";
-import { Category } from "@/database/entities/Category";
+import { Article } from "@/database/entities/article";
+import { Category } from "@/database/entities/category";
 import {
   articleRepository,
   categoryRepository,

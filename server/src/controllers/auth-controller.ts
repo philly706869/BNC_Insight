@@ -1,4 +1,4 @@
-import { AuthToken } from "@/database/entities/AuthToken";
+import { AuthToken } from "@/database/entities/auth-token";
 import {
   signin,
   SigninError,

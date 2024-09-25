@@ -1,4 +1,4 @@
-import { User } from "@/database/entities/User";
+import { User } from "@/database/entities/user";
 import { userRepository } from "@/database/repositories";
 import { SessionData } from "express-session";
 

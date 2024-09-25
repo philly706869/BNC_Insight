@@ -1,4 +1,4 @@
-import { User } from "@/database/entities/User";
+import { User } from "@/database/entities/user";
 import { ClassToObject } from "@/types/utils";
 
 export type ProtectedUserDTOProps = ClassToObject<ProtectedUserDTO>;

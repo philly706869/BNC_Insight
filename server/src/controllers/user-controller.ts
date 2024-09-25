@@ -1,4 +1,4 @@
-import { User } from "@/database/entities/User";
+import { User } from "@/database/entities/user";
 import { findUserByUsername } from "@/services/user-service";
 import { RequestHandler } from "express";
 
