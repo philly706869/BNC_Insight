@@ -1,11 +1,11 @@
 import { env, isDev } from "@/env";
 import "reflect-metadata";
 import { DataSource } from "typeorm";
-import { Article } from "./entities/Article";
-import { AuthToken } from "./entities/AuthToken";
-import { Category } from "./entities/Category";
-import { Session } from "./entities/Session";
-import { User } from "./entities/User";
+import { Article } from "./entities/article";
+import { AuthToken } from "./entities/auth-token";
+import { Category } from "./entities/category";
+import { Session } from "./entities/session";
+import { User } from "./entities/user";
 
 export const dataSource = new DataSource({
   type: "mysql",
