@@ -17,13 +17,12 @@ export type Env = {
     readonly sessionSecret: string;
   };
   readonly database: {
-    readonly host: string;
-    readonly port: number;
-    readonly username: string;
-    readonly password: string;
-    readonly dbname: string;
-    readonly poolSize: number;
-    readonly model: {
+    readonly url: string;
+    readonly pool: {
+      readonly min: number;
+      readonly max: number;
+    };
+    readonly config: {
       readonly authToken: {
         readonly token: MinMax;
       };
@@ -34,6 +33,7 @@ export type Env = {
       };
       readonly article: {
         readonly thumbnailUrl: Max;
+        readonly thumbnailCaption: MinMax;
         readonly title: MinMax;
         readonly subtitle: MinMax;
       };

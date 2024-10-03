@@ -11,9 +11,9 @@ export const categoryFindSelection = {
 } satisfies Readonly<FindOptionsSelect<Category>>;
 
 export class CategoryDTO {
-  public name: string;
-  public createdAt: string;
-  public updatedAt: string;
+  public readonly name: string;
+  public readonly createdAt: string;
+  public readonly updatedAt: string;
 
   public constructor(props: CategoryDTOProps) {
     this.name = props.name;

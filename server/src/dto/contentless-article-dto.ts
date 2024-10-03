@@ -17,14 +17,14 @@ export const contentlessArticleFindSelection = {
 } satisfies Readonly<FindOptionsSelect<Article>>;
 
 export class ContentlessArticleDTO {
-  public id: number;
-  public uploader: PublicUserDTOProps;
-  public categoryName: string;
-  public thumbnailUrl: string;
-  public title: string;
-  public subtitle: string;
-  public createdAt: string;
-  public updatedAt: string;
+  public readonly id: number;
+  public readonly uploader: PublicUserDTOProps;
+  public readonly categoryName: string;
+  public readonly thumbnailUrl: string;
+  public readonly title: string;
+  public readonly subtitle: string;
+  public readonly createdAt: string;
+  public readonly updatedAt: string;
 
   public constructor(props: ArticleDTOProps) {
     this.id = props.id;

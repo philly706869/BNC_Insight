@@ -1,23 +1,28 @@
-import { RequestHandler } from "express";
+import { ArticleService } from "@/services/article-service";
+import { Request, Response } from "express";
 
-export const postArticleHandler: RequestHandler = async (req, res) => {};
+export class ArticleController {
+  public constructor(private readonly articleService: ArticleService) {}
 
-export const getArticleHandler: RequestHandler = async (req, res) => {
-  const { id } = req.params;
-};
-
-export const getArticlesHandler: RequestHandler = async (req, res) => {
-  const { category, offset, limit } = req.query;
-  if (
-    typeof category !== "string" ||
-    typeof offset !== "string" ||
-    typeof limit !== "string"
-  ) {
-    res.status(400).end();
-    return;
+  public async getOne(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
   }
-};
 
-export const patchArticleHandler: RequestHandler = async (req, res) => {};
+  public async getMany(req: Request, res: Response): Promise<void> {
+    const { category, offset, limit } = req.query;
+    if (
+      typeof category !== "string" ||
+      typeof offset !== "string" ||
+      typeof limit !== "string"
+    ) {
+      res.status(400).end();
+      return;
+    }
+  }
 
-export const deleteArticleHandler: RequestHandler = async (req, res) => {};
+  public async post(req: Request, res: Response): Promise<void> {}
+
+  public async patch(req: Request, res: Response): Promise<void> {}
+
+  public async delete(req: Request, res: Response): Promise<void> {}
+}

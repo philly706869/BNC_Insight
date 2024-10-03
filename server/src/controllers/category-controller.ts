@@ -1,6 +1,14 @@
-import { RequestHandler } from "express";
+import { CategoryService } from "@/services/category-service";
+import { Request, Response } from "express";
 
-export const getCategoriesHandler: RequestHandler = async (req, res) => {};
-export const postCategoryHandler: RequestHandler = async (req, res) => {};
-export const patchCategoryHandler: RequestHandler = async (req, res) => {};
-export const deleteCategoryHandler: RequestHandler = async (req, res) => {};
+export class CategoryController {
+  public constructor(private readonly categoryService: CategoryService) {}
+
+  public async getMany(req: Request, res: Response): Promise<void> {}
+
+  public async post(req: Request, res: Response): Promise<void> {}
+
+  public async patch(req: Request, res: Response): Promise<void> {}
+
+  public async delete(req: Request, res: Response): Promise<void> {}
+}

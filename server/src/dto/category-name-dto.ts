@@ -9,7 +9,7 @@ export const categoryNameFindSelection = {
 } satisfies Readonly<FindOptionsSelect<Category>>;
 
 export class CategoryNameDTO {
-  public name: string;
+  public readonly name: string;
 
   public constructor(props: CategoryDTOProps) {
     this.name = props.name;

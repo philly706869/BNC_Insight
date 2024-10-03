@@ -10,7 +10,7 @@ import {
 import { Category } from "./category";
 import { User } from "./user";
 
-const metadata = env.database.model.article;
+const metadata = env.database.config.article;
 
 @Entity("articles")
 export class Article {
@@ -28,8 +28,16 @@ export class Article {
   @Column({
     type: "varchar",
     length: metadata.thumbnailUrl.max,
+    nullable: true,
   })
-  public declare thumbnailUrl: string;
+  public declare thumbnailUrl: string | null;
+
+  @Column({
+    type: "varchar",
+    length: metadata.thumbnailCaption.max,
+    nullable: true,
+  })
+  public declare thumbnailCaption: string | null;
 
   @Column({ type: "varchar", length: metadata.title.max })
   public declare title: string;

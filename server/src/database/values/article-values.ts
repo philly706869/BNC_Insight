@@ -1,8 +1,9 @@
 import { env } from "@/env";
 import validator, { IsURLOptions } from "validator";
+import { z } from "zod";
 
 export namespace ArticleValue {
-  const metadata = env.database.model.article;
+  const metadata = env.database.config.article;
 
   export class ThumbnailUrl {
     private static readonly isUrlOptions: IsURLOptions = {
@@ -10,7 +11,7 @@ export namespace ArticleValue {
     };
     public static readonly max = metadata.thumbnailUrl.max;
 
-    private constructor(public value: string) {}
+    private constructor(public readonly value: string) {}
 
     public static verify(value: string): ThumbnailUrl | null {
       const { isUrlOptions, max } = ThumbnailUrl;
@@ -20,12 +21,28 @@ export namespace ArticleValue {
     }
   }
 
+  export class ThumbnailCaption {
+    private static readonly regex = /^[^\n]*$/;
+    public static readonly min = metadata.thumbnailCaption.min;
+    public static readonly max = metadata.thumbnailCaption.max;
+
+    private constructor(public readonly value: string) {}
+
+    public static verify(value: string): ThumbnailCaption | null {
+      const { regex, min, max } = ThumbnailCaption;
+      if (!regex.test(value)) return null;
+      if (value.length < min) return null;
+      if (value.length > max) return null;
+      return new ThumbnailCaption(value);
+    }
+  }
+
   export class Title {
     private static readonly regex = /^[^\n]*$/;
     public static readonly min = metadata.title.min;
     public static readonly max = metadata.title.max;
 
-    private constructor(public value: string) {}
+    private constructor(public readonly value: string) {}
 
     public static verify(value: string): Title | null {
       const { regex, min, max } = Title;
@@ -41,7 +58,7 @@ export namespace ArticleValue {
     public static readonly min = metadata.subtitle.min;
     public static readonly max = metadata.subtitle.max;
 
-    private constructor(public value: string) {}
+    private constructor(public readonly value: string) {}
 
     public static verify(value: string): Title | null {
       const { regex, min, max } = Subtitle;
@@ -53,7 +70,11 @@ export namespace ArticleValue {
   }
 
   export class Content {
-    private constructor(public value: any) {}
+    private static readonly schema = z.object({
+      ops: z.array(z.object({})),
+    });
+
+    private constructor(public readonly value: any) {}
 
     public static verify(value: any): Content | null {
       return new Content(value);

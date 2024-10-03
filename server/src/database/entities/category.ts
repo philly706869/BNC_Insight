@@ -8,7 +8,7 @@ import {
 } from "typeorm";
 import { Article } from "./article";
 
-const metadata = env.database.model.category;
+const metadata = env.database.config.category;
 
 @Entity("categories")
 export class Category {

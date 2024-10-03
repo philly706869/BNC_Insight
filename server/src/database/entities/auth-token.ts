@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 
-const metadata = env.database.model.authToken;
+const metadata = env.database.config.authToken;
 
 @Entity("auth_tokens")
 export class AuthToken {

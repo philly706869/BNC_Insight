@@ -2,14 +2,14 @@ import { env } from "@/env";
 import { BCRYPT_MAX_BYTE_LENGTH } from "@/utils/constants";
 
 export namespace UserValue {
-  const metadata = env.database.model.user;
+  const metadata = env.database.config.user;
 
   export class Username {
     private static readonly regex = /^[a-z\d]*$/;
     public static readonly min = metadata.username.min;
     public static readonly max = metadata.username.max;
 
-    private constructor(public value: string) {}
+    private constructor(public readonly value: string) {}
 
     public static verify(value: string): Username | null {
       const { regex, min, max } = Username;
@@ -27,7 +27,7 @@ export namespace UserValue {
     public static readonly max = metadata.password.max;
     public static readonly byteMax = BCRYPT_MAX_BYTE_LENGTH;
 
-    private constructor(public value: string) {}
+    private constructor(public readonly value: string) {}
 
     public static verify(value: string): Password | null {
       const { regex, min, max, byteMax } = Password;
@@ -44,7 +44,7 @@ export namespace UserValue {
     public static readonly min = metadata.name.min;
     public static readonly max = metadata.name.max;
 
-    private constructor(public value: string) {}
+    private constructor(public readonly value: string) {}
 
     public static verify(value: string): Name | null {
       const { regex, min, max } = Name;

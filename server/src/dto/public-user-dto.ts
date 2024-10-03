@@ -10,8 +10,8 @@ export const publicUserFindSelection = {
 } satisfies Readonly<FindOptionsSelect<User>>;
 
 export class PublicUserDTO {
-  public username: string;
-  public name: string;
+  public readonly username: string;
+  public readonly name: string;
 
   public constructor(props: PublicUserDTOProps) {
     this.username = props.username;

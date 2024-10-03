@@ -23,15 +23,15 @@ export const articleFindSelection = {
 } satisfies Readonly<FindOptionsSelect<Article>>;
 
 export class ArticleDTO {
-  public id: number;
-  public uploader: PublicUserDTOProps;
-  public categoryName: string;
-  public thumbnailUrl: string;
-  public title: string;
-  public subtitle: string;
-  public content: any;
-  public createdAt: string;
-  public updatedAt: string;
+  public readonly id: number;
+  public readonly uploader: PublicUserDTOProps;
+  public readonly categoryName: string;
+  public readonly thumbnailUrl: string;
+  public readonly title: string;
+  public readonly subtitle: string;
+  public readonly content: any;
+  public readonly createdAt: string;
+  public readonly updatedAt: string;
 
   public constructor(props: ArticleDTOProps) {
     this.id = props.id;

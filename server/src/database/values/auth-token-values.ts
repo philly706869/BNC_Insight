@@ -1,13 +1,13 @@
 import { env } from "@/env";
 
 export namespace AuthTokenValue {
-  const metadata = env.database.model.authToken;
+  const metadata = env.database.config.authToken;
 
   export class Token {
     public static readonly min = metadata.token.min;
     public static readonly max = metadata.token.max;
 
-    private constructor(public value: string) {}
+    private constructor(public readonly value: string) {}
 
     public static verify(value: string): Token | null {
       const { min, max } = Token;

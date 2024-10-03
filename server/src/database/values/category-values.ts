@@ -1,14 +1,14 @@
 import { env } from "@/env";
 
 export namespace CategoryValue {
-  const metadata = env.database.model.category;
+  const metadata = env.database.config.category;
 
   export class Name {
     private static readonly regex = /^[^\n]*$/;
     public static readonly min = metadata.name.min;
     public static readonly max = metadata.name.max;
 
-    private constructor(public value: string) {}
+    private constructor(public readonly value: string) {}
 
     public static verify(value: string): Name | null {
       const { regex, min, max } = Name;

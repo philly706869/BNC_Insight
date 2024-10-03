@@ -12,10 +12,10 @@ export const protectedUserFindSelection = {
 } satisfies Readonly<FindOptionsSelect<User>>;
 
 export class ProtectedUserDTO {
-  public username: string;
-  public name: string;
-  public createdAt: string;
-  public isAdmin: boolean;
+  public readonly username: string;
+  public readonly name: string;
+  public readonly createdAt: string;
+  public readonly isAdmin: boolean;
 
   public constructor(props: ProtectedUserDTOProps) {
     this.username = props.username;
