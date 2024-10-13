@@ -20,7 +20,8 @@ export class ContentlessArticleDTO {
   public readonly id: number;
   public readonly uploader: PublicUserDTOProps;
   public readonly categoryName: string;
-  public readonly thumbnailUrl: string;
+  public readonly thumbnailUrl: string | null;
+  public readonly thumbnailCaption: string | null;
   public readonly title: string;
   public readonly subtitle: string;
   public readonly createdAt: string;
@@ -31,6 +32,7 @@ export class ContentlessArticleDTO {
     this.uploader = props.uploader;
     this.categoryName = props.categoryName;
     this.thumbnailUrl = props.thumbnailUrl;
+    this.thumbnailCaption = props.thumbnailCaption;
     this.title = props.title;
     this.subtitle = props.subtitle;
     this.createdAt = props.createdAt;

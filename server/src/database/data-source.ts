@@ -9,11 +9,11 @@ import { User } from "./entities/user";
 
 export const dataSource = new DataSource({
   type: "mysql",
-  host: env.database.host,
-  port: env.database.port,
   username: env.database.username,
   password: env.database.password,
-  database: env.database.dbname,
+  host: env.database.host,
+  port: env.database.port,
+  database: env.database.database,
   poolSize: env.database.poolSize,
   entities: [Article, AuthToken, Category, User, Session],
   synchronize: isDev,

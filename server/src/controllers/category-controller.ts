@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 export class CategoryController {
   public constructor(private readonly categoryService: CategoryService) {}
 
-  public async getMany(req: Request, res: Response): Promise<void> {}
+  public async getAll(req: Request, res: Response): Promise<void> {}
 
   public async post(req: Request, res: Response): Promise<void> {}
 

@@ -10,7 +10,7 @@ import {
 import { Category } from "./category";
 import { User } from "./user";
 
-const metadata = env.database.config.article;
+const metadata = env.article;
 
 @Entity("articles")
 export class Article {

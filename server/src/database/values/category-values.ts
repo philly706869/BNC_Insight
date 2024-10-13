@@ -1,7 +1,7 @@
 import { env } from "@/env";
 
 export namespace CategoryValue {
-  const metadata = env.database.config.category;
+  const metadata = env.category;
 
   export class Name {
     private static readonly regex = /^[^\n]*$/;

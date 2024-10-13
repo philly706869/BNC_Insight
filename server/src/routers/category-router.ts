@@ -6,7 +6,7 @@ import { Router } from "express";
 export const categoryRouter = Router();
 const service = new CategoryService(dataSource);
 const controller = new CategoryController(service);
-categoryRouter.get("/", controller.getMany);
+categoryRouter.get("/", controller.getAll);
 categoryRouter.post("/", controller.post);
 categoryRouter.patch("/:id", controller.patch);
 categoryRouter.delete("/:id", controller.delete);

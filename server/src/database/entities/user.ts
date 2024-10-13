@@ -10,7 +10,7 @@ import {
 } from "typeorm";
 import { Article } from "./article";
 
-const metadata = env.database.config.user;
+const metadata = env.user;
 
 @Entity("users")
 export class User {

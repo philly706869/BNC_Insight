@@ -1,79 +1,172 @@
-import { AuthToken } from "@/database/entities/auth-token";
+import { AuthTokenValue } from "@/database/values/auth-token-values";
+import { UserValue } from "@/database/values/user-values";
 import {
   AuthService,
-  signin,
-  SigninError,
-  signout,
-  signup,
-  SignupError,
+  IncorrectPasswordError,
+  InvalidAuthTokenError,
+  UserNotFoundError,
 } from "@/services/auth-service";
-import { getUserFromSession } from "@/services/user-service";
 import { Request, Response } from "express";
 
 export class AuthController {
   public constructor(private readonly authService: AuthService) {}
 
   public async verifyAuthToken(req: Request, res: Response): Promise<void> {
-    const { authToken } = req.body;
-    if (typeof authToken !== "string") res.status(400).end();
-    else if (!AuthToken.verifyToken(authToken)) res.status(400).end();
-    else if ((await findAuthToken(authToken)) === null) res.status(400).end();
-    else res.status(200).end();
+    const { token } = req.body;
+    if (typeof token !== "string") res.status(400).end();
+    else if (await this.authService.verifyAuthToken(token))
+      res.status(200).end();
+    else res.status(422).end();
+  }
+
+  public async verifyUsername(req: Request, res: Response): Promise<void> {}
+
+  public async getCurrentUser(req: Request, res: Response): Promise<void> {
+    const userDTO = await this.authService.getCurrentUser(req.session);
+    res.status(200).json(userDTO);
   }
 
   public async signup(req: Request, res: Response): Promise<void> {
-    const { authToken, username, password, name } = req.body;
+    const {
+      authToken: rawAuthToken,
+      username: rawUsername,
+      password: rawPassword,
+      name: rawName,
+    } = req.body;
     if (
-      typeof authToken !== "string" ||
-      typeof username !== "string" ||
-      typeof password !== "string" ||
-      typeof name !== "string"
+      typeof rawAuthToken !== "string" ||
+      typeof rawUsername !== "string" ||
+      typeof rawPassword !== "string" ||
+      typeof rawName !== "string"
     ) {
       res.status(400).end();
       return;
     }
 
-    try {
-      const user = await signup(authToken, username, password, name);
-      req.session.userUid = user.uid;
-      const currentUser = extractProtectedUserData(user);
-      res.status(201).json(currentUser);
-    } catch (error) {
-      if (error instanceof SignupError) {
-        res.status(422).json({
-          error: error.error,
-        });
-      } else throw error;
+    const authToken = AuthTokenValue.Token.verify(rawAuthToken);
+    if (!authToken) {
+      res.status(400).end();
+      return;
     }
-  }
 
-  public async signin(req: Request, res: Response): Promise<void> {
-    const { username, password } = req.body;
-    if (typeof username !== "string" || typeof password !== "string") {
+    const username = UserValue.Username.verify(rawUsername);
+    if (!username) {
+      res.status(400).end();
+      return;
+    }
+
+    const password = UserValue.Password.verify(rawPassword);
+    if (!password) {
+      res.status(400).end();
+      return;
+    }
+
+    const name = UserValue.Name.verify(rawName);
+    if (!name) {
       res.status(400).end();
       return;
     }
 
     try {
-      const user = await signin(req.session, username, password);
-      const currentUser = extractProtectedUserData(user);
-      res.status(201).json(currentUser);
+      const userDTO = await this.authService.signup(
+        req.session,
+        authToken,
+        username,
+        password,
+        name
+      );
+      res.status(201).json(userDTO);
     } catch (error) {
-      if (error instanceof SigninError) {
-        res.status(401).json({
-          error: error.error,
+      if (error instanceof InvalidAuthTokenError)
+        res.status(422).json({
+          errorCode: "INVALID_AUTH_TOKEN",
+          message: "Auth token is not valid.",
         });
-      } else throw error;
+      else throw error;
+    }
+  }
+
+  public async signin(req: Request, res: Response): Promise<void> {
+    const { username: rawUsername, password: rawPassword } = req.body;
+    if (typeof rawUsername !== "string" || typeof rawPassword !== "string") {
+      res.status(400).end();
+      return;
+    }
+
+    const username = UserValue.Username.verify(rawUsername);
+    if (!username) {
+      res.status(400).end();
+      return;
+    }
+
+    const password = UserValue.Password.verify(rawPassword);
+    if (!password) {
+      res.status(400).end();
+      return;
+    }
+
+    try {
+      const userDTO = await this.authService.signin(
+        req.session,
+        username,
+        password
+      );
+      res.status(201).json(userDTO);
+    } catch (error) {
+      if (error instanceof UserNotFoundError)
+        res.status(401).json({
+          errorCode: "USER_NOT_FOUND",
+          message: "User is not found.",
+        });
+      else if (error instanceof IncorrectPasswordError)
+        res.status(401).json({
+          errorCode: "INCORRECT_PASSWORD",
+          message: "Password is not correct.",
+        });
+      else throw error;
     }
   }
 
   public async signout(req: Request, res: Response): Promise<void> {
-    await signout(req.session);
+    await this.authService.signout(req.session);
     res.status(201).end();
   }
 
-  public async getCurrentUser(req: Request, res: Response): Promise<void> {
-    const user = await getUserFromSession(req.session);
-    res.status(200).json(user);
+  public async updatePassword(req: Request, res: Response): Promise<void> {
+    const { userUid } = req.session;
+    if (!userUid) {
+      res.status(401).end();
+      return;
+    }
+
+    const { current: rawCurrentPassword, new: rawNewPassword } = req.body;
+    if (
+      typeof rawCurrentPassword !== "string" ||
+      typeof rawNewPassword !== "string"
+    ) {
+      res.status(400).end();
+      return;
+    }
+
+    const currentPassword = UserValue.Password.verify(rawCurrentPassword);
+    if (!currentPassword) {
+      res.status(400).end();
+      return;
+    }
+
+    const newPassword = UserValue.Password.verify(rawNewPassword);
+    if (!newPassword) {
+      res.status(400).end();
+      return;
+    }
+
+    const success = await this.authService.updatePassword(
+      userUid,
+      currentPassword,
+      newPassword
+    );
+
+    if (success) res.status(201).end();
+    else res.status(400).end();
   }
 }

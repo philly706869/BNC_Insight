@@ -19,7 +19,7 @@ export class ArticleService {
     this.userRepository = dataSource.getRepository(User);
     this.categoryRepository = dataSource.getRepository(Category);
     this.articleRepository = dataSource.getRepository(Article);
-    dataSource.manager
+    dataSource.manager;
   }
 
   public async getOne(id: number): Promise<ArticleDTO | null> {
@@ -79,7 +79,7 @@ export class ArticleService {
         uploader: uploader,
         category: category,
         thumbnailUrl: thumbnailUrl?.value,
-        thumbnailCaption: thumbnailCaption
+        thumbnailCaption: thumbnailCaption?.value,
         title: title.value,
         subtitle: subtitle.value,
         content: content.value,
@@ -88,4 +88,8 @@ export class ArticleService {
 
     return ContentlessArticleDTO.from(article);
   }
+
+  public async patch(): Promise<any> {}
+
+  public async delete(): Promise<any> {}
 }

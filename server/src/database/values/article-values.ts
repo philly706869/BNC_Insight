@@ -3,7 +3,7 @@ import validator, { IsURLOptions } from "validator";
 import { z } from "zod";
 
 export namespace ArticleValue {
-  const metadata = env.database.config.article;
+  const metadata = env.article;
 
   export class ThumbnailUrl {
     private static readonly isUrlOptions: IsURLOptions = {

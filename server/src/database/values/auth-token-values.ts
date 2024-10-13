@@ -1,7 +1,7 @@
 import { env } from "@/env";
 
 export namespace AuthTokenValue {
-  const metadata = env.database.config.authToken;
+  const metadata = env.authToken;
 
   export class Token {
     public static readonly min = metadata.token.min;

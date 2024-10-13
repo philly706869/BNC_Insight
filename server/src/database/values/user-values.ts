@@ -2,7 +2,7 @@ import { env } from "@/env";
 import { BCRYPT_MAX_BYTE_LENGTH } from "@/utils/constants";
 
 export namespace UserValue {
-  const metadata = env.database.config.user;
+  const metadata = env.user;
 
   export class Username {
     private static readonly regex = /^[a-z\d]*$/;

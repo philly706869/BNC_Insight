@@ -17,30 +17,34 @@ export type Env = {
     readonly sessionSecret: string;
   };
   readonly database: {
-    readonly url: string;
-    readonly pool: {
-      readonly min: number;
-      readonly max: number;
-    };
-    readonly config: {
-      readonly authToken: {
-        readonly token: MinMax;
-      };
-      readonly user: {
-        readonly username: MinMax;
-        readonly password: MinMax;
-        readonly name: MinMax;
-      };
-      readonly article: {
-        readonly thumbnailUrl: Max;
-        readonly thumbnailCaption: MinMax;
-        readonly title: MinMax;
-        readonly subtitle: MinMax;
-      };
-      readonly category: {
-        readonly name: MinMax;
-      };
-    };
+    readonly username: string;
+    readonly password: string;
+    readonly host: string;
+    readonly port: number;
+    readonly database: string;
+    readonly poolSize: number;
+  };
+  readonly authToken: {
+    readonly token: MinMax;
+  };
+  readonly user: {
+    readonly username: MinMax;
+    readonly password: MinMax;
+    readonly name: MinMax;
+  };
+  readonly article: {
+    readonly thumbnailUrl: Max;
+    readonly thumbnailCaption: MinMax;
+    readonly title: MinMax;
+    readonly subtitle: MinMax;
+  };
+  readonly category: {
+    readonly name: MinMax;
+  };
+  readonly thumbnail: {
+    readonly path: string;
+    readonly maxBytes: number;
+    readonly supportedMIMETypes: string[];
   };
 };
 
