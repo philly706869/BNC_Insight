@@ -8,6 +8,8 @@ import {
   ContentlessArticleDTO,
   contentlessArticleFindSelection,
 } from "@/dto/contentless-article-dto";
+import { CategoryNotFoundError } from "@/errors/CategoryNotFoundError";
+import { UserNotFoundError } from "@/errors/UserNotFoundError";
 import { DataSource, Repository } from "typeorm";
 
 export class ArticleService {
@@ -15,7 +17,7 @@ export class ArticleService {
   private readonly categoryRepository: Repository<Category>;
   private readonly articleRepository: Repository<Article>;
 
-  public constructor(private readonly dataSource: DataSource) {
+  public constructor(dataSource: DataSource) {
     this.userRepository = dataSource.getRepository(User);
     this.categoryRepository = dataSource.getRepository(Category);
     this.articleRepository = dataSource.getRepository(Article);
@@ -53,9 +55,13 @@ export class ArticleService {
     return articles.map((article) => ContentlessArticleDTO.from(article));
   }
 
+  /**
+   * @throws {UserNotFoundError}
+   * @throws {CategoryNotFoundError}
+   */
   public async post(
     uploaderUid: number,
-    categoryName: CategoryValue.Name,
+    categoryName: CategoryValue.Name | null,
     thumbnailUrl: ArticleValue.ThumbnailUrl | null,
     thumbnailCaption: ArticleValue.ThumbnailCaption | null,
     title: ArticleValue.Title,
@@ -66,13 +72,17 @@ export class ArticleService {
       where: { uid: uploaderUid },
       select: { uid: true },
     });
-    if (!uploader) throw new Error();
+    if (!uploader) return Promise.reject(new UserNotFoundError());
 
-    const category = await this.categoryRepository.findOne({
-      where: { name: categoryName.value },
-      select: { name: true },
-    });
-    if (!category) throw new Error();
+    let category: Category | null = null;
+    if (categoryName) {
+      const foundCategory = await this.categoryRepository.findOne({
+        where: { name: categoryName.value },
+        select: { name: true },
+      });
+      if (!foundCategory) return Promise.reject(new CategoryNotFoundError());
+      category = foundCategory;
+    }
 
     const article = await this.articleRepository.save(
       this.articleRepository.create({
@@ -89,7 +99,42 @@ export class ArticleService {
     return ContentlessArticleDTO.from(article);
   }
 
-  public async patch(): Promise<any> {}
+  public async patch(
+    id: number,
+    data: {
+      categoryName?: CategoryValue.Name;
+      thumbnailUrl?: ArticleValue.ThumbnailUrl | null;
+      thumbnailCaption?: ArticleValue.ThumbnailCaption | null;
+      title?: ArticleValue.Title;
+      subtitle?: ArticleValue.Subtitle;
+      content?: ArticleValue.Content;
+    }
+  ): Promise<boolean> {
+    let category: Category | undefined = undefined;
+    if (data.categoryName) {
+      const category = await this.categoryRepository.findOne({
+        where: { name: data.categoryName?.value },
+      });
+      if (!category) return Promise.reject(new CategoryNotFoundError());
+    }
 
-  public async delete(): Promise<any> {}
+    const result = await this.articleRepository.update(
+      { id },
+      {
+        category,
+        thumbnailUrl: data.thumbnailUrl?.value,
+        thumbnailCaption: data.thumbnailCaption?.value,
+        title: data.title?.value,
+        subtitle: data.subtitle?.value,
+        content: data.content?.value,
+      }
+    );
+
+    return Boolean(result.affected);
+  }
+
+  public async delete(id: number): Promise<boolean> {
+    const result = await this.articleRepository.delete({ id });
+    return Boolean(result.affected);
+  }
 }

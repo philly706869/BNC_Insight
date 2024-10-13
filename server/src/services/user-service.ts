@@ -6,7 +6,7 @@ import { DataSource, Repository } from "typeorm";
 export class UserService {
   private readonly userRepository: Repository<User>;
 
-  public constructor(private readonly dataSource: DataSource) {
+  public constructor(dataSource: DataSource) {
     this.userRepository = dataSource.getRepository(User);
   }
 

@@ -10,7 +10,7 @@ import { DataSource, Repository } from "typeorm";
 export class CategoryService {
   private readonly categoryRepository: Repository<Category>;
 
-  public constructor(private readonly dataSource: DataSource) {
+  public constructor(dataSource: DataSource) {
     this.categoryRepository = dataSource.getRepository(Category);
   }
 

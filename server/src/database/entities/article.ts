@@ -22,8 +22,10 @@ export class Article {
   @ManyToOne((type) => User, (user) => user.articles)
   public declare uploader: User;
 
-  @ManyToOne((type) => Category, (category) => category.articles)
-  public declare category: Category;
+  @ManyToOne((type) => Category, (category) => category.articles, {
+    nullable: true,
+  })
+  public declare category: Category | null;
 
   @Column({
     type: "varchar",

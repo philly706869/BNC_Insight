@@ -1,4 +1,3 @@
-import { dataSource } from "@/database/data-source";
 import { AuthToken } from "@/database/entities/auth-token";
 import { User } from "@/database/entities/user";
 import { AuthTokenValue } from "@/database/values/auth-token-values";
@@ -7,14 +6,13 @@ import {
   ProtectedUserDTO,
   protectedUserFindSelection,
 } from "@/dto/protected-user-dto";
+import { IncorrectPasswordError } from "@/errors/IncorrectPasswordError";
+import { InvalidAuthTokenError } from "@/errors/InvalidAuthTokenError";
+import { UserNotFoundError } from "@/errors/UserNotFoundError";
 import { hashPassword } from "@/utils/hashPassword";
 import { compare } from "bcrypt";
 import { Session, SessionData } from "express-session";
 import { DataSource, Repository } from "typeorm";
-
-export class InvalidAuthTokenError extends Error {}
-export class UserNotFoundError extends Error {}
-export class IncorrectPasswordError extends Error {}
 
 export class AuthService {
   private readonly authTokenRepository: Repository<AuthToken>;
@@ -69,7 +67,7 @@ export class AuthService {
     });
     if (!authToken) return Promise.reject(new InvalidAuthTokenError());
 
-    const user = await dataSource.transaction(async (manager) => {
+    const user = await this.dataSource.transaction(async (manager) => {
       await manager.delete(AuthToken, authToken);
       const user = manager.create(User, {
         username: username.value,
@@ -117,6 +115,9 @@ export class AuthService {
     });
   }
 
+  /**
+   * @throws {IncorrectPasswordError}
+   */
   public async updatePassword(
     uid: number,
     currentPassword: UserValue.Password,
@@ -126,9 +127,9 @@ export class AuthService {
       where: { uid },
       select: { passwordHash: true },
     });
-    if (!user) return false;
+    if (!user) return Promise.reject(new UserNotFoundError());
     if (!(await compare(currentPassword.value, user.passwordHash.toString())))
-      return false;
+      return Promise.reject(new IncorrectPasswordError());
     const result = await this.userRepository.update(
       { uid },
       { passwordHash: await hashPassword(newPassword) }
