@@ -10,7 +10,7 @@ import {
 import { Category } from "./category";
 import { User } from "./user";
 
-const metadata = env.article;
+const config = env.article;
 
 @Entity("articles")
 export class Article {
@@ -29,22 +29,22 @@ export class Article {
 
   @Column({
     type: "varchar",
-    length: metadata.thumbnailUrl.max,
+    length: config.maxThumbnailUrlLength,
     nullable: true,
   })
   public declare thumbnailUrl: string | null;
 
   @Column({
     type: "varchar",
-    length: metadata.thumbnailCaption.max,
+    length: config.maxThumbnailCaptionLength,
     nullable: true,
   })
   public declare thumbnailCaption: string | null;
 
-  @Column({ type: "varchar", length: metadata.title.max })
+  @Column({ type: "varchar", length: config.maxTitleLength })
   public declare title: string;
 
-  @Column({ type: "varchar", length: metadata.subtitle.max })
+  @Column({ type: "varchar", length: config.maxSubtitleLength })
   public declare subtitle: string;
 
   @Column({ type: "json" })

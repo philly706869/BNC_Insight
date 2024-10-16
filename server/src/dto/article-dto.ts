@@ -51,7 +51,7 @@ export class ArticleDTO {
     return new ArticleDTO({
       ...article,
       uploader: new PublicUserDTO(article.uploader),
-      category: article.category.name,
+      category: article.category?.name ?? null,
       createdAt: article.createdAt.toISOString(),
       updatedAt: article.updatedAt.toISOString(),
     });

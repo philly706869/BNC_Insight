@@ -6,9 +6,11 @@ import {
   ProtectedUserDTO,
   protectedUserFindSelection,
 } from "@/dto/protected-user-dto";
-import { IncorrectPasswordError } from "@/errors/IncorrectPasswordError";
-import { InvalidAuthTokenError } from "@/errors/InvalidAuthTokenError";
-import { UserNotFoundError } from "@/errors/UserNotFoundError";
+import {
+  IncorrectPasswordError,
+  InvalidAuthTokenError,
+  UserNotFoundError,
+} from "@/errors/service-errors";
 import { hashPassword } from "@/utils/hashPassword";
 import { compare } from "bcrypt";
 import { Session, SessionData } from "express-session";

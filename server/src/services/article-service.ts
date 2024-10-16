@@ -8,8 +8,13 @@ import {
   ContentlessArticleDTO,
   contentlessArticleFindSelection,
 } from "@/dto/contentless-article-dto";
-import { CategoryNotFoundError } from "@/errors/CategoryNotFoundError";
-import { UserNotFoundError } from "@/errors/UserNotFoundError";
+import { env } from "@/env";
+import {
+  CategoryNotFoundError,
+  QueryLimitOutOfBoundsError,
+  QueryOffsetOutOfBoundsError,
+  UserNotFoundError,
+} from "@/errors/service-errors";
 import { DataSource, Repository } from "typeorm";
 
 export class ArticleService {
@@ -21,7 +26,6 @@ export class ArticleService {
     this.userRepository = dataSource.getRepository(User);
     this.categoryRepository = dataSource.getRepository(Category);
     this.articleRepository = dataSource.getRepository(Article);
-    dataSource.manager;
   }
 
   public async getOne(id: number): Promise<ArticleDTO | null> {
@@ -37,14 +41,17 @@ export class ArticleService {
     offset: number,
     limit: number
   ): Promise<ContentlessArticleDTO[]> {
-    offset = Math.max(0, offset);
-    limit = Math.max(0, Math.min(30, limit));
+    if (limit < 1) return Promise.reject(new QueryLimitOutOfBoundsError());
+    if (limit > env.article.maxQueryLimit)
+      return Promise.reject(new QueryLimitOutOfBoundsError());
+
+    if (offset < 0) return Promise.reject(new QueryOffsetOutOfBoundsError());
 
     const category = await this.categoryRepository.findOne({
       where: { name: categoryName.value },
       select: { name: true },
     });
-    if (!category) return [];
+    if (!category) return Promise.reject(new CategoryNotFoundError());
 
     const articles = await this.articleRepository.find({
       where: { category },

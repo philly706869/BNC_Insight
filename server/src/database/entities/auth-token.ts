@@ -7,13 +7,13 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 
-const metadata = env.authToken;
+const config = env.authToken;
 
 @Entity("auth_tokens")
 export class AuthToken {
   private constructor() {}
 
-  @PrimaryColumn({ type: "varchar", length: metadata.token.max })
+  @PrimaryColumn({ type: "varchar", length: config.maxTokenLength })
   public declare token: string;
 
   @Column({ type: "boolean", default: false })

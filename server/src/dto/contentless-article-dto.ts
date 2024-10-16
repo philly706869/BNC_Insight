@@ -19,7 +19,7 @@ export const contentlessArticleFindSelection = {
 export class ContentlessArticleDTO {
   public readonly id: number;
   public readonly uploader: PublicUserDTOProps;
-  public readonly categoryName: string;
+  public readonly category: string | null;
   public readonly thumbnailUrl: string | null;
   public readonly thumbnailCaption: string | null;
   public readonly title: string;
@@ -30,7 +30,7 @@ export class ContentlessArticleDTO {
   public constructor(props: ArticleDTOProps) {
     this.id = props.id;
     this.uploader = props.uploader;
-    this.categoryName = props.categoryName;
+    this.category = props.category;
     this.thumbnailUrl = props.thumbnailUrl;
     this.thumbnailCaption = props.thumbnailCaption;
     this.title = props.title;
@@ -43,7 +43,7 @@ export class ContentlessArticleDTO {
     return new ContentlessArticleDTO({
       ...article,
       uploader: new PublicUserDTO(article.uploader),
-      categoryName: article.category.name,
+      category: article.category?.name ?? null,
       createdAt: article.createdAt.toISOString(),
       updatedAt: article.updatedAt.toISOString(),
     });

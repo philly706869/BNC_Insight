@@ -1,20 +1,11 @@
 import rawEnv from "../env.json";
 
-type Min = {
-  readonly min: number;
-};
-
-type Max = {
-  readonly max: number;
-};
-
-type MinMax = Min & Max;
-
 export type Env = {
   readonly server: {
     readonly url: string;
     readonly port: number;
     readonly sessionSecret: string;
+    readonly uploadTempPath: string;
   };
   readonly database: {
     readonly username: string;
@@ -25,23 +16,32 @@ export type Env = {
     readonly poolSize: number;
   };
   readonly authToken: {
-    readonly token: MinMax;
+    readonly maxTokenLength: number;
   };
   readonly user: {
-    readonly username: MinMax;
-    readonly password: MinMax;
-    readonly name: MinMax;
-  };
-  readonly article: {
-    readonly thumbnailUrl: Max;
-    readonly thumbnailCaption: MinMax;
-    readonly title: MinMax;
-    readonly subtitle: MinMax;
+    readonly maxUsernameLength: number;
+    readonly minPasswordLength: number;
+    readonly maxPasswordLength: number;
+    readonly maxNameLength: number;
   };
   readonly category: {
-    readonly name: MinMax;
+    readonly maxNameLength: number;
+  };
+  readonly article: {
+    readonly defaultQueryLimit: number;
+    readonly maxQueryLimit: number;
+    readonly maxThumbnailUrlLength: number;
+    readonly maxThumbnailCaptionLength: number;
+    readonly maxTitleLength: number;
+    readonly maxSubtitleLength: number;
+    readonly maxContentDeltaLength: number;
   };
   readonly thumbnail: {
+    readonly path: string;
+    readonly maxBytes: number;
+    readonly supportedMIMETypes: string[];
+  };
+  readonly image: {
     readonly path: string;
     readonly maxBytes: number;
     readonly supportedMIMETypes: string[];

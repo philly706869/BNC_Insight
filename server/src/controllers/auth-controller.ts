@@ -1,11 +1,11 @@
 import { AuthTokenValue } from "@/database/values/auth-token-values";
 import { UserValue } from "@/database/values/user-values";
 import {
-  AuthService,
   IncorrectPasswordError,
   InvalidAuthTokenError,
   UserNotFoundError,
-} from "@/services/auth-service";
+} from "@/errors/service-errors";
+import { AuthService } from "@/services/auth-service";
 import { Request, Response } from "express";
 
 export class AuthController {

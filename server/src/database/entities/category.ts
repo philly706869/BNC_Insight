@@ -8,13 +8,13 @@ import {
 } from "typeorm";
 import { Article } from "./article";
 
-const metadata = env.category;
+const config = env.category;
 
 @Entity("categories")
 export class Category {
   private constructor() {}
 
-  @PrimaryColumn({ type: "varchar", length: metadata.name.max })
+  @PrimaryColumn({ type: "varchar", length: config.maxNameLength })
   public declare name: string;
 
   @OneToMany((type) => Article, (article) => article.category)
