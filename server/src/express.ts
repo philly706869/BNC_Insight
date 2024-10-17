@@ -5,6 +5,7 @@ import { dataSource } from "./database/data-source";
 import { Session } from "./database/entities/session";
 import { env, isProduction } from "./env";
 import { apiRouter } from "./routers/api-router";
+import { safeRequestHandler } from "./utils/async-request-handler";
 import { logger } from "./utils/logger";
 
 export const express = Express();
@@ -24,10 +25,13 @@ express.use(
 express.use("/api", apiRouter);
 
 if (isProduction) {
-  express.use("*", (req, res) => {
-    // TODO
-    res.status(200).end();
-  });
+  express.use(
+    "*",
+    safeRequestHandler((req, res) => {
+      // TODO
+      res.status(200).end();
+    })
+  );
 }
 
 express.use(((err, req, res, next) => {

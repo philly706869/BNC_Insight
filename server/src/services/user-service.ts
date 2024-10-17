@@ -1,6 +1,7 @@
 import { User } from "@/database/entities/user";
 import { UserValue } from "@/database/values/user-values";
 import { PublicUserDTO, publicUserFindSelection } from "@/dto/public-user-dto";
+import { UserNotFoundError } from "@/errors/service-errors";
 import { DataSource, Repository } from "typeorm";
 
 export class UserService {
@@ -10,29 +11,39 @@ export class UserService {
     this.userRepository = dataSource.getRepository(User);
   }
 
-  public async get(
-    username: UserValue.Username
-  ): Promise<PublicUserDTO | null> {
+  /**
+   * @throws {UserNotFoundError}
+   */
+  public async get(username: UserValue.Username): Promise<PublicUserDTO> {
     const user = await this.userRepository.findOne({
       where: { username: username.value },
       select: publicUserFindSelection,
     });
-    return user ? PublicUserDTO.from(user) : null;
+    if (!user) return Promise.reject(new UserNotFoundError());
+    return PublicUserDTO.from(user);
   }
 
+  /**
+   * @throws {UserNotFoundError}
+   */
   public async patch(
     uid: number,
     data: { username?: UserValue.Username; name?: UserValue.Name }
-  ): Promise<boolean> {
+  ): Promise<void> {
     const result = await this.userRepository.update(
       { uid },
       { username: data.username?.value, name: data.name?.value }
     );
-    return Boolean(result.affected);
+    if (!Boolean(result.affected))
+      return Promise.reject(new UserNotFoundError());
   }
 
-  public async delete(uid: number): Promise<boolean> {
+  /**
+   * @throws {UserNotFoundError}
+   */
+  public async delete(uid: number): Promise<void> {
     const result = await this.userRepository.delete({ uid });
-    return Boolean(result.affected);
+    if (!Boolean(result.affected))
+      return Promise.reject(new UserNotFoundError());
   }
 }

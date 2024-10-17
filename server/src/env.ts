@@ -39,12 +39,10 @@ export type Env = {
   readonly thumbnail: {
     readonly path: string;
     readonly maxBytes: number;
-    readonly supportedMIMETypes: string[];
   };
   readonly image: {
     readonly path: string;
     readonly maxBytes: number;
-    readonly supportedMIMETypes: string[];
   };
 };
 

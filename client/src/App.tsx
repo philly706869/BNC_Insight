@@ -52,6 +52,7 @@ export default function App() {
     <>
       <CurrentUserContext.Provider value={currentUser}>
         <CategoryContext.Provider value={category}>
+          {/* mui 테마 설정 */}
           <ThemeProvider theme={theme}>
             <BrowserRouter>
               <Routes>

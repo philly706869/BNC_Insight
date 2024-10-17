@@ -22,6 +22,18 @@ export class CategoryNotFoundError extends Error {
   }
 }
 
+export class ArticleNotFoundError extends Error {
+  public constructor(message?: string) {
+    super(message);
+  }
+}
+
+export class ImageNotFoundError extends Error {
+  public constructor(message?: string) {
+    super(message);
+  }
+}
+
 export class QueryLimitOutOfBoundsError extends Error {
   public constructor(message?: string) {
     super(message);
