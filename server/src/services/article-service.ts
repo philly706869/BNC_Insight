@@ -15,7 +15,7 @@ import {
   QueryOffsetOutOfBoundsError,
   UserNotFoundError,
 } from "@/errors/service-errors";
-import { DataSource, Repository } from "typeorm";
+import { DataSource, IsNull, Repository } from "typeorm";
 
 export class ArticleService {
   private readonly userRepository: Repository<User>;
@@ -37,24 +37,32 @@ export class ArticleService {
   }
 
   public async getMany(
-    categoryName: CategoryValue.Name,
-    offset: number,
-    limit: number
+    categoryName: CategoryValue.Name | null,
+    offset: number | undefined,
+    limit: number | undefined
   ): Promise<ContentlessArticleDTO[]> {
-    if (limit < 1) return Promise.reject(new QueryLimitOutOfBoundsError());
-    if (limit > env.article.maxQueryLimit)
-      return Promise.reject(new QueryLimitOutOfBoundsError());
+    if (limit) {
+      if (limit < 1) return Promise.reject(new QueryLimitOutOfBoundsError());
+      if (limit > env.article.maxQueryLimit)
+        return Promise.reject(new QueryLimitOutOfBoundsError());
+    } else limit = env.article.maxQueryLimit;
 
-    if (offset < 0) return Promise.reject(new QueryOffsetOutOfBoundsError());
+    if (offset) {
+      if (offset < 0) return Promise.reject(new QueryOffsetOutOfBoundsError());
+    } else offset = 0;
 
-    const category = await this.categoryRepository.findOne({
-      where: { name: categoryName.value },
-      select: { name: true },
-    });
-    if (!category) return Promise.reject(new CategoryNotFoundError());
+    let category: Category | null = null;
+    if (categoryName) {
+      const foundCategory = await this.categoryRepository.findOne({
+        where: { name: categoryName.value },
+        select: { name: true },
+      });
+      if (!foundCategory) return Promise.reject(new CategoryNotFoundError());
+      category = foundCategory;
+    }
 
     const articles = await this.articleRepository.find({
-      where: { category },
+      where: { category: category ?? IsNull() },
       select: contentlessArticleFindSelection,
       skip: offset,
       take: limit,
@@ -69,8 +77,10 @@ export class ArticleService {
   public async post(
     uploaderUid: number,
     categoryName: CategoryValue.Name | null,
-    thumbnailUrl: ArticleValue.ThumbnailUrl | null,
-    thumbnailCaption: ArticleValue.ThumbnailCaption | null,
+    thumbnail: {
+      url: ArticleValue.ThumbnailUrl;
+      caption: ArticleValue.ThumbnailCaption;
+    } | null,
     title: ArticleValue.Title,
     subtitle: ArticleValue.Subtitle,
     content: ArticleValue.Content
@@ -95,8 +105,8 @@ export class ArticleService {
       this.articleRepository.create({
         uploader: uploader,
         category: category,
-        thumbnailUrl: thumbnailUrl?.value,
-        thumbnailCaption: thumbnailCaption?.value,
+        thumbnailUrl: thumbnail?.url.value,
+        thumbnailCaption: thumbnail?.caption.value,
         title: title.value,
         subtitle: subtitle.value,
         content: content.value,

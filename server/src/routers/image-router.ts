@@ -2,7 +2,6 @@ import { ImageController } from "@/controllers/image-controller";
 import { env } from "@/env";
 import { authVerifier } from "@/middlewares/auth-verifier";
 import { ImageService } from "@/services/image-service";
-import { safeRequestHandler } from "@/utils/async-request-handler";
 import { IMAGE_MIME_TYPES } from "@/utils/constants";
 import { Router } from "express";
 import multer from "multer";
@@ -11,7 +10,11 @@ import path from "path";
 export const imageRouter = Router();
 const service = new ImageService();
 const controller = new ImageController(service);
-imageRouter.get("/:name", safeRequestHandler(controller.get.bind(controller)));
+
+imageRouter.get("/:name", (req, res, next) =>
+  controller.get(req, res).catch(next)
+);
+
 imageRouter.post(
   "/",
   authVerifier,
@@ -23,5 +26,5 @@ imageRouter.post(
       else callback(null, false);
     },
   }).single("image"),
-  safeRequestHandler(controller.post.bind(controller))
+  (req, res, next) => controller.post(req, res).catch(next)
 );
