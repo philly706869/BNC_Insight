@@ -5,6 +5,7 @@ import {
   CategoryNameDTO,
   categoryNameFindSelection,
 } from "@/dto/category-name-dto";
+import { CategoryNotFoundError } from "@/errors/service-errors";
 import { DataSource, Repository } from "typeorm";
 
 export class CategoryService {
@@ -31,16 +32,18 @@ export class CategoryService {
   public async patch(
     name: CategoryValue.Name,
     data: { name?: CategoryValue.Name }
-  ): Promise<boolean> {
+  ): Promise<void> {
     const result = await this.categoryRepository.update(
       { name: name.value },
       { name: data.name?.value }
     );
-    return Boolean(result.affected);
+    if (!Boolean(result.affected))
+      return Promise.reject(new CategoryNotFoundError());
   }
 
-  public async delete(name: CategoryValue.Name): Promise<boolean> {
+  public async delete(name: CategoryValue.Name): Promise<void> {
     const result = await this.categoryRepository.delete({ name: name.value });
-    return Boolean(result.affected);
+    if (!Boolean(result.affected))
+      return Promise.reject(new CategoryNotFoundError());
   }
 }

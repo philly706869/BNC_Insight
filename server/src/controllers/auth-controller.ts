@@ -7,22 +7,54 @@ import {
 } from "@/errors/service-errors";
 import { AuthService } from "@/services/auth-service";
 import { Request, Response } from "express";
+import { z } from "zod";
 
 export class AuthController {
   public constructor(private readonly authService: AuthService) {}
 
+  private static readonly verifyAuthTokenBodySchema = z.object({
+    value: z.string(),
+  });
+
   public async verifyAuthToken(req: Request, res: Response): Promise<void> {
-    const { token } = req.body;
-    if (typeof token !== "string") res.status(400).end();
-    else if (await this.authService.verifyAuthToken(token))
-      res.status(200).end();
+    const bodyParseResult =
+      await AuthController.verifyAuthTokenBodySchema.safeParseAsync(req.body);
+    if (!bodyParseResult.success) {
+      res.status(400).end();
+      return;
+    }
+
+    const body = bodyParseResult.data;
+
+    const result = await this.authService.verifyAuthToken(body.value);
+    if (result) res.status(200).end();
     else res.status(422).end();
   }
 
-  public async verifyUsername(req: Request, res: Response): Promise<void> {}
+  private static readonly verifyUsernameBodySchema = z.object({
+    value: z.string(),
+  });
+
+  public async verifyUsername(req: Request, res: Response): Promise<void> {
+    const bodyParseResult =
+      await AuthController.verifyUsernameBodySchema.safeParseAsync(req.body);
+    if (!bodyParseResult.success) {
+      res.status(400).end();
+      return;
+    }
+
+    const body = bodyParseResult.data;
+
+    const result = await this.authService.verifyUsername(body.value);
+    if (result) res.status(200).end();
+    else res.status(422).end();
+  }
 
   public async getCurrentUser(req: Request, res: Response): Promise<void> {
+    try {
     const userDTO = await this.authService.getCurrentUser(req.session);
+ 
+   }
     res.status(200).json(userDTO);
   }
 

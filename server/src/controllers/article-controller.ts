@@ -1,4 +1,11 @@
 import { CategoryValue } from "@/database/values/category-values";
+import {
+  ArticleNotFoundError,
+  CategoryNotFoundError,
+  QueryLimitOutOfBoundsError,
+  QueryOffsetOutOfBoundsError,
+  UserNotFoundError,
+} from "@/errors/service-errors";
 import { ArticleService } from "@/services/article-service";
 import { ArticleValueTransformer } from "@/utils/zod/article-value-transformers";
 import { CategoryValueTransformer } from "@/utils/zod/category-value-transformers";
@@ -8,24 +15,28 @@ import { z } from "zod";
 export class ArticleController {
   public constructor(private readonly articleService: ArticleService) {}
 
-  private static readonly getOneParamsSchema = z.object({
+  private static readonly paramsSchema = z.object({
     id: z.coerce.number().int().nonnegative(),
   });
 
   public async getOne(req: Request, res: Response): Promise<void> {
-    const paramsParsedResult =
-      await ArticleController.getOneParamsSchema.safeParseAsync(req.params);
+    const paramsParseResult =
+      await ArticleController.paramsSchema.safeParseAsync(req.params);
 
-    if (!paramsParsedResult.success) {
+    if (!paramsParseResult.success) {
       res.status(400).end();
       return;
     }
 
-    const params = paramsParsedResult.data;
+    const params = paramsParseResult.data;
 
-    const articleDTO = await this.articleService.getOne(params.id);
-    if (articleDTO) res.status(200).json(articleDTO);
-    else res.status(404).end();
+    try {
+      const articleDTO = await this.articleService.getOne(params.id);
+      res.status(200).json(articleDTO);
+    } catch (error) {
+      if (error instanceof ArticleNotFoundError) res.status(404).end();
+      else return Promise.reject(error);
+    }
   }
 
   private static readonly getManyQuerySchema = z.object({
@@ -45,22 +56,30 @@ export class ArticleController {
   });
 
   public async getMany(req: Request, res: Response): Promise<void> {
-    const queryParsedResult =
+    const queryParseResult =
       await ArticleController.getManyQuerySchema.safeParseAsync(req.query);
 
-    if (!queryParsedResult.success) {
+    if (!queryParseResult.success) {
       res.status(400).end();
       return;
     }
 
-    const { category, offset, limit } = queryParsedResult.data;
+    const query = queryParseResult.data;
 
-    const articlesDTO = await this.articleService.getMany(
-      category,
-      offset,
-      limit
-    );
-    res.status(200).json(articlesDTO);
+    try {
+      const articlesDTO = await this.articleService.getMany(
+        query.category,
+        query.offset,
+        query.limit
+      );
+      res.status(200).json(articlesDTO);
+    } catch (error) {
+      if (error instanceof QueryOffsetOutOfBoundsError) res.status(400).end();
+      else if (error instanceof QueryLimitOutOfBoundsError)
+        res.status(400).end();
+      else if (error instanceof CategoryNotFoundError) res.status(400).end();
+      else return Promise.reject(error);
+    }
   }
 
   private static readonly postBodySchema = z.object({
@@ -80,26 +99,91 @@ export class ArticleController {
     const uploaderUid = req.session.userUid;
     if (!uploaderUid) return Promise.reject();
 
-    const bodyParsedResult =
+    const bodyParseResult =
       await ArticleController.postBodySchema.safeParseAsync(req.body);
-    if (!bodyParsedResult.success) {
+    if (!bodyParseResult.success) {
       res.status(400).end();
       return;
     }
 
-    const body = bodyParsedResult.data;
+    const body = bodyParseResult.data;
 
-    await this.articleService.post(
-      uploaderUid,
-      body.category,
-      body.thumbnail,
-      body.title,
-      body.subtitle,
-      body.content
-    );
+    try {
+      await this.articleService.post(
+        uploaderUid,
+        body.category,
+        body.thumbnail,
+        body.title,
+        body.subtitle,
+        body.content
+      );
+    } catch (error) {
+      if (error instanceof UserNotFoundError) res.status(404).end();
+      else if (error instanceof CategoryNotFoundError) res.status(400).end();
+      else return Promise.reject(error);
+    }
   }
 
-  public async patch(req: Request, res: Response): Promise<void> {}
+  private static readonly patchBodySchema = z.object({
+    category: z
+      .string()
+      .transform(CategoryValueTransformer.name)
+      .nullable()
+      .optional(),
+    thumbnail: z
+      .object({
+        url: z.string().transform(ArticleValueTransformer.thumbnailUrl),
+        caption: z.string().transform(ArticleValueTransformer.thumbnailCaption),
+      })
+      .nullable()
+      .optional(),
+    title: z.string().transform(ArticleValueTransformer.title).optional(),
+    subtitle: z.string().transform(ArticleValueTransformer.subtitle).optional(),
+    content: z.string().transform(ArticleValueTransformer.content).optional(),
+  });
 
-  public async delete(req: Request, res: Response): Promise<void> {}
+  public async patch(req: Request, res: Response): Promise<void> {
+    const paramsParseResult =
+      await ArticleController.paramsSchema.safeParseAsync(req.params);
+    if (!paramsParseResult.success) {
+      res.status(400).end();
+      return;
+    }
+
+    const bodyParseResult =
+      await ArticleController.patchBodySchema.safeParseAsync(req.body);
+    if (!bodyParseResult.success) {
+      res.status(400).end();
+      return;
+    }
+
+    const params = paramsParseResult.data;
+    const body = bodyParseResult.data;
+
+    try {
+      await this.articleService.patch(params.id, body);
+    } catch (error) {
+      if (error instanceof CategoryNotFoundError) res.status(400).end();
+      else if (error instanceof ArticleNotFoundError) res.status(404).end();
+      else return Promise.reject(error);
+    }
+  }
+
+  public async delete(req: Request, res: Response): Promise<void> {
+    const paramsParseResult =
+      await ArticleController.paramsSchema.safeParseAsync(req.params);
+    if (!paramsParseResult.success) {
+      res.status(400).end();
+      return;
+    }
+
+    const params = paramsParseResult.data;
+
+    try {
+      await this.articleService.delete(params.id);
+    } catch (error) {
+      if (error instanceof ArticleNotFoundError) res.status(404).end();
+      else return Promise.reject(error);
+    }
+  }
 }

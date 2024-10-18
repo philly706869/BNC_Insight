@@ -10,7 +10,7 @@ export class ImageService {
   /**
    * @throws {ImageNotFoundError}
    */
-  public async get(name: string): Promise<string | null> {
+  public async get(name: string): Promise<string> {
     try {
       const imagePath = path.resolve(env.image.path, name);
       const stat = await fs.stat(imagePath);

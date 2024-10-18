@@ -41,16 +41,20 @@ export class AuthService {
     return true;
   }
 
+  /**
+   * @throws {UserNotFoundError}
+   */
   public async getCurrentUser(
     session: Partial<SessionData>
-  ): Promise<ProtectedUserDTO | null> {
+  ): Promise<ProtectedUserDTO> {
     const { userUid } = session;
-    if (!userUid) return null;
+    if (!userUid) return Promise.reject(new UserNotFoundError());
     const user = await this.userRepository.findOne({
       where: { uid: userUid },
       select: protectedUserFindSelection,
     });
-    return user ? ProtectedUserDTO.from(user) : null;
+    if (!user) return Promise.reject(new UserNotFoundError());
+    return ProtectedUserDTO.from(user);
   }
 
   /**
