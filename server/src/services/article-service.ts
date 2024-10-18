@@ -10,6 +10,7 @@ import {
 } from "@/dto/contentless-article-dto";
 import { env } from "@/env";
 import {
+  ArticleNotFoundError,
   CategoryNotFoundError,
   QueryLimitOutOfBoundsError,
   QueryOffsetOutOfBoundsError,
@@ -28,14 +29,23 @@ export class ArticleService {
     this.articleRepository = dataSource.getRepository(Article);
   }
 
-  public async getOne(id: number): Promise<ArticleDTO | null> {
+  /**
+   * @throws {ArticleNotFoundError}
+   */
+  public async getOne(id: number): Promise<ArticleDTO> {
     const article = await this.articleRepository.findOne({
       where: { id },
       select: articleFindSelection,
     });
-    return article ? ArticleDTO.from(article) : null;
+    if (!article) return Promise.reject(new ArticleNotFoundError());
+    return ArticleDTO.from(article);
   }
 
+  /**
+   * @throws {QueryLimitOutOfBoundsError}
+   * @throws {QueryOffsetOutOfBoundsError}
+   * @throws {CategoryNotFoundError}
+   */
   public async getMany(
     categoryName: CategoryValue.Name | null,
     offset: number | undefined,
@@ -116,17 +126,23 @@ export class ArticleService {
     return ContentlessArticleDTO.from(article);
   }
 
+  /**
+   * @throws {CategoryNotFoundError}
+   * @throws {ArticleNotFoundError}
+   */
   public async patch(
     id: number,
     data: {
       categoryName?: CategoryValue.Name;
-      thumbnailUrl?: ArticleValue.ThumbnailUrl | null;
-      thumbnailCaption?: ArticleValue.ThumbnailCaption | null;
+      thumbnail?: {
+        url: ArticleValue.ThumbnailUrl;
+        caption: ArticleValue.ThumbnailCaption;
+      } | null;
       title?: ArticleValue.Title;
       subtitle?: ArticleValue.Subtitle;
       content?: ArticleValue.Content;
     }
-  ): Promise<boolean> {
+  ): Promise<void> {
     let category: Category | undefined = undefined;
     if (data.categoryName) {
       const category = await this.categoryRepository.findOne({
@@ -139,19 +155,30 @@ export class ArticleService {
       { id },
       {
         category,
-        thumbnailUrl: data.thumbnailUrl?.value,
-        thumbnailCaption: data.thumbnailCaption?.value,
+        thumbnailUrl:
+          data.thumbnail !== undefined
+            ? data.thumbnail?.url.value ?? env.thumbnail.defaultUrl
+            : undefined,
+        thumbnailCaption:
+          data.thumbnail !== undefined
+            ? data.thumbnail?.caption.value ?? ""
+            : undefined,
         title: data.title?.value,
         subtitle: data.subtitle?.value,
         content: data.content?.value,
       }
     );
 
-    return Boolean(result.affected);
+    if (!Boolean(result.affected))
+      return Promise.reject(new ArticleNotFoundError());
   }
 
-  public async delete(id: number): Promise<boolean> {
+  /**
+   * @throws {ArticleNotFoundError}
+   */
+  public async delete(id: number): Promise<void> {
     const result = await this.articleRepository.delete({ id });
-    return Boolean(result.affected);
+    if (!Boolean(result.affected))
+      return Promise.reject(new ArticleNotFoundError());
   }
 }

@@ -20,8 +20,10 @@ export class ContentlessArticleDTO {
   public readonly id: number;
   public readonly uploader: PublicUserDTOProps;
   public readonly category: string | null;
-  public readonly thumbnailUrl: string | null;
-  public readonly thumbnailCaption: string | null;
+  public readonly thumbnail: {
+    readonly url: string;
+    readonly caption: string;
+  };
   public readonly title: string;
   public readonly subtitle: string;
   public readonly createdAt: string;
@@ -31,8 +33,7 @@ export class ContentlessArticleDTO {
     this.id = props.id;
     this.uploader = props.uploader;
     this.category = props.category;
-    this.thumbnailUrl = props.thumbnailUrl;
-    this.thumbnailCaption = props.thumbnailCaption;
+    this.thumbnail = props.thumbnail;
     this.title = props.title;
     this.subtitle = props.subtitle;
     this.createdAt = props.createdAt;
@@ -44,6 +45,10 @@ export class ContentlessArticleDTO {
       ...article,
       uploader: new PublicUserDTO(article.uploader),
       category: article.category?.name ?? null,
+      thumbnail: {
+        url: article.thumbnailUrl,
+        caption: article.thumbnailCaption,
+      },
       createdAt: article.createdAt.toISOString(),
       updatedAt: article.updatedAt.toISOString(),
     });

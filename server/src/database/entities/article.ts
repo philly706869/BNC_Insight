@@ -30,16 +30,14 @@ export class Article {
   @Column({
     type: "varchar",
     length: config.maxThumbnailUrlLength,
-    nullable: true,
   })
-  public declare thumbnailUrl: string | null;
+  public declare thumbnailUrl: string;
 
   @Column({
     type: "varchar",
     length: config.maxThumbnailCaptionLength,
-    nullable: true,
   })
-  public declare thumbnailCaption: string | null;
+  public declare thumbnailCaption: string;
 
   @Column({ type: "varchar", length: config.maxTitleLength })
   public declare title: string;

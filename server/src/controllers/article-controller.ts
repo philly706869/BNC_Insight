@@ -1,6 +1,5 @@
 import { CategoryValue } from "@/database/values/category-values";
 import { ArticleService } from "@/services/article-service";
-import { strictParseInt } from "@/utils/strict-parse-int";
 import { ArticleValueTransformer } from "@/utils/zod/article-value-transformers";
 import { CategoryValueTransformer } from "@/utils/zod/category-value-transformers";
 import { Request, Response } from "express";
@@ -9,14 +8,22 @@ import { z } from "zod";
 export class ArticleController {
   public constructor(private readonly articleService: ArticleService) {}
 
+  private static readonly getOneParamsSchema = z.object({
+    id: z.coerce.number().int().nonnegative(),
+  });
+
   public async getOne(req: Request, res: Response): Promise<void> {
-    const id = strictParseInt(req.params.id);
-    if (isNaN(id) || id < 0) {
+    const paramsParsedResult =
+      await ArticleController.getOneParamsSchema.safeParseAsync(req.params);
+
+    if (!paramsParsedResult.success) {
       res.status(400).end();
       return;
     }
 
-    const articleDTO = await this.articleService.getOne(id);
+    const params = paramsParsedResult.data;
+
+    const articleDTO = await this.articleService.getOne(params.id);
     if (articleDTO) res.status(200).json(articleDTO);
     else res.status(404).end();
   }

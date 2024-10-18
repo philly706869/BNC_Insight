@@ -1,4 +1,4 @@
-import rawEnv from "../env.json";
+import rawEnv from "../env.json"; // 오류 발생 시 ../env.json 추가할 것
 
 export type Env = {
   readonly server: {
@@ -37,6 +37,7 @@ export type Env = {
     readonly maxContentDeltaLength: number;
   };
   readonly thumbnail: {
+    readonly defaultUrl: string;
     readonly path: string;
     readonly maxBytes: number;
   };
@@ -46,7 +47,7 @@ export type Env = {
   };
 };
 
-export const env: Env = rawEnv; // 이 부분에서 오류 발생 시 ../env.json 관리 필요
+export const env: Env = rawEnv; // ../env.json의 구조가 유효하지 않을 시 오류 발생
 
 export type NODE_ENV = "development" | "production";
 export const NODE_ENV: NODE_ENV =
