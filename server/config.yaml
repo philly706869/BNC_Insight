@@ -1,0 +1,26 @@
+authToken:
+  maxTokenLength: 128
+
+user:
+  maxUsernameLength: 32
+  minPasswordLength: 8
+  maxPasswordLength: 72
+  maxNameLength: 16
+
+category:
+  maxNameLength: 16
+
+article:
+  defaultQueryLimit: 30
+  maxQueryLimit: 30
+  defaultThumbnailUrl: ""
+  maxThumbnailUrlLength: 2048
+  maxThumbnailCaptionLength: 64
+  maxTitleLength: 64
+  maxSubtitleLength: 128
+  maxContentDeltaLength: 10000
+
+image:
+  tempPath: "./uploads/tmp"
+  path: "./uploads/images"
+  maxBytes: 4096

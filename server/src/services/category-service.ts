@@ -29,6 +29,9 @@ export class CategoryService {
     return CategoryDTO.from(category);
   }
 
+  /**
+   * @throws {CategoryNotFoundError}
+   */
   public async patch(
     name: CategoryValue.Name,
     data: { name?: CategoryValue.Name }
@@ -41,6 +44,9 @@ export class CategoryService {
       return Promise.reject(new CategoryNotFoundError());
   }
 
+  /**
+   * @throws {CategoryNotFoundError}
+   */
   public async delete(name: CategoryValue.Name): Promise<void> {
     const result = await this.categoryRepository.delete({ name: name.value });
     if (!Boolean(result.affected))

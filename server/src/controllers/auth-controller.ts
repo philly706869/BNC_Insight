@@ -1,29 +1,29 @@
-import { AuthTokenValue } from "@/database/values/auth-token-values";
-import { UserValue } from "@/database/values/user-values";
 import {
   IncorrectPasswordError,
   InvalidAuthTokenError,
   UserNotFoundError,
 } from "@/errors/service-errors";
 import { AuthService } from "@/services/auth-service";
+import { logger } from "@/utils/logger";
+import { AuthTokenValueTransformer } from "@/utils/zod/auth-token-values-transformers";
+import { UserValueTransformer } from "@/utils/zod/user-value-transformers";
 import { Request, Response } from "express";
 import { z } from "zod";
 
 export class AuthController {
   public constructor(private readonly authService: AuthService) {}
 
-  private static readonly verifyAuthTokenBodySchema = z.object({
+  private static readonly verifyAuthTokenSchema = z.object({
     value: z.string(),
   });
 
   public async verifyAuthToken(req: Request, res: Response): Promise<void> {
     const bodyParseResult =
-      await AuthController.verifyAuthTokenBodySchema.safeParseAsync(req.body);
+      await AuthController.verifyAuthTokenSchema.safeParseAsync(req.body);
     if (!bodyParseResult.success) {
       res.status(400).end();
       return;
     }
-
     const body = bodyParseResult.data;
 
     const result = await this.authService.verifyAuthToken(body.value);
@@ -31,18 +31,17 @@ export class AuthController {
     else res.status(422).end();
   }
 
-  private static readonly verifyUsernameBodySchema = z.object({
+  private static readonly verifyUsernameSchema = z.object({
     value: z.string(),
   });
 
   public async verifyUsername(req: Request, res: Response): Promise<void> {
     const bodyParseResult =
-      await AuthController.verifyUsernameBodySchema.safeParseAsync(req.body);
+      await AuthController.verifyUsernameSchema.safeParseAsync(req.body);
     if (!bodyParseResult.success) {
       res.status(400).end();
       return;
     }
-
     const body = bodyParseResult.data;
 
     const result = await this.authService.verifyUsername(body.value);
@@ -52,60 +51,42 @@ export class AuthController {
 
   public async getCurrentUser(req: Request, res: Response): Promise<void> {
     try {
-    const userDTO = await this.authService.getCurrentUser(req.session);
- 
-   }
-    res.status(200).json(userDTO);
+      const userDTO = await this.authService.getCurrentUser(req.session);
+      res.status(200).json(userDTO);
+    } catch (error) {
+      if (error instanceof UserNotFoundError) {
+        req.session.destroy((error) => {
+          logger.error(error);
+        });
+        res.status(404).end();
+      } else return Promise.reject(error);
+    }
   }
 
+  private static readonly signupSchema = z.object({
+    authToken: z.string().transform(AuthTokenValueTransformer.token),
+    username: z.string().transform(UserValueTransformer.username),
+    password: z.string().transform(UserValueTransformer.password),
+    name: z.string().transform(UserValueTransformer.name),
+  });
+
   public async signup(req: Request, res: Response): Promise<void> {
-    const {
-      authToken: rawAuthToken,
-      username: rawUsername,
-      password: rawPassword,
-      name: rawName,
-    } = req.body;
-    if (
-      typeof rawAuthToken !== "string" ||
-      typeof rawUsername !== "string" ||
-      typeof rawPassword !== "string" ||
-      typeof rawName !== "string"
-    ) {
+    const bodyParseResult = await AuthController.signupSchema.safeParseAsync(
+      req.body
+    );
+    if (!bodyParseResult.success) {
       res.status(400).end();
       return;
     }
-
-    const authToken = AuthTokenValue.Token.verify(rawAuthToken);
-    if (!authToken) {
-      res.status(400).end();
-      return;
-    }
-
-    const username = UserValue.Username.verify(rawUsername);
-    if (!username) {
-      res.status(400).end();
-      return;
-    }
-
-    const password = UserValue.Password.verify(rawPassword);
-    if (!password) {
-      res.status(400).end();
-      return;
-    }
-
-    const name = UserValue.Name.verify(rawName);
-    if (!name) {
-      res.status(400).end();
-      return;
-    }
+    const body = bodyParseResult.data;
 
     try {
       const userDTO = await this.authService.signup(
         req.session,
-        authToken,
-        username,
-        password,
-        name
+        body.authToken,
+        body.username,
+        body.password,
+        body.name
       );
       res.status(201).json(userDTO);
     } catch (error) {
@@ -118,30 +99,26 @@ export class AuthController {
     }
   }
 
+  private static readonly signinSchema = z.object({
+    username: z.string().transform(UserValueTransformer.username),
+    password: z.string().transform(UserValueTransformer.password),
+  });
+
   public async signin(req: Request, res: Response): Promise<void> {
-    const { username: rawUsername, password: rawPassword } = req.body;
-    if (typeof rawUsername !== "string" || typeof rawPassword !== "string") {
+    const bodyParseResult = await AuthController.signinSchema.safeParseAsync(
+      req.body
+    );
+    if (!bodyParseResult.success) {
       res.status(400).end();
       return;
     }
-
-    const username = UserValue.Username.verify(rawUsername);
-    if (!username) {
-      res.status(400).end();
-      return;
-    }
-
-    const password = UserValue.Password.verify(rawPassword);
-    if (!password) {
-      res.status(400).end();
-      return;
-    }
+    const body = bodyParseResult.data;
 
     try {
       const userDTO = await this.authService.signin(
         req.session,
-        username,
-        password
+        body.username,
+        body.password
       );
       res.status(201).json(userDTO);
     } catch (error) {
@@ -164,41 +141,37 @@ export class AuthController {
     res.status(201).end();
   }
 
+  private static readonly updatePasswordSchema = z.object({
+    currentPassword: z.string().transform(UserValueTransformer.password),
+    newPassword: z.string().transform(UserValueTransformer.password),
+  });
+
   public async updatePassword(req: Request, res: Response): Promise<void> {
-    const { userUid } = req.session;
+    const userUid = req.session.userUid;
     if (!userUid) {
       res.status(401).end();
       return;
     }
 
-    const { current: rawCurrentPassword, new: rawNewPassword } = req.body;
-    if (
-      typeof rawCurrentPassword !== "string" ||
-      typeof rawNewPassword !== "string"
-    ) {
+    const bodyParseResult =
+      await AuthController.updatePasswordSchema.safeParseAsync(req.body);
+    if (!bodyParseResult.success) {
       res.status(400).end();
       return;
     }
+    const body = bodyParseResult.data;
 
-    const currentPassword = UserValue.Password.verify(rawCurrentPassword);
-    if (!currentPassword) {
-      res.status(400).end();
-      return;
+    try {
+      await this.authService.updatePassword(
+        userUid,
+        body.currentPassword,
+        body.newPassword
+      );
+      res.status(201).end();
+    } catch (error) {
+      if (error instanceof UserNotFoundError) res.status(400).end();
+      else if (error instanceof IncorrectPasswordError) res.status(401).end();
+      else return Promise.reject(error);
     }
-
-    const newPassword = UserValue.Password.verify(rawNewPassword);
-    if (!newPassword) {
-      res.status(400).end();
-      return;
-    }
-
-    const success = await this.authService.updatePassword(
-      userUid,
-      currentPassword,
-      newPassword
-    );
-
-    if (success) res.status(201).end();
-    else res.status(400).end();
   }
 }

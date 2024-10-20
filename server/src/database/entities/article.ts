@@ -1,4 +1,11 @@
-import { env } from "@/env";
+import { config } from "@/config";
+import {
+  json,
+  mysqlTable,
+  smallint,
+  timestamp,
+  varchar,
+} from "drizzle-orm/mysql-core";
 import {
   Column,
   CreateDateColumn,
@@ -10,7 +17,7 @@ import {
 import { Category } from "./category";
 import { User } from "./user";
 
-const config = env.article;
+const conf = config.article;
 
 @Entity("articles")
 export class Article {
@@ -29,20 +36,20 @@ export class Article {
 
   @Column({
     type: "varchar",
-    length: config.maxThumbnailUrlLength,
+    length: conf.maxThumbnailUrlLength,
   })
   public declare thumbnailUrl: string;
 
   @Column({
     type: "varchar",
-    length: config.maxThumbnailCaptionLength,
+    length: conf.maxThumbnailCaptionLength,
   })
   public declare thumbnailCaption: string;
 
-  @Column({ type: "varchar", length: config.maxTitleLength })
+  @Column({ type: "varchar", length: conf.maxTitleLength })
   public declare title: string;
 
-  @Column({ type: "varchar", length: config.maxSubtitleLength })
+  @Column({ type: "varchar", length: conf.maxSubtitleLength })
   public declare subtitle: string;
 
   @Column({ type: "json" })
@@ -54,3 +61,14 @@ export class Article {
   @UpdateDateColumn()
   public declare updatedAt: Date;
 }
+
+const ArticleTable = mysqlTable("articles", {
+  id: smallint({ unsigned: true }).primaryKey().autoincrement(),
+  thumbnailUrl: varchar({ length: conf.maxThumbnailUrlLength }),
+  thumbnailCaption: varchar({ length: conf.maxThumbnailCaptionLength }),
+  title: varchar({ length: conf.maxTitleLength }),
+  subtitle: varchar({ length: conf.maxSubtitleLength }),
+  content: json(),
+  createdAt: timestamp().defaultNow(),
+  updatedAt: timestamp().defaultNow(),
+});

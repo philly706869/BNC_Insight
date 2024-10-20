@@ -11,7 +11,10 @@ export async function signup(
   username: string,
   password: string,
   name: string
-): SignupResult {}
+): Promise<SignupResult> {
+  // TODO
+  return Promise.reject();
+}
 
 export async function signin(id: string, password: string) {}
 

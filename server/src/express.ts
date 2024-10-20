@@ -3,16 +3,16 @@ import Express, { ErrorRequestHandler } from "express";
 import session from "express-session";
 import { dataSource } from "./database/data-source";
 import { Session } from "./database/entities/session";
-import { env, isProduction } from "./env";
+import { env } from "./env";
+import { NODE_ENV } from "./node-env";
 import { apiRouter } from "./routers/api-router";
-import { safeRequestHandler } from "./utils/async-request-handler";
 import { logger } from "./utils/logger";
 
 export const express = Express();
 
 express.use(
   session({
-    secret: env.server.sessionSecret,
+    secret: env.SERVER_SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -24,14 +24,11 @@ express.use(
 
 express.use("/api", apiRouter);
 
-if (isProduction) {
-  express.use(
-    "*",
-    safeRequestHandler((req, res) => {
-      // TODO
-      res.status(200).end();
-    })
-  );
+if (NODE_ENV === "production") {
+  express.use("*", (req, res) => {
+    // TODO
+    res.status(200).end();
+  });
 }
 
 express.use(((err, req, res, next) => {

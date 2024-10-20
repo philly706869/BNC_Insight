@@ -1,57 +1,39 @@
-import rawEnv from "../env.json"; // 오류 발생 시 ../env.json 추가할 것
+import dotenv from "dotenv";
+import fs from "fs/promises";
+import path from "path";
+import { z } from "zod";
+import { NODE_ENV } from "./node-env";
 
-export type Env = {
-  readonly server: {
-    readonly url: string;
-    readonly port: number;
-    readonly sessionSecret: string;
-    readonly uploadTempPath: string;
-  };
-  readonly database: {
-    readonly username: string;
-    readonly password: string;
-    readonly host: string;
-    readonly port: number;
-    readonly database: string;
-    readonly poolSize: number;
-  };
-  readonly authToken: {
-    readonly maxTokenLength: number;
-  };
-  readonly user: {
-    readonly maxUsernameLength: number;
-    readonly minPasswordLength: number;
-    readonly maxPasswordLength: number;
-    readonly maxNameLength: number;
-  };
-  readonly category: {
-    readonly maxNameLength: number;
-  };
-  readonly article: {
-    readonly defaultQueryLimit: number;
-    readonly maxQueryLimit: number;
-    readonly maxThumbnailUrlLength: number;
-    readonly maxThumbnailCaptionLength: number;
-    readonly maxTitleLength: number;
-    readonly maxSubtitleLength: number;
-    readonly maxContentDeltaLength: number;
-  };
-  readonly thumbnail: {
-    readonly defaultUrl: string;
-    readonly path: string;
-    readonly maxBytes: number;
-  };
-  readonly image: {
-    readonly path: string;
-    readonly maxBytes: number;
-  };
-};
+const developmentEnvPath = path.resolve(".env.development");
+const productionEnvPath = path.resolve(".env.production");
 
-export const env: Env = rawEnv; // ../env.json의 구조가 유효하지 않을 시 오류 발생
+const envSchema = z
+  .object({
+    SERVER_URL: z.string(),
+    SERVER_PORT: z.coerce.number(),
+    SERVER_SESSION_SECRET: z.string(),
 
-export type NODE_ENV = "development" | "production";
-export const NODE_ENV: NODE_ENV =
-  process.env.NODE_ENV === "production" ? "production" : "development";
+    DATABASE_USERNAME: z.string(),
+    DATABASE_PASSWORD: z.string(),
+    DATABASE_HOST: z.string(),
+    DATABASE_PORT: z.coerce.number(),
+    DATABASE_NAME: z.string(),
+    DATABASE_CONNECTION_LIMIT: z.coerce.number(),
+  })
+  .readonly();
 
-export const isDev = NODE_ENV === "development";
-export const isProduction = NODE_ENV === "production";
+export const env = await (async () => {
+  const envPath =
+    NODE_ENV === "development" ? developmentEnvPath : productionEnvPath;
+  try {
+    const rawEnv = await fs.readFile(envPath, "utf8");
+    const parsedEnv = dotenv.parse(rawEnv);
+    try {
+      return await envSchema.parseAsync(parsedEnv);
+    } catch {
+      return Promise.reject(new Error(`\`${envPath}\` is not valid`));
+    }
+  } catch {
+    return Promise.reject(new Error(`Failed to read \`${envPath}\``));
+  }
+})();

@@ -47,7 +47,7 @@ export class ArticleService {
    * @throws {CategoryNotFoundError}
    */
   public async getMany(
-    categoryName: CategoryValue.Name | null,
+    categoryName: CategoryValue.Name | null | undefined,
     offset: number | undefined,
     limit: number | undefined
   ): Promise<ContentlessArticleDTO[]> {
@@ -61,7 +61,7 @@ export class ArticleService {
       if (offset < 0) return Promise.reject(new QueryOffsetOutOfBoundsError());
     } else offset = 0;
 
-    let category: Category | null = null;
+    let category: Category | null | undefined = undefined;
     if (categoryName) {
       const foundCategory = await this.categoryRepository.findOne({
         where: { name: categoryName.value },
@@ -69,10 +69,12 @@ export class ArticleService {
       });
       if (!foundCategory) return Promise.reject(new CategoryNotFoundError());
       category = foundCategory;
-    }
+    } else if (categoryName === null) category = null;
 
     const articles = await this.articleRepository.find({
-      where: { category: category ?? IsNull() },
+      where: {
+        category: category ?? (category === null ? IsNull() : undefined),
+      },
       select: contentlessArticleFindSelection,
       skip: offset,
       take: limit,

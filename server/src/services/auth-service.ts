@@ -122,24 +122,33 @@ export class AuthService {
   }
 
   /**
+   * @throws {UserNotFoundError}
    * @throws {IncorrectPasswordError}
    */
   public async updatePassword(
     uid: number,
     currentPassword: UserValue.Password,
     newPassword: UserValue.Password
-  ): Promise<boolean> {
+  ): Promise<void> {
     const user = await this.userRepository.findOne({
       where: { uid },
       select: { passwordHash: true },
     });
     if (!user) return Promise.reject(new UserNotFoundError());
-    if (!(await compare(currentPassword.value, user.passwordHash.toString())))
-      return Promise.reject(new IncorrectPasswordError());
+
+    const isCorrect = await compare(
+      currentPassword.value,
+      user.passwordHash.toString()
+    );
+    if (!isCorrect) return Promise.reject(new IncorrectPasswordError());
+
     const result = await this.userRepository.update(
       { uid },
       { passwordHash: await hashPassword(newPassword) }
     );
-    return Boolean(result.affected);
+    if (!Boolean(result.affected))
+      return Promise.reject(new UserNotFoundError());
+
+    return;
   }
 }

@@ -1,15 +1,16 @@
 import fs from "fs/promises";
 import { exit } from "process";
 import { dataSource } from "./database/data-source";
-import { env } from "./env";
 import { express } from "./express";
 import { logger } from "./utils/logger";
 
 try {
+  const { env } = await import("@/env");
+  const { config } = await import("@/config");
+
   logger.info("Checking directories...");
-  await fs.mkdir(env.server.uploadTempPath, { recursive: true });
-  await fs.mkdir(env.thumbnail.path, { recursive: true });
-  await fs.mkdir(env.image.path, { recursive: true });
+  await fs.mkdir(config.image.tempPath, { recursive: true });
+  await fs.mkdir(config.image.path, { recursive: true });
   logger.info("Completed checking directories");
 
   logger.info("Connecting database...");
@@ -17,7 +18,7 @@ try {
   logger.info("Completed connecting database");
 
   logger.info("Starting express server...");
-  const { port } = env.server;
+  const port = env.SERVER_PORT;
   await new Promise<void>((resolve) => express.listen(port, resolve));
   logger.info(`Completed starting express server (port: ${port})`);
 } catch (error) {

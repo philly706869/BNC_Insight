@@ -1,4 +1,3 @@
-import { CategoryValue } from "@/database/values/category-values";
 import {
   ArticleNotFoundError,
   CategoryNotFoundError,
@@ -22,12 +21,10 @@ export class ArticleController {
   public async getOne(req: Request, res: Response): Promise<void> {
     const paramsParseResult =
       await ArticleController.paramsSchema.safeParseAsync(req.params);
-
     if (!paramsParseResult.success) {
       res.status(400).end();
       return;
     }
-
     const params = paramsParseResult.data;
 
     try {
@@ -39,31 +36,19 @@ export class ArticleController {
     }
   }
 
-  private static readonly getManyQuerySchema = z.object({
-    category: z
-      .string()
-      .transform((arg, ctx) => {
-        const categoryName = CategoryValue.Name.verify(arg);
-        if (!categoryName) {
-          ctx.addIssue({ code: "custom" });
-          return z.NEVER;
-        }
-        return categoryName;
-      })
-      .nullable(),
+  private static readonly getManySchema = z.object({
+    category: z.string().transform(CategoryValueTransformer.name).nullable(),
     offset: z.number().int().optional(),
     limit: z.number().int().optional(),
   });
 
   public async getMany(req: Request, res: Response): Promise<void> {
     const queryParseResult =
-      await ArticleController.getManyQuerySchema.safeParseAsync(req.query);
-
+      await ArticleController.getManySchema.safeParseAsync(req.query);
     if (!queryParseResult.success) {
       res.status(400).end();
       return;
     }
-
     const query = queryParseResult.data;
 
     try {
@@ -82,7 +67,7 @@ export class ArticleController {
     }
   }
 
-  private static readonly postBodySchema = z.object({
+  private static readonly postSchema = z.object({
     category: z.string().transform(CategoryValueTransformer.name).nullable(),
     thumbnail: z
       .object({
@@ -97,15 +82,18 @@ export class ArticleController {
 
   public async post(req: Request, res: Response): Promise<void> {
     const uploaderUid = req.session.userUid;
-    if (!uploaderUid) return Promise.reject();
+    if (!uploaderUid) {
+      res.status(401).end();
+      return;
+    }
 
-    const bodyParseResult =
-      await ArticleController.postBodySchema.safeParseAsync(req.body);
+    const bodyParseResult = await ArticleController.postSchema.safeParseAsync(
+      req.body
+    );
     if (!bodyParseResult.success) {
       res.status(400).end();
       return;
     }
-
     const body = bodyParseResult.data;
 
     try {
@@ -117,6 +105,7 @@ export class ArticleController {
         body.subtitle,
         body.content
       );
+      res.status(201).end();
     } catch (error) {
       if (error instanceof UserNotFoundError) res.status(404).end();
       else if (error instanceof CategoryNotFoundError) res.status(400).end();
@@ -124,7 +113,7 @@ export class ArticleController {
     }
   }
 
-  private static readonly patchBodySchema = z.object({
+  private static readonly patchSchema = z.object({
     category: z
       .string()
       .transform(CategoryValueTransformer.name)
@@ -149,19 +138,20 @@ export class ArticleController {
       res.status(400).end();
       return;
     }
+    const params = paramsParseResult.data;
 
-    const bodyParseResult =
-      await ArticleController.patchBodySchema.safeParseAsync(req.body);
+    const bodyParseResult = await ArticleController.patchSchema.safeParseAsync(
+      req.body
+    );
     if (!bodyParseResult.success) {
       res.status(400).end();
       return;
     }
-
-    const params = paramsParseResult.data;
     const body = bodyParseResult.data;
 
     try {
       await this.articleService.patch(params.id, body);
+      res.status(201).end();
     } catch (error) {
       if (error instanceof CategoryNotFoundError) res.status(400).end();
       else if (error instanceof ArticleNotFoundError) res.status(404).end();
@@ -170,17 +160,23 @@ export class ArticleController {
   }
 
   public async delete(req: Request, res: Response): Promise<void> {
+    const userUid = req.session.userUid;
+    if (!userUid) {
+      res.status(401).end();
+      return;
+    }
+
     const paramsParseResult =
       await ArticleController.paramsSchema.safeParseAsync(req.params);
     if (!paramsParseResult.success) {
       res.status(400).end();
       return;
     }
-
     const params = paramsParseResult.data;
 
     try {
       await this.articleService.delete(params.id);
+      res.status(201).end();
     } catch (error) {
       if (error instanceof ArticleNotFoundError) res.status(404).end();
       else return Promise.reject(error);
