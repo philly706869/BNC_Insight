@@ -1,5 +1,5 @@
+import { config } from "@/config";
 import { ImageController } from "@/controllers/image-controller";
-import { env } from "@/env";
 import { authVerifier } from "@/middlewares/auth-verifier";
 import { ImageService } from "@/services/image-service";
 import { IMAGE_MIME_TYPES } from "@/utils/constants";
@@ -19,8 +19,8 @@ imageRouter.post(
   "/",
   authVerifier,
   multer({
-    dest: path.resolve(env.server.uploadTempPath),
-    limits: { fileSize: env.image.maxBytes },
+    dest: path.resolve(config.image.tempPath),
+    limits: { fileSize: config.image.maxBytes },
     fileFilter(req, file, callback) {
       if (IMAGE_MIME_TYPES.includes(file.mimetype)) callback(null, true);
       else callback(null, false);

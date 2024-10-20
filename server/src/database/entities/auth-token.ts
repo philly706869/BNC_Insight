@@ -1,4 +1,4 @@
-import { env } from "@/env";
+import { config } from "@/config";
 import {
   Column,
   CreateDateColumn,
@@ -7,13 +7,13 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 
-const config = env.authToken;
+const conf = config.authToken;
 
 @Entity("auth_tokens")
 export class AuthToken {
   private constructor() {}
 
-  @PrimaryColumn({ type: "varchar", length: config.maxTokenLength })
+  @PrimaryColumn({ type: "varchar", length: conf.maxTokenLength })
   public declare token: string;
 
   @Column({ type: "boolean", default: false })

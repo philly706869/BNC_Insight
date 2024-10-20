@@ -1,14 +1,14 @@
-import { env } from "@/env";
+import { config } from "@/config";
 
 export namespace AuthTokenValue {
-  const config = env.authToken;
+  const conf = config.authToken;
 
   export class Token {
     private constructor(public readonly value: string) {}
 
     public static verify(value: string): Token | null {
       if (value.length < 1) return null;
-      if (value.length > config.maxTokenLength) return null;
+      if (value.length > conf.maxTokenLength) return null;
       return new Token(value);
     }
   }

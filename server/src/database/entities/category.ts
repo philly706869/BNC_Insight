@@ -1,4 +1,4 @@
-import { env } from "@/env";
+import { config } from "@/config";
 import {
   CreateDateColumn,
   Entity,
@@ -8,13 +8,13 @@ import {
 } from "typeorm";
 import { Article } from "./article";
 
-const config = env.category;
+const conf = config.category;
 
 @Entity("categories")
 export class Category {
   private constructor() {}
 
-  @PrimaryColumn({ type: "varchar", length: config.maxNameLength })
+  @PrimaryColumn({ type: "varchar", length: conf.maxNameLength })
   public declare name: string;
 
   @OneToMany((type) => Article, (article) => article.category)

@@ -1,3 +1,4 @@
+import { config } from "@/config";
 import { Article } from "@/database/entities/article";
 import { Category } from "@/database/entities/category";
 import { User } from "@/database/entities/user";
@@ -8,7 +9,6 @@ import {
   ContentlessArticleDTO,
   contentlessArticleFindSelection,
 } from "@/dto/contentless-article-dto";
-import { env } from "@/env";
 import {
   ArticleNotFoundError,
   CategoryNotFoundError,
@@ -53,9 +53,9 @@ export class ArticleService {
   ): Promise<ContentlessArticleDTO[]> {
     if (limit) {
       if (limit < 1) return Promise.reject(new QueryLimitOutOfBoundsError());
-      if (limit > env.article.maxQueryLimit)
+      if (limit > config.article.maxQueryLimit)
         return Promise.reject(new QueryLimitOutOfBoundsError());
-    } else limit = env.article.maxQueryLimit;
+    } else limit = config.article.maxQueryLimit;
 
     if (offset) {
       if (offset < 0) return Promise.reject(new QueryOffsetOutOfBoundsError());
@@ -159,7 +159,7 @@ export class ArticleService {
         category,
         thumbnailUrl:
           data.thumbnail !== undefined
-            ? data.thumbnail?.url.value ?? env.thumbnail.defaultUrl
+            ? data.thumbnail?.url.value ?? config.article.defaultThumbnailUrl
             : undefined,
         thumbnailCaption:
           data.thumbnail !== undefined

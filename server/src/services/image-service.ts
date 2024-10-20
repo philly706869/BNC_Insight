@@ -1,4 +1,4 @@
-import { env } from "@/env";
+import { config } from "@/config";
 import { ImageNotFoundError } from "@/errors/service-errors";
 import fs from "fs/promises";
 import path from "path";
@@ -12,7 +12,7 @@ export class ImageService {
    */
   public async get(name: string): Promise<string> {
     try {
-      const imagePath = path.resolve(env.image.path, name);
+      const imagePath = path.resolve(config.image.path, name);
       const stat = await fs.stat(imagePath);
       if (!stat.isFile()) return Promise.reject(new ImageNotFoundError());
       return imagePath;
@@ -25,7 +25,7 @@ export class ImageService {
     imagePath: string,
     imageExt: "jpeg" | "png" | "webp"
   ): Promise<string> {
-    const copyDest = path.resolve(env.image.path, `${uuidv4()}.${imageExt}`);
+    const copyDest = path.resolve(config.image.path, `${uuidv4()}.${imageExt}`);
     await fs.copyFile(imagePath, copyDest, fs.constants.COPYFILE_EXCL);
     return copyDest;
   }

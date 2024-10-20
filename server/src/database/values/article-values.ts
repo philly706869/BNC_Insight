@@ -1,8 +1,8 @@
-import { env } from "@/env";
+import { config } from "@/config";
 import validator, { IsURLOptions } from "validator";
 
 export namespace ArticleValue {
-  const config = env.article;
+  const conf = config.article;
 
   export class ThumbnailUrl {
     private static readonly isURLOptions: IsURLOptions = {
@@ -13,7 +13,7 @@ export namespace ArticleValue {
 
     public static verify(value: string): ThumbnailUrl | null {
       if (!validator.isURL(value, this.isURLOptions)) return null;
-      if (value.length > config.maxThumbnailUrlLength) return null;
+      if (value.length > conf.maxThumbnailUrlLength) return null;
       return new ThumbnailUrl(value);
     }
   }
@@ -25,7 +25,7 @@ export namespace ArticleValue {
 
     public static verify(value: string): ThumbnailCaption | null {
       if (!this.regex.test(value)) return null;
-      if (value.length > config.maxThumbnailCaptionLength) return null;
+      if (value.length > conf.maxThumbnailCaptionLength) return null;
       return new ThumbnailCaption(value);
     }
   }
@@ -38,7 +38,7 @@ export namespace ArticleValue {
     public static verify(value: string): Title | null {
       if (!this.regex.test(value)) return null;
       if (value.length < 1) return null;
-      if (value.length > config.maxTitleLength) return null;
+      if (value.length > conf.maxTitleLength) return null;
       return new Title(value);
     }
   }
@@ -50,7 +50,7 @@ export namespace ArticleValue {
 
     public static verify(value: string): Title | null {
       if (!this.regex.test(value)) return null;
-      if (value.length > config.maxSubtitleLength) return null;
+      if (value.length > conf.maxSubtitleLength) return null;
       return new Subtitle(value);
     }
   }
@@ -59,7 +59,7 @@ export namespace ArticleValue {
     private constructor(public readonly value: any) {}
 
     public static verify(value: string): Content | null {
-      if (value.length > config.maxContentDeltaLength) return null;
+      if (value.length > conf.maxContentDeltaLength) return null;
       return new Content(value);
     }
   }
