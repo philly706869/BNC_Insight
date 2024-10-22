@@ -1,6 +1,5 @@
 import fs from "fs/promises";
 import { exit } from "process";
-import { dataSource } from "./database/data-source";
 import { express } from "./express";
 import { logger } from "./utils/logger";
 
@@ -14,7 +13,7 @@ try {
   logger.info("Completed checking directories");
 
   logger.info("Connecting database...");
-  await dataSource.initialize();
+  await import("./database/database");
   logger.info("Completed connecting database");
 
   logger.info("Starting express server...");

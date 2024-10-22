@@ -1,50 +1,71 @@
 import { config } from "@/config";
-import { Article } from "@/database/entities/article";
-import { Category } from "@/database/entities/category";
-import { User } from "@/database/entities/user";
+import { Database } from "@/database/database";
+import { articles } from "@/database/tables/article";
+import { users } from "@/database/tables/user";
 import { ArticleValue } from "@/database/values/article-values";
 import { CategoryValue } from "@/database/values/category-values";
-import { ArticleDTO, articleFindSelection } from "@/dto/article-dto";
-import {
-  ContentlessArticleDTO,
-  contentlessArticleFindSelection,
-} from "@/dto/contentless-article-dto";
+import { ArticleDTO } from "@/dto/article-dto";
+import { ContentlessArticleDTO } from "@/dto/contentless-article-dto";
+import { PublicUserDTO } from "@/dto/public-user-dto";
 import {
   ArticleNotFoundError,
-  CategoryNotFoundError,
   QueryLimitOutOfBoundsError,
   QueryOffsetOutOfBoundsError,
-  UserNotFoundError,
 } from "@/errors/service-errors";
-import { DataSource, IsNull, Repository } from "typeorm";
+import { eq, isNull } from "drizzle-orm";
 
 export class ArticleService {
-  private readonly userRepository: Repository<User>;
-  private readonly categoryRepository: Repository<Category>;
-  private readonly articleRepository: Repository<Article>;
-
-  public constructor(dataSource: DataSource) {
-    this.userRepository = dataSource.getRepository(User);
-    this.categoryRepository = dataSource.getRepository(Category);
-    this.articleRepository = dataSource.getRepository(Article);
-  }
+  public constructor(private readonly database: Database) {}
 
   /**
    * @throws {ArticleNotFoundError}
    */
-  public async getOne(id: number): Promise<ArticleDTO> {
-    const article = await this.articleRepository.findOne({
-      where: { id },
-      select: articleFindSelection,
+  public async getOne(uid: number): Promise<ArticleDTO> {
+    const articleArray = await this.database
+      .select({
+        uid: articles.uid,
+        uploaderUsername: users.username,
+        uploaderName: users.name,
+        category: articles.categoryName,
+        thumbnailUrl: articles.thumbnailUrl,
+        thumbnailCaption: articles.thumbnailCaption,
+        title: articles.title,
+        subtitle: articles.subtitle,
+        content: articles.content,
+        createdAt: articles.createdAt,
+        updatedAt: articles.updatedAt,
+      })
+      .from(articles)
+      .leftJoin(users, eq(users.uid, articles.uploaderUid))
+      .where(eq(articles.uid, uid))
+      .limit(1)
+      .execute();
+
+    if (articleArray.length < 1)
+      return Promise.reject(new ArticleNotFoundError());
+    const article = articleArray[0];
+
+    return new ArticleDTO({
+      ...article,
+      uploader:
+        article.uploaderUsername && article.uploaderName
+          ? new PublicUserDTO({
+              username: article.uploaderUsername,
+              name: article.uploaderName,
+            })
+          : null,
+      thumbnail: {
+        url: article.thumbnailUrl,
+        caption: article.thumbnailCaption,
+      },
+      createdAt: article.createdAt.toISOString(),
+      updatedAt: article.updatedAt.toISOString(),
     });
-    if (!article) return Promise.reject(new ArticleNotFoundError());
-    return ArticleDTO.from(article);
   }
 
   /**
    * @throws {QueryLimitOutOfBoundsError}
    * @throws {QueryOffsetOutOfBoundsError}
-   * @throws {CategoryNotFoundError}
    */
   public async getMany(
     categoryName: CategoryValue.Name | null | undefined,
@@ -61,31 +82,51 @@ export class ArticleService {
       if (offset < 0) return Promise.reject(new QueryOffsetOutOfBoundsError());
     } else offset = 0;
 
-    let category: Category | null | undefined = undefined;
-    if (categoryName) {
-      const foundCategory = await this.categoryRepository.findOne({
-        where: { name: categoryName.value },
-        select: { name: true },
-      });
-      if (!foundCategory) return Promise.reject(new CategoryNotFoundError());
-      category = foundCategory;
-    } else if (categoryName === null) category = null;
+    const articleArray = await this.database
+      .select({
+        uid: articles.uid,
+        uploaderUsername: users.username,
+        uploaderName: users.name,
+        category: articles.categoryName,
+        thumbnailUrl: articles.thumbnailUrl,
+        thumbnailCaption: articles.thumbnailCaption,
+        title: articles.title,
+        subtitle: articles.subtitle,
+        createdAt: articles.createdAt,
+        updatedAt: articles.updatedAt,
+      })
+      .from(articles)
+      .leftJoin(users, eq(users.uid, articles.uploaderUid))
+      .where(
+        categoryName
+          ? eq(articles.categoryName, categoryName.value)
+          : isNull(articles.categoryName)
+      )
+      .limit(limit)
+      .offset(offset)
+      .execute();
 
-    const articles = await this.articleRepository.find({
-      where: {
-        category: category ?? (category === null ? IsNull() : undefined),
-      },
-      select: contentlessArticleFindSelection,
-      skip: offset,
-      take: limit,
-    });
-    return articles.map((article) => ContentlessArticleDTO.from(article));
+    return articleArray.map(
+      (article) =>
+        new ContentlessArticleDTO({
+          ...article,
+          uploader:
+            article.uploaderUsername && article.uploaderName
+              ? new PublicUserDTO({
+                  username: article.uploaderUsername,
+                  name: article.uploaderName,
+                })
+              : null,
+          thumbnail: {
+            url: article.thumbnailUrl,
+            caption: article.thumbnailCaption,
+          },
+          createdAt: article.createdAt.toISOString(),
+          updatedAt: article.updatedAt.toISOString(),
+        })
+    );
   }
 
-  /**
-   * @throws {UserNotFoundError}
-   * @throws {CategoryNotFoundError}
-   */
   public async post(
     uploaderUid: number,
     categoryName: CategoryValue.Name | null,
@@ -96,44 +137,24 @@ export class ArticleService {
     title: ArticleValue.Title,
     subtitle: ArticleValue.Subtitle,
     content: ArticleValue.Content
-  ): Promise<ContentlessArticleDTO> {
-    const uploader = await this.userRepository.findOne({
-      where: { uid: uploaderUid },
-      select: { uid: true },
-    });
-    if (!uploader) return Promise.reject(new UserNotFoundError());
-
-    let category: Category | null = null;
-    if (categoryName) {
-      const foundCategory = await this.categoryRepository.findOne({
-        where: { name: categoryName.value },
-        select: { name: true },
-      });
-      if (!foundCategory) return Promise.reject(new CategoryNotFoundError());
-      category = foundCategory;
-    }
-
-    const article = await this.articleRepository.save(
-      this.articleRepository.create({
-        uploader: uploader,
-        category: category,
-        thumbnailUrl: thumbnail?.url.value,
-        thumbnailCaption: thumbnail?.caption.value,
+  ): Promise<void> {
+    await this.database
+      .insert(articles)
+      .values({
+        uploaderUid,
+        categoryName: categoryName?.value ?? null,
+        thumbnailUrl:
+          thumbnail?.url.value ?? config.article.defaultThumbnailUrl,
+        thumbnailCaption: thumbnail?.caption.value ?? "",
         title: title.value,
         subtitle: subtitle.value,
         content: content.value,
       })
-    );
-
-    return ContentlessArticleDTO.from(article);
+      .execute();
   }
 
-  /**
-   * @throws {CategoryNotFoundError}
-   * @throws {ArticleNotFoundError}
-   */
   public async patch(
-    id: number,
+    uid: number,
     data: {
       categoryName?: CategoryValue.Name;
       thumbnail?: {
@@ -145,42 +166,21 @@ export class ArticleService {
       content?: ArticleValue.Content;
     }
   ): Promise<void> {
-    let category: Category | undefined = undefined;
-    if (data.categoryName) {
-      const category = await this.categoryRepository.findOne({
-        where: { name: data.categoryName?.value },
-      });
-      if (!category) return Promise.reject(new CategoryNotFoundError());
-    }
-
-    const result = await this.articleRepository.update(
-      { id },
-      {
-        category,
-        thumbnailUrl:
-          data.thumbnail !== undefined
-            ? data.thumbnail?.url.value ?? config.article.defaultThumbnailUrl
-            : undefined,
-        thumbnailCaption:
-          data.thumbnail !== undefined
-            ? data.thumbnail?.caption.value ?? ""
-            : undefined,
+    await this.database
+      .update(articles)
+      .set({
+        categoryName: data.categoryName?.value,
+        thumbnailUrl: data.thumbnail?.url.value,
+        thumbnailCaption: data.thumbnail?.caption.value,
         title: data.title?.value,
         subtitle: data.subtitle?.value,
         content: data.content?.value,
-      }
-    );
-
-    if (!Boolean(result.affected))
-      return Promise.reject(new ArticleNotFoundError());
+      })
+      .where(eq(articles.uid, uid))
+      .execute();
   }
 
-  /**
-   * @throws {ArticleNotFoundError}
-   */
-  public async delete(id: number): Promise<void> {
-    const result = await this.articleRepository.delete({ id });
-    if (!Boolean(result.affected))
-      return Promise.reject(new ArticleNotFoundError());
+  public async delete(uid: number): Promise<void> {
+    await this.database.delete(articles).where(eq(articles.uid, uid)).execute();
   }
 }

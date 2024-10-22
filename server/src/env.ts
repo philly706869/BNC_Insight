@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import fs from "fs/promises";
 import path from "path";
 import { z } from "zod";
-import { NODE_ENV } from "./node-env";
+import { NODE_ENV } from "./utils/node-env";
 
 const developmentEnvPath = path.resolve(".env.development");
 const productionEnvPath = path.resolve(".env.production");

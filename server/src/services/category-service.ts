@@ -1,4 +1,4 @@
-import { Category } from "@/database/entities/category";
+import { Category } from "@/database/tables/category";
 import { CategoryValue } from "@/database/values/category-values";
 import { CategoryDTO } from "@/dto/category-dto";
 import {

@@ -1,5 +1,5 @@
-import { AuthToken } from "@/database/entities/auth-token";
-import { User } from "@/database/entities/user";
+import { AuthToken } from "@/database/tables/auth-token";
+import { User } from "@/database/tables/user";
 import { AuthTokenValue } from "@/database/values/auth-token-values";
 import { UserValue } from "@/database/values/user-values";
 import {

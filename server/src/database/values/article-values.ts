@@ -56,7 +56,7 @@ export namespace ArticleValue {
   }
 
   export class Content {
-    private constructor(public readonly value: any) {}
+    private constructor(public readonly value: string) {}
 
     public static verify(value: string): Content | null {
       if (value.length > conf.maxContentDeltaLength) return null;

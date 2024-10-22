@@ -1,4 +1,4 @@
-import { User } from "@/database/entities/user";
+import { User } from "@/database/tables/user";
 import { UserValue } from "@/database/values/user-values";
 import { PublicUserDTO, publicUserFindSelection } from "@/dto/public-user-dto";
 import { UserNotFoundError } from "@/errors/service-errors";

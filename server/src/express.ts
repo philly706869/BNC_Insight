@@ -1,12 +1,10 @@
-import { TypeormStore } from "connect-typeorm";
 import Express, { ErrorRequestHandler } from "express";
+import MySQLStore from "express-mysql-session";
 import session from "express-session";
-import { dataSource } from "./database/data-source";
-import { Session } from "./database/entities/session";
 import { env } from "./env";
-import { NODE_ENV } from "./node-env";
 import { apiRouter } from "./routers/api-router";
 import { logger } from "./utils/logger";
+import { NODE_ENV } from "./utils/node-env";
 
 export const express = Express();
 
@@ -18,7 +16,16 @@ express.use(
     cookie: {
       maxAge: 30 * 24 * 60 * 1000,
     },
-    store: new TypeormStore().connect(dataSource.getRepository(Session)),
+    store: new (MySQLStore(await import("express-session")))({
+      user: env.DATABASE_USERNAME,
+      password: env.DATABASE_PASSWORD,
+      host: env.DATABASE_HOST,
+      port: env.DATABASE_PORT,
+      database: env.DATABASE_NAME,
+      clearExpired: true,
+      checkExpirationInterval: 3 * 60 * 1000,
+      expiration: 30 * 24 * 60 * 1000,
+    }),
   })
 );
 
