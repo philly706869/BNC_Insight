@@ -1,44 +1,39 @@
-import { AuthToken } from "@/database/tables/auth-token";
-import { User } from "@/database/tables/user";
+import { Database } from "@/database/database";
+import { authTokens } from "@/database/tables/auth-token";
+import { users } from "@/database/tables/user";
 import { AuthTokenValue } from "@/database/values/auth-token-values";
 import { UserValue } from "@/database/values/user-values";
-import {
-  ProtectedUserDTO,
-  protectedUserFindSelection,
-} from "@/dto/protected-user-dto";
+import { ProtectedUserDTO } from "@/dto/protected-user-dto";
 import {
   IncorrectPasswordError,
-  InvalidAuthTokenError,
   UserNotFoundError,
 } from "@/errors/service-errors";
 import { hashPassword } from "@/utils/hashPassword";
 import { compare } from "bcrypt";
+import { eq, sql } from "drizzle-orm";
 import { Session, SessionData } from "express-session";
-import { DataSource, Repository } from "typeorm";
 
 export class AuthService {
-  private readonly authTokenRepository: Repository<AuthToken>;
-  private readonly userRepository: Repository<User>;
+  public constructor(private readonly database: Database) {}
 
-  public constructor(private readonly dataSource: DataSource) {
-    this.authTokenRepository = dataSource.getRepository(AuthToken);
-    this.userRepository = dataSource.getRepository(User);
+  public async verifyAuthToken(
+    authToken: AuthTokenValue.Token
+  ): Promise<boolean> {
+    const result = await this.database
+      .select({ exists: sql<number>`1` })
+      .from(authTokens)
+      .where(eq(authTokens.token, authToken.value))
+      .execute();
+    return Boolean(result.length);
   }
 
-  public async verifyAuthToken(value: string): Promise<boolean> {
-    const token = AuthTokenValue.Token.verify(value);
-    if (token === null) return false;
-    if (await this.authTokenRepository.existsBy({ token: token.value }))
-      return true;
-    return false;
-  }
-
-  public async verifyUsername(value: string): Promise<boolean> {
-    const username = UserValue.Username.verify(value);
-    if (username === null) return false;
-    if (await this.userRepository.existsBy({ username: username.value }))
-      return false;
-    return true;
+  public async verifyUsername(username: UserValue.Username): Promise<boolean> {
+    const result = await this.database
+      .select({ exists: sql<number>`1` })
+      .from(users)
+      .where(eq(users.username, username.value))
+      .execute();
+    return Boolean(result.length);
   }
 
   /**
@@ -49,44 +44,61 @@ export class AuthService {
   ): Promise<ProtectedUserDTO> {
     const { userUid } = session;
     if (!userUid) return Promise.reject(new UserNotFoundError());
-    const user = await this.userRepository.findOne({
-      where: { uid: userUid },
-      select: protectedUserFindSelection,
+    const userArray = await this.database
+      .select({
+        username: users.username,
+        name: users.name,
+        isAdmin: users.isAdmin,
+        createdAt: users.createdAt,
+      })
+      .from(users)
+      .where(eq(users.uid, userUid))
+      .execute();
+
+    if (!userArray.length) return Promise.reject(new UserNotFoundError());
+    const user = userArray[0];
+
+    return new ProtectedUserDTO({
+      ...user,
+      createdAt: user.createdAt.toISOString(),
     });
-    if (!user) return Promise.reject(new UserNotFoundError());
-    return ProtectedUserDTO.from(user);
   }
 
-  /**
-   * @throws {InvalidAuthTokenError}
-   */
   public async signup(
     session: Partial<SessionData>,
     token: AuthTokenValue.Token,
     username: UserValue.Username,
     password: UserValue.Password,
     name: UserValue.Name
-  ): Promise<ProtectedUserDTO> {
-    const authToken = await this.authTokenRepository.findOne({
-      where: { token: token.value },
-      select: { token: true, isAdminToken: true },
+  ): Promise<void> {
+    session.userUid = await this.database.transaction(async (tx) => {
+      const tokenArray = await tx
+        .select({ isAdminToken: authTokens.isAdminToken })
+        .from(authTokens)
+        .for("update")
+        .where(eq(authTokens.token, token.value))
+        .execute();
+      if (!tokenArray.length) tx.rollback();
+      const { isAdminToken } = tokenArray[0];
+
+      const userArray = await tx
+        .insert(users)
+        .values({
+          username: username.value,
+          passwordHash: await hashPassword(password),
+          name: name.value,
+          isAdmin: isAdminToken,
+        })
+        .$returningId()
+        .execute();
+
+      await tx
+        .delete(authTokens)
+        .where(eq(authTokens.token, token.value))
+        .execute();
+
+      return userArray[0].uid;
     });
-    if (!authToken) return Promise.reject(new InvalidAuthTokenError());
-
-    const user = await this.dataSource.transaction(async (manager) => {
-      await manager.delete(AuthToken, authToken);
-      const user = manager.create(User, {
-        username: username.value,
-        passwordHash: await hashPassword(password),
-        name: name.value,
-        isAdmin: authToken.isAdminToken,
-      });
-      return await manager.save(user);
-    });
-
-    session.userUid = user.uid;
-
-    return ProtectedUserDTO.from(user);
   }
 
   /**

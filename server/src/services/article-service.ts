@@ -38,11 +38,9 @@ export class ArticleService {
       .from(articles)
       .leftJoin(users, eq(users.uid, articles.uploaderUid))
       .where(eq(articles.uid, uid))
-      .limit(1)
       .execute();
 
-    if (articleArray.length < 1)
-      return Promise.reject(new ArticleNotFoundError());
+    if (!articleArray.length) return Promise.reject(new ArticleNotFoundError());
     const article = articleArray[0];
 
     return new ArticleDTO({
