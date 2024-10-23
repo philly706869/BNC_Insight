@@ -1,4 +1,4 @@
-# BNC_Inght 프론트
+# BNC_Inght 프론트엔드
 
 ## 디렉토리 개요
 
@@ -51,14 +51,14 @@
 
 ## 라우트 엔드포인트
 
-- **`/`** [&lt;Home /&gt;](./src/pages/Home.tsx)
-- **`/signin`** [&lt;Signin /&gt;](./src/pages/Signin.tsx)
-- **`/signup`** [&lt;Signup /&gt;](./src/pages/Signup.tsx)
-- **`/category/:category`** [&lt;Category /&gt;](./src/pages/Category.tsx)
-- **`/myarticles`** [&lt;MyArticles /&gt;](./src/pages/article/MyArticles.tsx)
-- **`/article/view/:id`** [&lt;ViewArticle /&gt;](./src/pages/article/ViewArticle.tsx)
-- **`/article/new`** [&lt;NewArticle /&gt;](./src/pages/article/NewArticle.tsx)
-- **`/article/edit`** [&lt;EditArticle /&gt;](./src/pages/article/EditArticle.tsx)
-- **`/myaccount`** [&lt;MyAccount /&gt;](./src/pages/MyAccount.tsx)
-- **`/user/:username`** [&lt;User /&gt;](./src/pages/User.tsx)
-- **`/*`** [&lt;NotFound /&gt;](./src/pages/NotFound.tsx)
+- `/` [&lt;Home /&gt;](./src/pages/Home.tsx)
+- `/signin` [&lt;Signin /&gt;](./src/pages/Signin.tsx)
+- `/signup` [&lt;Signup /&gt;](./src/pages/Signup.tsx)
+- `/category/:category` [&lt;Category /&gt;](./src/pages/Category.tsx)
+- `/myarticles` [&lt;MyArticles /&gt;](./src/pages/article/MyArticles.tsx)
+- `/article/view/:id` [&lt;ViewArticle /&gt;](./src/pages/article/ViewArticle.tsx)
+- `/article/new` [&lt;NewArticle /&gt;](./src/pages/article/NewArticle.tsx)
+- `/article/edit` [&lt;EditArticle /&gt;](./src/pages/article/EditArticle.tsx)
+- `/myaccount` [&lt;MyAccount /&gt;](./src/pages/MyAccount.tsx)
+- `/user/:username` [&lt;User /&gt;](./src/pages/User.tsx)
+- `/*` [&lt;NotFound /&gt;](./src/pages/NotFound.tsx)

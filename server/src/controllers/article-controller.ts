@@ -28,8 +28,8 @@ export class ArticleController {
     const params = paramsParseResult.data;
 
     try {
-      const articleDTO = await this.articleService.getOne(params.id);
-      res.status(200).json(articleDTO);
+      const response = await this.articleService.getOne(params.id);
+      res.status(200).json(response);
     } catch (error) {
       if (error instanceof ArticleNotFoundError) res.status(404).end();
       else return Promise.reject(error);

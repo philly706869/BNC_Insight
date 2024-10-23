@@ -179,7 +179,7 @@ export class ArticleService {
       content?: ArticleValue.Content;
     }
   ): Promise<void> {
-    const response = await this.database
+    const [header] = await this.database
       .update(articleTable)
       .set({
         categoryName: data.categoryName?.value,
@@ -192,7 +192,7 @@ export class ArticleService {
       .where(eq(articleTable.uid, uid))
       .execute();
 
-    if (!Boolean(response[0].affectedRows)) {
+    if (!Boolean(header.affectedRows)) {
       return Promise.reject(new ArticleNotFoundError());
     }
   }
@@ -201,12 +201,12 @@ export class ArticleService {
    * @throws {ArticleNotFoundError}
    */
   public async delete(uid: number): Promise<void> {
-    const response = await this.database
+    const [header] = await this.database
       .delete(articleTable)
       .where(eq(articleTable.uid, uid))
       .execute();
 
-    if (!Boolean(response[0].affectedRows)) {
+    if (!Boolean(header.affectedRows)) {
       return Promise.reject(new ArticleNotFoundError());
     }
   }

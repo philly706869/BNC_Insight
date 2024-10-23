@@ -32,13 +32,13 @@ export class CategoryService {
     name: CategoryValue.Name,
     data: { name?: CategoryValue.Name }
   ): Promise<void> {
-    const response = await this.database
+    const [header] = await this.database
       .update(categoryTable)
       .set({ name: data.name?.value })
       .where(eq(categoryTable.name, name.value))
       .execute();
 
-    if (!Boolean(response[0].affectedRows)) {
+    if (!Boolean(header.affectedRows)) {
       return Promise.reject(new CategoryNotFoundError());
     }
   }
@@ -47,12 +47,12 @@ export class CategoryService {
    * @throws {CategoryNotFoundError}
    */
   public async delete(name: CategoryValue.Name): Promise<void> {
-    const response = await this.database
+    const [header] = await this.database
       .delete(categoryTable)
       .where(eq(categoryTable.name, name.value))
       .execute();
 
-    if (!Boolean(response[0].affectedRows)) {
+    if (!Boolean(header.affectedRows)) {
       return Promise.reject(new CategoryNotFoundError());
     }
   }

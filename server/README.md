@@ -1,3 +1,11 @@
+# BNC_Inght 백엔드
+
+## 디렉토리 개요
+
+작성중
+
+## 라우트 엔드포인트
+
 - `/api`
   - `/auth`
     - `POST /verify-auth-token`

@@ -37,7 +37,7 @@ export class UserService {
     uid: number,
     data: { username?: UserValue.Username; name?: UserValue.Name }
   ): Promise<void> {
-    const response = await this.database
+    const [header] = await this.database
       .update(userTable)
       .set({
         username: data.username?.value,
@@ -46,7 +46,7 @@ export class UserService {
       .where(eq(userTable.uid, uid))
       .execute();
 
-    if (!Boolean(response[0].affectedRows)) {
+    if (!Boolean(header.affectedRows)) {
       return Promise.reject(new UserNotFoundError());
     }
   }
@@ -55,12 +55,12 @@ export class UserService {
    * @throws {UserNotFoundError}
    */
   public async delete(uid: number): Promise<void> {
-    const response = await this.database
+    const [header] = await this.database
       .delete(userTable)
       .where(eq(userTable.uid, uid))
       .execute();
 
-    if (!Boolean(response[0].affectedRows)) {
+    if (!Boolean(header.affectedRows)) {
       return Promise.reject(new UserNotFoundError());
     }
   }
