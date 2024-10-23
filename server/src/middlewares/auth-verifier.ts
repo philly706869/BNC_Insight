@@ -5,10 +5,12 @@ export function authVerifier(
   res: Response,
   next: NextFunction
 ): void {
-  if (!req.session.userUid)
+  if (!req.session.userUid) {
     res.status(401).json({
       errorCode: "UNAUTHORIZED_REQUEST",
       message: "Access denied. Please login to continue.",
     });
-  else next();
+    return;
+  }
+  next();
 }

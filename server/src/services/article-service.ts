@@ -1,7 +1,7 @@
 import { config } from "@/config";
 import { Database } from "@/database/database";
-import { articles } from "@/database/tables/article";
-import { users } from "@/database/tables/user";
+import { articleTable } from "@/database/tables/article";
+import { userTable } from "@/database/tables/user";
 import { ArticleValue } from "@/database/values/article-values";
 import { CategoryValue } from "@/database/values/category-values";
 import { ArticleDTO } from "@/dto/article-dto";
@@ -21,27 +21,30 @@ export class ArticleService {
    * @throws {ArticleNotFoundError}
    */
   public async getOne(uid: number): Promise<ArticleDTO> {
-    const articleArray = await this.database
-      .select({
-        uid: articles.uid,
-        uploaderUsername: users.username,
-        uploaderName: users.name,
-        category: articles.categoryName,
-        thumbnailUrl: articles.thumbnailUrl,
-        thumbnailCaption: articles.thumbnailCaption,
-        title: articles.title,
-        subtitle: articles.subtitle,
-        content: articles.content,
-        createdAt: articles.createdAt,
-        updatedAt: articles.updatedAt,
-      })
-      .from(articles)
-      .leftJoin(users, eq(users.uid, articles.uploaderUid))
-      .where(eq(articles.uid, uid))
-      .execute();
+    const article = (
+      await this.database
+        .select({
+          uid: articleTable.uid,
+          uploaderUsername: userTable.username,
+          uploaderName: userTable.name,
+          category: articleTable.categoryName,
+          thumbnailUrl: articleTable.thumbnailUrl,
+          thumbnailCaption: articleTable.thumbnailCaption,
+          title: articleTable.title,
+          subtitle: articleTable.subtitle,
+          content: articleTable.content,
+          createdAt: articleTable.createdAt,
+          updatedAt: articleTable.updatedAt,
+        })
+        .from(articleTable)
+        .leftJoin(userTable, eq(userTable.uid, articleTable.uploaderUid))
+        .where(eq(articleTable.uid, uid))
+        .execute()
+    ).at(0);
 
-    if (!articleArray.length) return Promise.reject(new ArticleNotFoundError());
-    const article = articleArray[0];
+    if (!article) {
+      return Promise.reject(new ArticleNotFoundError());
+    }
 
     return new ArticleDTO({
       ...article,
@@ -70,41 +73,50 @@ export class ArticleService {
     offset: number | undefined,
     limit: number | undefined
   ): Promise<ContentlessArticleDTO[]> {
-    if (limit) {
-      if (limit < 1) return Promise.reject(new QueryLimitOutOfBoundsError());
-      if (limit > config.article.maxQueryLimit)
+    if (limit !== undefined) {
+      if (limit < 1) {
         return Promise.reject(new QueryLimitOutOfBoundsError());
-    } else limit = config.article.maxQueryLimit;
+      }
+      if (limit > config.article.maxQueryLimit) {
+        return Promise.reject(new QueryLimitOutOfBoundsError());
+      }
+    } else {
+      limit = config.article.maxQueryLimit;
+    }
 
-    if (offset) {
-      if (offset < 0) return Promise.reject(new QueryOffsetOutOfBoundsError());
-    } else offset = 0;
+    if (offset !== undefined) {
+      if (offset < 0) {
+        return Promise.reject(new QueryOffsetOutOfBoundsError());
+      }
+    } else {
+      offset = 0;
+    }
 
-    const articleArray = await this.database
+    const articles = await this.database
       .select({
-        uid: articles.uid,
-        uploaderUsername: users.username,
-        uploaderName: users.name,
-        category: articles.categoryName,
-        thumbnailUrl: articles.thumbnailUrl,
-        thumbnailCaption: articles.thumbnailCaption,
-        title: articles.title,
-        subtitle: articles.subtitle,
-        createdAt: articles.createdAt,
-        updatedAt: articles.updatedAt,
+        uid: articleTable.uid,
+        uploaderUsername: userTable.username,
+        uploaderName: userTable.name,
+        category: articleTable.categoryName,
+        thumbnailUrl: articleTable.thumbnailUrl,
+        thumbnailCaption: articleTable.thumbnailCaption,
+        title: articleTable.title,
+        subtitle: articleTable.subtitle,
+        createdAt: articleTable.createdAt,
+        updatedAt: articleTable.updatedAt,
       })
-      .from(articles)
-      .leftJoin(users, eq(users.uid, articles.uploaderUid))
+      .from(articleTable)
+      .leftJoin(userTable, eq(userTable.uid, articleTable.uploaderUid))
       .where(
         categoryName
-          ? eq(articles.categoryName, categoryName.value)
-          : isNull(articles.categoryName)
+          ? eq(articleTable.categoryName, categoryName.value)
+          : isNull(articleTable.categoryName)
       )
       .limit(limit)
       .offset(offset)
       .execute();
 
-    return articleArray.map(
+    return articles.map(
       (article) =>
         new ContentlessArticleDTO({
           ...article,
@@ -137,7 +149,7 @@ export class ArticleService {
     content: ArticleValue.Content
   ): Promise<void> {
     await this.database
-      .insert(articles)
+      .insert(articleTable)
       .values({
         uploaderUid,
         categoryName: categoryName?.value ?? null,
@@ -151,6 +163,9 @@ export class ArticleService {
       .execute();
   }
 
+  /**
+   * @throws {ArticleNotFoundError}
+   */
   public async patch(
     uid: number,
     data: {
@@ -164,8 +179,8 @@ export class ArticleService {
       content?: ArticleValue.Content;
     }
   ): Promise<void> {
-    await this.database
-      .update(articles)
+    const response = await this.database
+      .update(articleTable)
       .set({
         categoryName: data.categoryName?.value,
         thumbnailUrl: data.thumbnail?.url.value,
@@ -174,11 +189,25 @@ export class ArticleService {
         subtitle: data.subtitle?.value,
         content: data.content?.value,
       })
-      .where(eq(articles.uid, uid))
+      .where(eq(articleTable.uid, uid))
       .execute();
+
+    if (!Boolean(response[0].affectedRows)) {
+      return Promise.reject(new ArticleNotFoundError());
+    }
   }
 
+  /**
+   * @throws {ArticleNotFoundError}
+   */
   public async delete(uid: number): Promise<void> {
-    await this.database.delete(articles).where(eq(articles.uid, uid)).execute();
+    const response = await this.database
+      .delete(articleTable)
+      .where(eq(articleTable.uid, uid))
+      .execute();
+
+    if (!Boolean(response[0].affectedRows)) {
+      return Promise.reject(new ArticleNotFoundError());
+    }
   }
 }

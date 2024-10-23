@@ -1,11 +1,12 @@
 import { Database } from "@/database/database";
-import { authTokens } from "@/database/tables/auth-token";
-import { users } from "@/database/tables/user";
+import { authTokenTable } from "@/database/tables/auth-token";
+import { userTable } from "@/database/tables/user";
 import { AuthTokenValue } from "@/database/values/auth-token-values";
 import { UserValue } from "@/database/values/user-values";
 import { ProtectedUserDTO } from "@/dto/protected-user-dto";
 import {
   IncorrectPasswordError,
+  InvalidAuthTokenError,
   UserNotFoundError,
 } from "@/errors/service-errors";
 import { hashPassword } from "@/utils/hashPassword";
@@ -21,8 +22,8 @@ export class AuthService {
   ): Promise<boolean> {
     const result = await this.database
       .select({ exists: sql<number>`1` })
-      .from(authTokens)
-      .where(eq(authTokens.token, authToken.value))
+      .from(authTokenTable)
+      .where(eq(authTokenTable.token, authToken.value))
       .execute();
     return Boolean(result.length);
   }
@@ -30,8 +31,8 @@ export class AuthService {
   public async verifyUsername(username: UserValue.Username): Promise<boolean> {
     const result = await this.database
       .select({ exists: sql<number>`1` })
-      .from(users)
-      .where(eq(users.username, username.value))
+      .from(userTable)
+      .where(eq(userTable.username, username.value))
       .execute();
     return Boolean(result.length);
   }
@@ -42,21 +43,27 @@ export class AuthService {
   public async getCurrentUser(
     session: Partial<SessionData>
   ): Promise<ProtectedUserDTO> {
-    const { userUid } = session;
-    if (!userUid) return Promise.reject(new UserNotFoundError());
-    const userArray = await this.database
-      .select({
-        username: users.username,
-        name: users.name,
-        isAdmin: users.isAdmin,
-        createdAt: users.createdAt,
-      })
-      .from(users)
-      .where(eq(users.uid, userUid))
-      .execute();
+    const userUid = session.userUid;
+    if (!userUid) {
+      return Promise.reject(new UserNotFoundError());
+    }
 
-    if (!userArray.length) return Promise.reject(new UserNotFoundError());
-    const user = userArray[0];
+    const user = (
+      await this.database
+        .select({
+          username: userTable.username,
+          name: userTable.name,
+          isAdmin: userTable.isAdmin,
+          createdAt: userTable.createdAt,
+        })
+        .from(userTable)
+        .where(eq(userTable.uid, userUid))
+        .execute()
+    ).at(0);
+
+    if (!user) {
+      return Promise.reject(new UserNotFoundError());
+    }
 
     return new ProtectedUserDTO({
       ...user,
@@ -64,6 +71,9 @@ export class AuthService {
     });
   }
 
+  /**
+   * @throws {InvalidAuthTokenError}
+   */
   public async signup(
     session: Partial<SessionData>,
     token: AuthTokenValue.Token,
@@ -71,33 +81,38 @@ export class AuthService {
     password: UserValue.Password,
     name: UserValue.Name
   ): Promise<void> {
-    session.userUid = await this.database.transaction(async (tx) => {
-      const tokenArray = await tx
-        .select({ isAdminToken: authTokens.isAdminToken })
-        .from(authTokens)
-        .for("update")
-        .where(eq(authTokens.token, token.value))
-        .execute();
-      if (!tokenArray.length) tx.rollback();
-      const { isAdminToken } = tokenArray[0];
+    await this.database.transaction(async (tx) => {
+      const authToken = (
+        await tx
+          .select({ isAdminToken: authTokenTable.isAdminToken })
+          .from(authTokenTable)
+          .for("update")
+          .where(eq(authTokenTable.token, token.value))
+          .execute()
+      ).at(0);
+      if (!authToken) {
+        return Promise.reject(new InvalidAuthTokenError());
+      }
 
-      const userArray = await tx
-        .insert(users)
-        .values({
-          username: username.value,
-          passwordHash: await hashPassword(password),
-          name: name.value,
-          isAdmin: isAdminToken,
-        })
-        .$returningId()
-        .execute();
+      const user = (
+        await tx
+          .insert(userTable)
+          .values({
+            username: username.value,
+            passwordHash: await hashPassword(password),
+            name: name.value,
+            isAdmin: authToken.isAdminToken,
+          })
+          .$returningId()
+          .execute()
+      )[0];
 
       await tx
-        .delete(authTokens)
-        .where(eq(authTokens.token, token.value))
+        .delete(authTokenTable)
+        .where(eq(authTokenTable.token, token.value))
         .execute();
 
-      return userArray[0].uid;
+      session.userUid = user.uid;
     });
   }
 
@@ -109,19 +124,27 @@ export class AuthService {
     session: Partial<SessionData>,
     username: UserValue.Username,
     password: UserValue.Password
-  ): Promise<ProtectedUserDTO> {
-    const user = await this.userRepository.findOne({
-      where: { username: username.value },
-      select: { uid: true, passwordHash: true },
-    });
-    if (!user) return Promise.reject(new UserNotFoundError());
+  ): Promise<void> {
+    const user = (
+      await this.database
+        .select({
+          uid: userTable.uid,
+          passwordHash: userTable.passwordHash,
+        })
+        .from(userTable)
+        .where(eq(userTable.username, username.value))
+        .execute()
+    ).at(0);
+    if (!user) {
+      return Promise.reject(new UserNotFoundError());
+    }
 
-    if (!(await compare(password.value, user.passwordHash.toString())))
+    const isCorrect = await compare(password.value, user.passwordHash);
+    if (!isCorrect) {
       return Promise.reject(new IncorrectPasswordError());
+    }
 
     session.userUid = user.uid;
-
-    return ProtectedUserDTO.from(user);
   }
 
   public async signout(session: Session & Partial<SessionData>): Promise<void> {
@@ -142,25 +165,34 @@ export class AuthService {
     currentPassword: UserValue.Password,
     newPassword: UserValue.Password
   ): Promise<void> {
-    const user = await this.userRepository.findOne({
-      where: { uid },
-      select: { passwordHash: true },
+    await this.database.transaction(async (tx) => {
+      const user = (
+        await tx
+          .select({ passwordHash: userTable.passwordHash })
+          .from(userTable)
+          .for("update")
+          .where(eq(userTable.uid, uid))
+          .execute()
+      ).at(0);
+      if (!user) {
+        return Promise.reject(new UserNotFoundError());
+      }
+
+      const isCorrect = await compare(
+        currentPassword.value,
+        user.passwordHash.toString()
+      );
+      if (!isCorrect) {
+        return Promise.reject(new IncorrectPasswordError());
+      }
+
+      await tx
+        .update(userTable)
+        .set({
+          passwordHash: await hashPassword(newPassword),
+        })
+        .where(eq(userTable.uid, uid))
+        .execute();
     });
-    if (!user) return Promise.reject(new UserNotFoundError());
-
-    const isCorrect = await compare(
-      currentPassword.value,
-      user.passwordHash.toString()
-    );
-    if (!isCorrect) return Promise.reject(new IncorrectPasswordError());
-
-    const result = await this.userRepository.update(
-      { uid },
-      { passwordHash: await hashPassword(newPassword) }
-    );
-    if (!Boolean(result.affected))
-      return Promise.reject(new UserNotFoundError());
-
-    return;
   }
 }

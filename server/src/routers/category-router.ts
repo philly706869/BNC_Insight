@@ -1,11 +1,11 @@
 import { CategoryController } from "@/controllers/category-controller";
-import { dataSource } from "@/database/data-source";
+import { database } from "@/database/database";
 import { authVerifier } from "@/middlewares/auth-verifier";
 import { CategoryService } from "@/services/category-service";
 import { Router } from "express";
 
 export const categoryRouter = Router();
-const service = new CategoryService(dataSource);
+const service = new CategoryService(database);
 const controller = new CategoryController(service);
 
 categoryRouter.get("/", (req, res, next) =>

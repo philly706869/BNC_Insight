@@ -10,9 +10,15 @@ export namespace UserValue {
     private constructor(public readonly value: string) {}
 
     public static verify(value: string): Username | null {
-      if (!this.regex.test(value)) return null;
-      if (value.length < 1) return null;
-      if (value.length > conf.maxUsernameLength) return null;
+      if (!this.regex.test(value)) {
+        return null;
+      }
+      if (value.length < 1) {
+        return null;
+      }
+      if (value.length > conf.maxUsernameLength) {
+        return null;
+      }
       return new Username(value);
     }
   }
@@ -24,10 +30,18 @@ export namespace UserValue {
     private constructor(public readonly value: string) {}
 
     public static verify(value: string): Password | null {
-      if (!this.regex.test(value)) return null;
-      if (value.length < conf.minPasswordLength) return null;
-      if (value.length > conf.maxPasswordLength) return null;
-      if (Buffer.byteLength(value) > BCRYPT_MAX_BYTE_LENGTH) return null;
+      if (!this.regex.test(value)) {
+        return null;
+      }
+      if (value.length < conf.minPasswordLength) {
+        return null;
+      }
+      if (value.length > conf.maxPasswordLength) {
+        return null;
+      }
+      if (Buffer.byteLength(value) > BCRYPT_MAX_BYTE_LENGTH) {
+        return null;
+      }
       return new Password(value);
     }
   }
@@ -38,9 +52,15 @@ export namespace UserValue {
     private constructor(public readonly value: string) {}
 
     public static verify(value: string): Name | null {
-      if (!this.regex.test(value)) return null;
-      if (value.length < 1) return null;
-      if (value.length > conf.maxNameLength) return null;
+      if (!this.regex.test(value)) {
+        return null;
+      }
+      if (value.length < 1) {
+        return null;
+      }
+      if (value.length > conf.maxNameLength) {
+        return null;
+      }
       return new Name(value);
     }
   }

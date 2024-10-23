@@ -5,7 +5,7 @@ import { mysqlTable, varchar } from "drizzle-orm/mysql-core";
 
 const conf = config.category;
 
-export const categories = mysqlTable("categories", {
+export const categoryTable = mysqlTable("categories", {
   name: varchar({ length: conf.maxNameLength }).primaryKey(),
   createdAt,
   updatedAt,

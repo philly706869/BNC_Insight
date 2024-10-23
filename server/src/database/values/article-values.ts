@@ -12,8 +12,12 @@ export namespace ArticleValue {
     private constructor(public readonly value: string) {}
 
     public static verify(value: string): ThumbnailUrl | null {
-      if (!validator.isURL(value, this.isURLOptions)) return null;
-      if (value.length > conf.maxThumbnailUrlLength) return null;
+      if (!validator.isURL(value, this.isURLOptions)) {
+        return null;
+      }
+      if (value.length > conf.maxThumbnailUrlLength) {
+        return null;
+      }
       return new ThumbnailUrl(value);
     }
   }
@@ -24,8 +28,12 @@ export namespace ArticleValue {
     private constructor(public readonly value: string) {}
 
     public static verify(value: string): ThumbnailCaption | null {
-      if (!this.regex.test(value)) return null;
-      if (value.length > conf.maxThumbnailCaptionLength) return null;
+      if (!this.regex.test(value)) {
+        return null;
+      }
+      if (value.length > conf.maxThumbnailCaptionLength) {
+        return null;
+      }
       return new ThumbnailCaption(value);
     }
   }
@@ -36,9 +44,15 @@ export namespace ArticleValue {
     private constructor(public readonly value: string) {}
 
     public static verify(value: string): Title | null {
-      if (!this.regex.test(value)) return null;
-      if (value.length < 1) return null;
-      if (value.length > conf.maxTitleLength) return null;
+      if (!this.regex.test(value)) {
+        return null;
+      }
+      if (value.length < 1) {
+        return null;
+      }
+      if (value.length > conf.maxTitleLength) {
+        return null;
+      }
       return new Title(value);
     }
   }
@@ -49,8 +63,12 @@ export namespace ArticleValue {
     private constructor(public readonly value: string) {}
 
     public static verify(value: string): Title | null {
-      if (!this.regex.test(value)) return null;
-      if (value.length > conf.maxSubtitleLength) return null;
+      if (!this.regex.test(value)) {
+        return null;
+      }
+      if (value.length > conf.maxSubtitleLength) {
+        return null;
+      }
       return new Subtitle(value);
     }
   }
@@ -59,7 +77,9 @@ export namespace ArticleValue {
     private constructor(public readonly value: string) {}
 
     public static verify(value: string): Content | null {
-      if (value.length > conf.maxContentDeltaLength) return null;
+      if (value.length > conf.maxContentDeltaLength) {
+        return null;
+      }
       return new Content(value);
     }
   }

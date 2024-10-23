@@ -1,11 +1,11 @@
 import { UserController } from "@/controllers/user-controller";
-import { dataSource } from "@/database/data-source";
+import { database } from "@/database/database";
 import { authVerifier } from "@/middlewares/auth-verifier";
 import { UserService } from "@/services/user-service";
 import { Router } from "express";
 
 export const userRouter = Router();
-const service = new UserService(dataSource);
+const service = new UserService(database);
 const controller = new UserController(service);
 
 userRouter.get("/:username", (req, res, next) =>

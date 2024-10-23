@@ -14,7 +14,9 @@ export class ImageService {
     try {
       const imagePath = path.resolve(config.image.path, name);
       const stat = await fs.stat(imagePath);
-      if (!stat.isFile()) return Promise.reject(new ImageNotFoundError());
+      if (!stat.isFile()) {
+        return Promise.reject(new ImageNotFoundError());
+      }
       return imagePath;
     } catch (error) {
       return Promise.reject(new ImageNotFoundError());

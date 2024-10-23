@@ -1,32 +1,28 @@
-import { Category } from "@/database/tables/category";
+import { Database } from "@/database/database";
+import { categoryTable } from "@/database/tables/category";
 import { CategoryValue } from "@/database/values/category-values";
-import { CategoryDTO } from "@/dto/category-dto";
-import {
-  CategoryNameDTO,
-  categoryNameFindSelection,
-} from "@/dto/category-name-dto";
+import { CategoryNameDTO } from "@/dto/category-name-dto";
 import { CategoryNotFoundError } from "@/errors/service-errors";
-import { DataSource, Repository } from "typeorm";
+import { eq } from "drizzle-orm";
 
 export class CategoryService {
-  private readonly categoryRepository: Repository<Category>;
-
-  public constructor(dataSource: DataSource) {
-    this.categoryRepository = dataSource.getRepository(Category);
-  }
+  public constructor(private readonly database: Database) {}
 
   public async getAll(): Promise<CategoryNameDTO[]> {
-    const categories = await this.categoryRepository.find({
-      select: categoryNameFindSelection,
-    });
-    return categories.map((category) => CategoryNameDTO.from(category));
+    const categories = await this.database
+      .select({
+        name: categoryTable.name,
+      })
+      .from(categoryTable)
+      .execute();
+    return categories.map((category) => new CategoryNameDTO(category));
   }
 
-  public async post(name: CategoryValue.Name): Promise<CategoryDTO> {
-    const category = await this.categoryRepository.save(
-      this.categoryRepository.create({ name: name.value })
-    );
-    return CategoryDTO.from(category);
+  public async post(name: CategoryValue.Name): Promise<void> {
+    await this.database
+      .insert(categoryTable)
+      .values({ name: name.value })
+      .execute();
   }
 
   /**
@@ -36,20 +32,28 @@ export class CategoryService {
     name: CategoryValue.Name,
     data: { name?: CategoryValue.Name }
   ): Promise<void> {
-    const result = await this.categoryRepository.update(
-      { name: name.value },
-      { name: data.name?.value }
-    );
-    if (!Boolean(result.affected))
+    const response = await this.database
+      .update(categoryTable)
+      .set({ name: data.name?.value })
+      .where(eq(categoryTable.name, name.value))
+      .execute();
+
+    if (!Boolean(response[0].affectedRows)) {
       return Promise.reject(new CategoryNotFoundError());
+    }
   }
 
   /**
    * @throws {CategoryNotFoundError}
    */
   public async delete(name: CategoryValue.Name): Promise<void> {
-    const result = await this.categoryRepository.delete({ name: name.value });
-    if (!Boolean(result.affected))
+    const response = await this.database
+      .delete(categoryTable)
+      .where(eq(categoryTable.name, name.value))
+      .execute();
+
+    if (!Boolean(response[0].affectedRows)) {
       return Promise.reject(new CategoryNotFoundError());
+    }
   }
 }

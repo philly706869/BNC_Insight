@@ -1,11 +1,11 @@
 import { AuthController } from "@/controllers/auth-controller";
-import { dataSource } from "@/database/data-source";
+import { database } from "@/database/database";
 import { authVerifier } from "@/middlewares/auth-verifier";
 import { AuthService } from "@/services/auth-service";
 import { Router } from "express";
 
 export const authRouter = Router();
-const service = new AuthService(dataSource);
+const service = new AuthService(database);
 const controller = new AuthController(service);
 
 authRouter.post("/verify-auth-token", (req, res, next) =>
