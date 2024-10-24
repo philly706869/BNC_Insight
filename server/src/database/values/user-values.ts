@@ -47,7 +47,7 @@ export namespace UserValue {
   }
 
   export class Name {
-    private static readonly regex = /^[a-z\d]*$/;
+    private static readonly regex = /^\w*$/;
 
     private constructor(public readonly value: string) {}
 
