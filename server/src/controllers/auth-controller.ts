@@ -81,7 +81,7 @@ export class AuthController {
   }
 
   private static readonly signupSchema = z.object({
-    authToken: z.string().transform(AuthTokenValueTransformer.token),
+    token: z.string().transform(AuthTokenValueTransformer.token),
     username: z.string().transform(UserValueTransformer.username),
     password: z.string().transform(UserValueTransformer.password),
     name: z.string().transform(UserValueTransformer.name),
@@ -100,7 +100,7 @@ export class AuthController {
     try {
       const userDTO = await this.authService.signup(
         req.session,
-        body.authToken,
+        body.token,
         body.username,
         body.password,
         body.name
