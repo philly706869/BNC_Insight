@@ -2,6 +2,7 @@ import { config } from "@/config";
 import { ImageNotFoundError } from "@/errors/service-errors";
 import fs from "fs/promises";
 import path from "path";
+import sharp from "sharp";
 import { v4 as uuidv4 } from "uuid";
 
 export class ImageService {
@@ -23,12 +24,18 @@ export class ImageService {
     }
   }
 
-  public async post(
-    imagePath: string,
-    imageExt: "jpeg" | "png" | "webp"
-  ): Promise<string> {
-    const copyDest = path.resolve(config.image.path, `${uuidv4()}.${imageExt}`);
-    await fs.copyFile(imagePath, copyDest, fs.constants.COPYFILE_EXCL);
-    return copyDest;
+  public async post(imagePath: string): Promise<string> {
+    try {
+      const image = sharp(imagePath);
+      const metadata = await image.metadata();
+      const dest = path.resolve(
+        config.image.path,
+        `${uuidv4()}.${metadata.format}`
+      );
+      await image.toFile(dest);
+      return dest;
+    } catch (error) {
+      return Promise.reject(error);
+    }
   }
 }
