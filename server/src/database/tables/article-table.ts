@@ -2,8 +2,8 @@ import { config } from "@/config";
 import { createdAt } from "@/utils/drizzle/created-at";
 import { updatedAt } from "@/utils/drizzle/updated-at";
 import { mysqlTable, smallint, varchar } from "drizzle-orm/mysql-core";
-import { categoryTable } from "./category";
-import { userTable } from "./user";
+import { categoryTable } from "./category-table";
+import { userTable } from "./user-table";
 
 const conf = config.article;
 

@@ -31,8 +31,11 @@ export class ArticleController {
       const response = await this.articleService.getOne(params.id);
       res.status(200).json(response);
     } catch (error) {
-      if (error instanceof ArticleNotFoundError) res.status(404).end();
-      else return Promise.reject(error);
+      if (error instanceof ArticleNotFoundError) {
+        res.status(404).end();
+      } else {
+        return Promise.reject(error);
+      }
     }
   }
 
@@ -59,11 +62,15 @@ export class ArticleController {
       );
       res.status(200).json(articlesDTO);
     } catch (error) {
-      if (error instanceof QueryOffsetOutOfBoundsError) res.status(400).end();
-      else if (error instanceof QueryLimitOutOfBoundsError)
+      if (error instanceof QueryOffsetOutOfBoundsError) {
         res.status(400).end();
-      else if (error instanceof CategoryNotFoundError) res.status(400).end();
-      else return Promise.reject(error);
+      } else if (error instanceof QueryLimitOutOfBoundsError) {
+        res.status(400).end();
+      } else if (error instanceof CategoryNotFoundError) {
+        res.status(400).end();
+      } else {
+        return Promise.reject(error);
+      }
     }
   }
 
@@ -82,7 +89,7 @@ export class ArticleController {
 
   public async post(req: Request, res: Response): Promise<void> {
     const uploaderUid = req.session.userUid;
-    if (!uploaderUid) {
+    if (uploaderUid === undefined) {
       res.status(401).end();
       return;
     }
@@ -107,9 +114,13 @@ export class ArticleController {
       );
       res.status(201).end();
     } catch (error) {
-      if (error instanceof UserNotFoundError) res.status(404).end();
-      else if (error instanceof CategoryNotFoundError) res.status(400).end();
-      else return Promise.reject(error);
+      if (error instanceof UserNotFoundError) {
+        res.status(404).end();
+      } else if (error instanceof CategoryNotFoundError) {
+        res.status(400).end();
+      } else {
+        return Promise.reject(error);
+      }
     }
   }
 
@@ -153,15 +164,19 @@ export class ArticleController {
       await this.articleService.patch(params.id, body);
       res.status(201).end();
     } catch (error) {
-      if (error instanceof CategoryNotFoundError) res.status(400).end();
-      else if (error instanceof ArticleNotFoundError) res.status(404).end();
-      else return Promise.reject(error);
+      if (error instanceof CategoryNotFoundError) {
+        res.status(400).end();
+      } else if (error instanceof ArticleNotFoundError) {
+        res.status(404).end();
+      } else {
+        return Promise.reject(error);
+      }
     }
   }
 
   public async delete(req: Request, res: Response): Promise<void> {
     const userUid = req.session.userUid;
-    if (!userUid) {
+    if (userUid === undefined) {
       res.status(401).end();
       return;
     }
@@ -178,8 +193,11 @@ export class ArticleController {
       await this.articleService.delete(params.id);
       res.status(201).end();
     } catch (error) {
-      if (error instanceof ArticleNotFoundError) res.status(404).end();
-      else return Promise.reject(error);
+      if (error instanceof ArticleNotFoundError) {
+        res.status(404).end();
+      } else {
+        return Promise.reject(error);
+      }
     }
   }
 }

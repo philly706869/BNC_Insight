@@ -4,6 +4,12 @@ export class InvalidAuthTokenError extends Error {
   }
 }
 
+export class InvalidUsernameError extends Error {
+  public constructor(message?: string) {
+    super(message);
+  }
+}
+
 export class IncorrectPasswordError extends Error {
   public constructor(message?: string) {
     super(message);

@@ -1,5 +1,5 @@
 import { Database } from "@/database/database";
-import { userTable } from "@/database/tables/user";
+import { userTable } from "@/database/tables/user-table";
 import { UserValue } from "@/database/values/user-values";
 import { PublicUserDTO } from "@/dto/public-user-dto";
 import { UserNotFoundError } from "@/errors/service-errors";
@@ -23,7 +23,7 @@ export class UserService {
         .execute()
     ).at(0);
 
-    if (!user) {
+    if (user === undefined) {
       return Promise.reject(new UserNotFoundError());
     }
 
@@ -46,7 +46,7 @@ export class UserService {
       .where(eq(userTable.uid, uid))
       .execute();
 
-    if (!Boolean(header.affectedRows)) {
+    if (header.affectedRows === 0) {
       return Promise.reject(new UserNotFoundError());
     }
   }
@@ -60,7 +60,7 @@ export class UserService {
       .where(eq(userTable.uid, uid))
       .execute();
 
-    if (!Boolean(header.affectedRows)) {
+    if (header.affectedRows === 0) {
       return Promise.reject(new UserNotFoundError());
     }
   }

@@ -12,8 +12,8 @@ export class CategoryController {
   });
 
   public async getAll(req: Request, res: Response): Promise<void> {
-    const categoriesDTO = await this.categoryService.getAll();
-    res.status(200).json(categoriesDTO);
+    const response = await this.categoryService.getAll();
+    res.status(200).json(response);
   }
 
   private static readonly postSchema = z.object({
@@ -30,8 +30,8 @@ export class CategoryController {
     }
     const body = bodyParseResult.data;
 
-    const cateogryDTO = await this.categoryService.post(body.name);
-    res.status(201).json(cateogryDTO);
+    await this.categoryService.post(body.name);
+    res.status(201).end();
   }
 
   private static readonly patchSchema = z.object({
@@ -57,11 +57,14 @@ export class CategoryController {
     const body = bodyParseResult.data;
 
     try {
-      this.categoryService.patch(params.name, body);
+      await this.categoryService.patch(params.name, body);
       res.status(201).end();
     } catch (error) {
-      if (error instanceof CategoryNotFoundError) res.status(404).end();
-      else return Promise.reject(error);
+      if (error instanceof CategoryNotFoundError) {
+        res.status(404).end();
+      } else {
+        return Promise.reject(error);
+      }
     }
   }
 
@@ -77,8 +80,11 @@ export class CategoryController {
     try {
       await this.categoryService.delete(params.name);
     } catch (error) {
-      if (error instanceof CategoryNotFoundError) res.status(404).end();
-      else return Promise.reject(error);
+      if (error instanceof CategoryNotFoundError) {
+        res.status(404).end();
+      } else {
+        return Promise.reject(error);
+      }
     }
   }
 }

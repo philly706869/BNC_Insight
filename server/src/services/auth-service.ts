@@ -1,12 +1,13 @@
 import { Database } from "@/database/database";
-import { authTokenTable } from "@/database/tables/auth-token";
-import { userTable } from "@/database/tables/user";
+import { authTokenTable } from "@/database/tables/auth-token-table";
+import { userTable } from "@/database/tables/user-table";
 import { AuthTokenValue } from "@/database/values/auth-token-values";
 import { UserValue } from "@/database/values/user-values";
 import { ProtectedUserDTO } from "@/dto/protected-user-dto";
 import {
   IncorrectPasswordError,
   InvalidAuthTokenError,
+  InvalidUsernameError,
   UserNotFoundError,
 } from "@/errors/service-errors";
 import { hashPassword } from "@/utils/hashPassword";
@@ -17,24 +18,42 @@ import { Session, SessionData } from "express-session";
 export class AuthService {
   public constructor(private readonly database: Database) {}
 
-  public async verifyAuthToken(
-    authToken: AuthTokenValue.Token
-  ): Promise<boolean> {
+  /**
+   * @throws {InvalidAuthTokenError}
+   */
+  public async verifyAuthToken(value: string): Promise<void> {
+    const token = AuthTokenValue.Token.verify(value);
+    if (token === null) {
+      return Promise.reject(new InvalidAuthTokenError());
+    }
+
     const result = await this.database
       .select({ exists: sql<number>`1` })
       .from(authTokenTable)
-      .where(eq(authTokenTable.token, authToken.value))
+      .where(eq(authTokenTable.token, token.value))
       .execute();
-    return Boolean(result.length);
+    if (result.length === 0) {
+      return Promise.reject(new InvalidAuthTokenError());
+    }
   }
 
-  public async verifyUsername(username: UserValue.Username): Promise<boolean> {
+  /**
+   * @throws {InvalidUsernameError}
+   */
+  public async verifyUsername(value: string): Promise<void> {
+    const username = UserValue.Username.verify(value);
+    if (username === null) {
+      return Promise.reject(new InvalidUsernameError());
+    }
+
     const result = await this.database
       .select({ exists: sql<number>`1` })
       .from(userTable)
       .where(eq(userTable.username, username.value))
       .execute();
-    return Boolean(result.length);
+    if (result.length === 0) {
+      return Promise.reject(new InvalidUsernameError());
+    }
   }
 
   /**
@@ -44,7 +63,7 @@ export class AuthService {
     session: Partial<SessionData>
   ): Promise<ProtectedUserDTO> {
     const userUid = session.userUid;
-    if (!userUid) {
+    if (userUid === undefined) {
       return Promise.reject(new UserNotFoundError());
     }
 
@@ -61,7 +80,7 @@ export class AuthService {
         .execute()
     ).at(0);
 
-    if (!user) {
+    if (user === undefined) {
       return Promise.reject(new UserNotFoundError());
     }
 
@@ -90,7 +109,7 @@ export class AuthService {
           .where(eq(authTokenTable.token, token.value))
           .execute()
       ).at(0);
-      if (!authToken) {
+      if (authToken === undefined) {
         return Promise.reject(new InvalidAuthTokenError());
       }
 
@@ -135,7 +154,7 @@ export class AuthService {
         .where(eq(userTable.username, username.value))
         .execute()
     ).at(0);
-    if (!user) {
+    if (user === undefined) {
       return Promise.reject(new UserNotFoundError());
     }
 
@@ -174,7 +193,7 @@ export class AuthService {
           .where(eq(userTable.uid, uid))
           .execute()
       ).at(0);
-      if (!user) {
+      if (user === undefined) {
         return Promise.reject(new UserNotFoundError());
       }
 

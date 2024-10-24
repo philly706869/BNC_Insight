@@ -22,8 +22,11 @@ imageRouter.post(
     dest: path.resolve(config.image.tempPath),
     limits: { fileSize: config.image.maxBytes },
     fileFilter(req, file, callback) {
-      if (IMAGE_MIME_TYPES.includes(file.mimetype)) callback(null, true);
-      else callback(null, false);
+      if (!IMAGE_MIME_TYPES.includes(file.mimetype)) {
+        callback(null, false);
+        return;
+      }
+      callback(null, true);
     },
   }).single("image"),
   (req, res, next) => controller.post(req, res).catch(next)

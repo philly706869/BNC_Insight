@@ -25,14 +25,17 @@ export class ImageController {
       const filePath = await this.service.get(params.name);
       res.status(200).sendFile(filePath);
     } catch (error) {
-      if (error instanceof ImageNotFoundError) res.status(404).end();
-      else return Promise.reject(error);
+      if (error instanceof ImageNotFoundError) {
+        res.status(404).end();
+      } else {
+        return Promise.reject(error);
+      }
     }
   }
 
   public async post(req: Request, res: Response): Promise<void> {
     const file = req.file;
-    if (!file) {
+    if (file === undefined) {
       res.status(400).end();
       return;
     }
@@ -47,7 +50,7 @@ export class ImageController {
           ? "webp"
           : null;
 
-      if (!imageExt) {
+      if (imageExt === null) {
         res.status(400).end();
         return;
       }

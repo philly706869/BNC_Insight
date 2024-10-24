@@ -2,12 +2,15 @@ import { AuthTokenValue } from "@/database/values/auth-token-values";
 import { z } from "zod";
 
 export namespace AuthTokenValueTransformer {
-  export const token = (arg: string, ctx: z.RefinementCtx) => {
+  export const token = (
+    arg: string,
+    ctx: z.RefinementCtx
+  ): AuthTokenValue.Token => {
     const token = AuthTokenValue.Token.verify(arg);
-    if (token) {
-      return token;
+    if (token === null) {
+      ctx.addIssue({ code: "custom" });
+      return z.NEVER;
     }
-    ctx.addIssue({ code: "custom" });
-    return z.NEVER;
+    return token;
   };
 }

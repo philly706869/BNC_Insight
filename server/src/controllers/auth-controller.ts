@@ -1,6 +1,7 @@
 import {
   IncorrectPasswordError,
   InvalidAuthTokenError,
+  InvalidUsernameError,
   UserNotFoundError,
 } from "@/errors/service-errors";
 import { AuthService } from "@/services/auth-service";
@@ -26,9 +27,16 @@ export class AuthController {
     }
     const body = bodyParseResult.data;
 
-    const result = await this.authService.verifyAuthToken(body.value);
-    if (result) res.status(200).end();
-    else res.status(422).end();
+    try {
+      await this.authService.verifyAuthToken(body.value);
+      res.status(422).end();
+    } catch (error) {
+      if (error instanceof InvalidAuthTokenError) {
+        res.status(422).end();
+      } else {
+        return Promise.reject(error);
+      }
+    }
   }
 
   private static readonly verifyUsernameSchema = z.object({
@@ -44,9 +52,16 @@ export class AuthController {
     }
     const body = bodyParseResult.data;
 
-    const result = await this.authService.verifyUsername(body.value);
-    if (result) res.status(200).end();
-    else res.status(422).end();
+    try {
+      await this.authService.verifyUsername(body.value);
+      res.status(200).end();
+    } catch (error) {
+      if (error instanceof InvalidUsernameError) {
+        res.status(422).end();
+      } else {
+        return Promise.reject(error);
+      }
+    }
   }
 
   public async getCurrentUser(req: Request, res: Response): Promise<void> {
@@ -59,7 +74,9 @@ export class AuthController {
           logger.error(error);
         });
         res.status(404).end();
-      } else return Promise.reject(error);
+      } else {
+        return Promise.reject(error);
+      }
     }
   }
 
@@ -90,12 +107,14 @@ export class AuthController {
       );
       res.status(201).json(userDTO);
     } catch (error) {
-      if (error instanceof InvalidAuthTokenError)
+      if (error instanceof InvalidAuthTokenError) {
         res.status(422).json({
           errorCode: "INVALID_AUTH_TOKEN",
           message: "Auth token is not valid.",
         });
-      else throw error;
+      } else {
+        return Promise.reject(error);
+      }
     }
   }
 
@@ -122,17 +141,19 @@ export class AuthController {
       );
       res.status(201).json(userDTO);
     } catch (error) {
-      if (error instanceof UserNotFoundError)
+      if (error instanceof UserNotFoundError) {
         res.status(401).json({
           errorCode: "USER_NOT_FOUND",
           message: "User is not found.",
         });
-      else if (error instanceof IncorrectPasswordError)
+      } else if (error instanceof IncorrectPasswordError) {
         res.status(401).json({
           errorCode: "INCORRECT_PASSWORD",
           message: "Password is not correct.",
         });
-      else throw error;
+      } else {
+        return Promise.reject(error);
+      }
     }
   }
 
@@ -148,7 +169,7 @@ export class AuthController {
 
   public async updatePassword(req: Request, res: Response): Promise<void> {
     const userUid = req.session.userUid;
-    if (!userUid) {
+    if (userUid === undefined) {
       res.status(401).end();
       return;
     }
@@ -169,9 +190,13 @@ export class AuthController {
       );
       res.status(201).end();
     } catch (error) {
-      if (error instanceof UserNotFoundError) res.status(400).end();
-      else if (error instanceof IncorrectPasswordError) res.status(401).end();
-      else return Promise.reject(error);
+      if (error instanceof UserNotFoundError) {
+        res.status(400).end();
+      } else if (error instanceof IncorrectPasswordError) {
+        res.status(401).end();
+      } else {
+        return Promise.reject(error);
+      }
     }
   }
 }

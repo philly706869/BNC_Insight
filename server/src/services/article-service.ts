@@ -1,7 +1,7 @@
 import { config } from "@/config";
 import { Database } from "@/database/database";
-import { articleTable } from "@/database/tables/article";
-import { userTable } from "@/database/tables/user";
+import { articleTable } from "@/database/tables/article-table";
+import { userTable } from "@/database/tables/user-table";
 import { ArticleValue } from "@/database/values/article-values";
 import { CategoryValue } from "@/database/values/category-values";
 import { ArticleDTO } from "@/dto/article-dto";
@@ -42,7 +42,7 @@ export class ArticleService {
         .execute()
     ).at(0);
 
-    if (!article) {
+    if (article === undefined) {
       return Promise.reject(new ArticleNotFoundError());
     }
 
@@ -192,7 +192,7 @@ export class ArticleService {
       .where(eq(articleTable.uid, uid))
       .execute();
 
-    if (!Boolean(header.affectedRows)) {
+    if (header.affectedRows === 0) {
       return Promise.reject(new ArticleNotFoundError());
     }
   }
@@ -206,7 +206,7 @@ export class ArticleService {
       .where(eq(articleTable.uid, uid))
       .execute();
 
-    if (!Boolean(header.affectedRows)) {
+    if (header.affectedRows === 0) {
       return Promise.reject(new ArticleNotFoundError());
     }
   }

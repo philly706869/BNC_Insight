@@ -22,11 +22,14 @@ export class UserController {
     const params = paramsParseResult.data;
 
     try {
-      const userDTO = await this.userService.get(params.username);
-      res.status(200).json(userDTO);
+      const response = await this.userService.get(params.username);
+      res.status(200).json(response);
     } catch (error) {
-      if (error instanceof UserNotFoundError) res.status(404).end();
-      else return Promise.reject(error);
+      if (error instanceof UserNotFoundError) {
+        res.status(404).end();
+      } else {
+        return Promise.reject(error);
+      }
     }
   }
 
@@ -37,7 +40,7 @@ export class UserController {
 
   public async patch(req: Request, res: Response): Promise<void> {
     const userUid = req.session.userUid;
-    if (!userUid) {
+    if (userUid === undefined) {
       res.status(401).end();
       return;
     }
@@ -55,14 +58,17 @@ export class UserController {
       await this.userService.patch(userUid, body);
       res.status(201).end();
     } catch (error) {
-      if (error instanceof UserNotFoundError) res.status(500).end();
-      else return Promise.reject(error);
+      if (error instanceof UserNotFoundError) {
+        res.status(500).end();
+      } else {
+        return Promise.reject(error);
+      }
     }
   }
 
   public async delete(req: Request, res: Response): Promise<void> {
     const userUid = req.session.userUid;
-    if (!userUid) {
+    if (userUid === undefined) {
       res.status(401).end();
       return;
     }
@@ -71,8 +77,11 @@ export class UserController {
       await this.userService.delete(userUid);
       res.status(201).end();
     } catch (error) {
-      if (error instanceof UserNotFoundError) res.status(500).end();
-      else return Promise.reject(error);
+      if (error instanceof UserNotFoundError) {
+        res.status(500).end();
+      } else {
+        return Promise.reject(error);
+      }
     }
   }
 }

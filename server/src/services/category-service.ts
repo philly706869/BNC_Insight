@@ -1,5 +1,5 @@
 import { Database } from "@/database/database";
-import { categoryTable } from "@/database/tables/category";
+import { categoryTable } from "@/database/tables/category-table";
 import { CategoryValue } from "@/database/values/category-values";
 import { CategoryNameDTO } from "@/dto/category-name-dto";
 import { CategoryNotFoundError } from "@/errors/service-errors";
@@ -38,7 +38,7 @@ export class CategoryService {
       .where(eq(categoryTable.name, name.value))
       .execute();
 
-    if (!Boolean(header.affectedRows)) {
+    if (header.affectedRows === 0) {
       return Promise.reject(new CategoryNotFoundError());
     }
   }
@@ -52,7 +52,7 @@ export class CategoryService {
       .where(eq(categoryTable.name, name.value))
       .execute();
 
-    if (!Boolean(header.affectedRows)) {
+    if (header.affectedRows === 0) {
       return Promise.reject(new CategoryNotFoundError());
     }
   }
