@@ -8,6 +8,25 @@ import { NODE_ENV } from "./utils/node-env";
 
 export const express = Express();
 
+express.use((req, res, next) => {
+  const startTime = Date.now();
+  res.on("finish", () => {
+    const httpVersion = `HTTP/${req.httpVersion}`;
+    const method = req.method;
+    const url = req.originalUrl;
+    const statusCode = res.statusCode;
+    const duration = Date.now() - startTime;
+    const contentSize = res.getHeader("content-length");
+    const ip = req.ip ?? "Unknown Ip";
+    const userAgent = req.headers["user-agent"];
+
+    logger.http(
+      `[${httpVersion}] ${method} ${url} ${statusCode} in ${duration}ms with ${contentSize}bytes to ${ip} ${userAgent}`
+    );
+  });
+  next();
+});
+
 express.use(
   session({
     secret: env.SERVER_SESSION_SECRET,
