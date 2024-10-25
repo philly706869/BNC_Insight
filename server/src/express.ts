@@ -57,7 +57,15 @@ if (NODE_ENV === "production") {
   });
 }
 
-express.use(((err, req, res, next) => {
-  logger.error(err);
+express.use(((error, req, res, next) => {
+  if (error instanceof Error) {
+    if (error.stack) {
+      logger.error(error.stack);
+    } else {
+      logger.error(`${error.name} ${error.message}`);
+    }
+  } else {
+    logger.error(error);
+  }
   res.status(500).end();
 }) satisfies ErrorRequestHandler);

@@ -39,6 +39,7 @@ export class ImageController {
       res.status(400).end();
       return;
     }
+
     const imagePath = path.resolve(file.destination, file.filename);
     try {
       if (

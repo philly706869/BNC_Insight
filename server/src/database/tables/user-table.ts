@@ -15,7 +15,9 @@ const conf = config.user;
 export const userTable = mysqlTable("users", {
   uid: smallint({ unsigned: true }).primaryKey().autoincrement(),
   username: varchar({ length: conf.maxUsernameLength }).unique().notNull(),
-  passwordHash: binary({ length: BCRYPT_HASH_LENGTH }).notNull(),
+  passwordHash: binary({ length: BCRYPT_HASH_LENGTH })
+    .$type<Buffer>()
+    .notNull(),
   name: varchar({ length: conf.maxNameLength }).notNull(),
   isAdmin: boolean().default(false).notNull(),
   createdAt,

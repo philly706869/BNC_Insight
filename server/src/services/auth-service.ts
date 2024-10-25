@@ -158,7 +158,10 @@ export class AuthService {
       return Promise.reject(new UserNotFoundError());
     }
 
-    const isCorrect = await compare(password.value, user.passwordHash);
+    const isCorrect = await compare(
+      password.value,
+      user.passwordHash.toString()
+    );
     if (!isCorrect) {
       return Promise.reject(new IncorrectPasswordError());
     }
