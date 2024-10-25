@@ -16,7 +16,7 @@ express.use((req, res, next) => {
     const url = req.originalUrl;
     const statusCode = res.statusCode;
     const duration = Date.now() - startTime;
-    const contentSize = res.getHeader("content-length");
+    const contentSize = String(res.getHeader("content-length") ?? 0);
     const ip = req.ip ?? "Unknown Ip";
     const userAgent = req.headers["user-agent"];
 
