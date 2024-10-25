@@ -1,8 +1,8 @@
 import { Database } from "@/database/database";
 import { categoryTable } from "@/database/tables/category-table";
-import { CategoryValue } from "@/database/values/category-values";
 import { CategoryNameDTO } from "@/dto/category-name-dto";
 import { CategoryNotFoundError } from "@/errors/service-errors";
+import { CategoryValue } from "@/value-objects/category-values";
 import { eq } from "drizzle-orm";
 
 export class CategoryService {

@@ -1,4 +1,4 @@
-import { UserValue } from "@/database/values/user-values";
+import { UserValue } from "@/value-objects/user-values";
 import { z } from "zod";
 
 export namespace UserValueTransformer {

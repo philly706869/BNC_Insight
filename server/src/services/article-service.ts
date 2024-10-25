@@ -2,8 +2,6 @@ import { config } from "@/config";
 import { Database } from "@/database/database";
 import { articleTable } from "@/database/tables/article-table";
 import { userTable } from "@/database/tables/user-table";
-import { ArticleValue } from "@/database/values/article-values";
-import { CategoryValue } from "@/database/values/category-values";
 import { ArticleDTO } from "@/dto/article-dto";
 import { ContentlessArticleDTO } from "@/dto/contentless-article-dto";
 import { PublicUserDTO } from "@/dto/public-user-dto";
@@ -12,6 +10,8 @@ import {
   QueryLimitOutOfBoundsError,
   QueryOffsetOutOfBoundsError,
 } from "@/errors/service-errors";
+import { ArticleValue } from "@/value-objects/article-values";
+import { CategoryValue } from "@/value-objects/category-values";
 import { eq, isNull } from "drizzle-orm";
 
 export class ArticleService {

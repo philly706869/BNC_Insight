@@ -1,8 +1,6 @@
 import { Database } from "@/database/database";
 import { authTokenTable } from "@/database/tables/auth-token-table";
 import { userTable } from "@/database/tables/user-table";
-import { AuthTokenValue } from "@/database/values/auth-token-values";
-import { UserValue } from "@/database/values/user-values";
 import { ProtectedUserDTO } from "@/dto/protected-user-dto";
 import {
   IncorrectPasswordError,
@@ -11,6 +9,8 @@ import {
   UserNotFoundError,
 } from "@/errors/service-errors";
 import { hashPassword } from "@/utils/hashPassword";
+import { AuthTokenValue } from "@/value-objects/auth-token-values";
+import { UserValue } from "@/value-objects/user-values";
 import { compare } from "bcrypt";
 import { eq, sql } from "drizzle-orm";
 import { Session, SessionData } from "express-session";

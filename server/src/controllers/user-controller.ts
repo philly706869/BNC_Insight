@@ -1,6 +1,6 @@
 import { UserNotFoundError } from "@/errors/service-errors";
 import { UserService } from "@/services/user-service";
-import { UserValueTransformer } from "@/utils/zod/user-value-transformers";
+import { UserValueTransformer } from "@/tranformers/user-value-transformers";
 import { Request, Response } from "express";
 import { z } from "zod";
 

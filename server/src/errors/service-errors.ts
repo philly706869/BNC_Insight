@@ -51,3 +51,9 @@ export class QueryOffsetOutOfBoundsError extends Error {
     super(message);
   }
 }
+
+export class UnsupportedImageFormatError extends Error {
+  public constructor(message?: string) {
+    super(message);
+  }
+}

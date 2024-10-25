@@ -1,4 +1,4 @@
-import { ArticleValue } from "@/database/values/article-values";
+import { ArticleValue } from "@/value-objects/article-values";
 import { z } from "zod";
 
 export namespace ArticleValueTransformer {

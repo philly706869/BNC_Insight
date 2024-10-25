@@ -5,9 +5,9 @@ import {
   UserNotFoundError,
 } from "@/errors/service-errors";
 import { AuthService } from "@/services/auth-service";
+import { AuthTokenValueTransformer } from "@/tranformers/auth-token-value-transformers";
+import { UserValueTransformer } from "@/tranformers/user-value-transformers";
 import { logger } from "@/utils/logger";
-import { AuthTokenValueTransformer } from "@/utils/zod/auth-token-values-transformers";
-import { UserValueTransformer } from "@/utils/zod/user-value-transformers";
 import { Request, Response } from "express";
 import { z } from "zod";
 

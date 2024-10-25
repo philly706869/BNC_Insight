@@ -42,6 +42,7 @@ const configSchema = z
         tempPath: z.string(),
         path: z.string(),
         maxBytes: z.number(),
+        supportedFormats: z.array(z.string()).readonly(),
       })
       .readonly(),
   })

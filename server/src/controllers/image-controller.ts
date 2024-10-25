@@ -42,15 +42,6 @@ export class ImageController {
 
     const imagePath = path.resolve(file.destination, file.filename);
     try {
-      if (
-        file.mimetype !== "image/jpeg" &&
-        file.mimetype !== "image/png" &&
-        file.mimetype !== "image/webp"
-      ) {
-        res.status(400).end();
-        return;
-      }
-
       await this.service.post(imagePath);
       res.status(201).end();
     } finally {

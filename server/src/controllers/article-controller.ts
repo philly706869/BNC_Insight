@@ -6,8 +6,8 @@ import {
   UserNotFoundError,
 } from "@/errors/service-errors";
 import { ArticleService } from "@/services/article-service";
-import { ArticleValueTransformer } from "@/utils/zod/article-value-transformers";
-import { CategoryValueTransformer } from "@/utils/zod/category-value-transformers";
+import { ArticleValueTransformer } from "@/tranformers/article-value-transformers";
+import { CategoryValueTransformer } from "@/tranformers/category-value-transformers";
 import { Request, Response } from "express";
 import { z } from "zod";
 

@@ -1,5 +1,8 @@
 import { config } from "@/config";
-import { ImageNotFoundError } from "@/errors/service-errors";
+import {
+  ImageNotFoundError,
+  UnsupportedImageFormatError,
+} from "@/errors/service-errors";
 import fs from "fs/promises";
 import path from "path";
 import sharp from "sharp";
@@ -24,14 +27,19 @@ export class ImageService {
     }
   }
 
+  /**
+   * @throws {UnsupportedImageFormatError}
+   */
   public async post(imagePath: string): Promise<string> {
     try {
       const image = sharp(imagePath);
       const metadata = await image.metadata();
-      const dest = path.resolve(
-        config.image.path,
-        `${uuidv4()}.${metadata.format}`
-      );
+      const format = metadata.format;
+      const supportedFormats = config.image.supportedFormats;
+      if (format === undefined || !supportedFormats.includes(format)) {
+        return Promise.reject(new UnsupportedImageFormatError());
+      }
+      const dest = path.resolve(config.image.path, `${uuidv4()}.${format}`);
       await image.toFile(dest);
       return dest;
     } catch (error) {

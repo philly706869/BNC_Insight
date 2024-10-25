@@ -24,3 +24,7 @@ image:
   tempPath: "./uploads/tmp"
   path: "./uploads/images"
   maxBytes: 4194304
+  supportedFormats:
+    - jpeg
+    - png
+    - webp

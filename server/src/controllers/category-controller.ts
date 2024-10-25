@@ -1,6 +1,6 @@
 import { CategoryNotFoundError } from "@/errors/service-errors";
 import { CategoryService } from "@/services/category-service";
-import { CategoryValueTransformer } from "@/utils/zod/category-value-transformers";
+import { CategoryValueTransformer } from "@/tranformers/category-value-transformers";
 import { Request, Response } from "express";
 import { z } from "zod";
 
