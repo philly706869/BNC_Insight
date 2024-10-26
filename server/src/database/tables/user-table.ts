@@ -1,5 +1,5 @@
 import { config } from "@/config";
-import { BCRYPT_HASH_LENGTH } from "@/utils/constants";
+import { BCRYPT_HASH_LENGTH } from "@/utils/bcrypt-constants";
 import { createdAt, updatedAt } from "@/utils/timestamp-columns";
 import {
   binary,

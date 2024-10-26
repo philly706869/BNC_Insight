@@ -1,5 +1,5 @@
 import { config } from "@/config";
-import { BCRYPT_MAX_BYTE_LENGTH } from "@/utils/constants";
+import { BCRYPT_MAX_BYTE_LENGTH } from "@/utils/bcrypt-constants";
 
 export namespace UserValue {
   const conf = config.user;

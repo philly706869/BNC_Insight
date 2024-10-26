@@ -5,6 +5,7 @@ user:
   maxUsernameLength: 32
   minPasswordLength: 8
   maxPasswordLength: 72
+  passwordHashRounds: 10
   maxNameLength: 16
 
 category:

@@ -17,6 +17,7 @@ const configSchema = z
         maxUsernameLength: z.number(),
         minPasswordLength: z.number(),
         maxPasswordLength: z.number(),
+        passwordHashRounds: z.number(),
         maxNameLength: z.number(),
       })
       .readonly(),

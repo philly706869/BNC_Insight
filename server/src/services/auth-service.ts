@@ -1,3 +1,4 @@
+import { config } from "@/config";
 import { Database } from "@/database/database";
 import { authTokenTable } from "@/database/tables/auth-token-table";
 import { userTable } from "@/database/tables/user-table";
@@ -8,10 +9,9 @@ import {
   InvalidUsernameError,
   UserNotFoundError,
 } from "@/errors/service-errors";
-import { hashPassword } from "@/utils/hashPassword";
 import { AuthTokenValue } from "@/value-objects/auth-token-values";
 import { UserValue } from "@/value-objects/user-values";
-import { compare } from "bcrypt";
+import { compare, hash } from "bcrypt";
 import { eq, sql } from "drizzle-orm";
 import { Session, SessionData } from "express-session";
 
@@ -118,7 +118,9 @@ export class AuthService {
           .insert(userTable)
           .values({
             username: username.value,
-            passwordHash: await hashPassword(password),
+            passwordHash: Buffer.from(
+              await hash(password.value, config.user.passwordHashRounds)
+            ),
             name: name.value,
             isAdmin: authToken.isAdminToken,
           })
@@ -211,7 +213,9 @@ export class AuthService {
       await tx
         .update(userTable)
         .set({
-          passwordHash: await hashPassword(newPassword),
+          passwordHash: Buffer.from(
+            await hash(newPassword.value, config.user.passwordHashRounds)
+          ),
         })
         .where(eq(userTable.uid, uid))
         .execute();
