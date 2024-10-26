@@ -1,7 +1,6 @@
 import { config } from "@/config";
 import { BCRYPT_HASH_LENGTH } from "@/utils/constants";
-import { createdAt } from "@/utils/drizzle/created-at";
-import { updatedAt } from "@/utils/drizzle/updated-at";
+import { createdAt, updatedAt } from "@/utils/timestamp-columns";
 import {
   binary,
   boolean,

@@ -1,6 +1,5 @@
 import { config } from "@/config";
-import { createdAt } from "@/utils/drizzle/created-at";
-import { updatedAt } from "@/utils/drizzle/updated-at";
+import { createdAt, updatedAt } from "@/utils/timestamp-columns";
 import { mysqlTable, varchar } from "drizzle-orm/mysql-core";
 
 const conf = config.category;
