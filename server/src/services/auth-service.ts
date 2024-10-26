@@ -6,7 +6,6 @@ import { ProtectedUserDTO } from "@/dto/protected-user-dto";
 import {
   IncorrectPasswordError,
   InvalidAuthTokenError,
-  InvalidUsernameError,
   UserNotFoundError,
 } from "@/errors/service-errors";
 import { AuthTokenValue } from "@/value-objects/auth-token-values";
@@ -18,13 +17,10 @@ import { Session, SessionData } from "express-session";
 export class AuthService {
   public constructor(private readonly database: Database) {}
 
-  /**
-   * @throws {InvalidAuthTokenError}
-   */
-  public async verifyAuthToken(value: string): Promise<void> {
+  public async verifyAuthToken(value: string): Promise<{ valid: boolean }> {
     const token = AuthTokenValue.Token.verify(value);
     if (token === null) {
-      return Promise.reject(new InvalidAuthTokenError());
+      return { valid: false };
     }
 
     const result = await this.database
@@ -32,28 +28,8 @@ export class AuthService {
       .from(authTokenTable)
       .where(eq(authTokenTable.token, token.value))
       .execute();
-    if (result.length === 0) {
-      return Promise.reject(new InvalidAuthTokenError());
-    }
-  }
 
-  /**
-   * @throws {InvalidUsernameError}
-   */
-  public async verifyUsername(value: string): Promise<void> {
-    const username = UserValue.Username.verify(value);
-    if (username === null) {
-      return Promise.reject(new InvalidUsernameError());
-    }
-
-    const result = await this.database
-      .select({ exists: sql<number>`1` })
-      .from(userTable)
-      .where(eq(userTable.username, username.value))
-      .execute();
-    if (result.length === 0) {
-      return Promise.reject(new InvalidUsernameError());
-    }
+    return { valid: result.length !== 0 };
   }
 
   /**

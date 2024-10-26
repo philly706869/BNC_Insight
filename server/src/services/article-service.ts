@@ -44,7 +44,7 @@ export class ArticleService {
     ).at(0);
 
     if (article === undefined) {
-      return Promise.reject(new ArticleNotFoundError());
+      return Promise.reject(new ArticleNotFoundError("Article not found"));
     }
 
     return new ArticleDTO({
@@ -75,11 +75,14 @@ export class ArticleService {
     limit: number | undefined
   ): Promise<ContentlessArticleDTO[]> {
     if (limit !== undefined) {
-      if (limit < 1) {
-        return Promise.reject(new QueryLimitOutOfBoundsError());
-      }
-      if (limit > config.article.maxQueryLimit) {
-        return Promise.reject(new QueryLimitOutOfBoundsError());
+      const min = 1;
+      const max = config.article.maxQueryLimit;
+      if (limit < min || limit > max) {
+        return Promise.reject(
+          new QueryLimitOutOfBoundsError(
+            `Query limit must be between ${min} and ${max}, inclusive`
+          )
+        );
       }
     } else {
       limit = config.article.maxQueryLimit;
@@ -87,7 +90,11 @@ export class ArticleService {
 
     if (offset !== undefined) {
       if (offset < 0) {
-        return Promise.reject(new QueryOffsetOutOfBoundsError());
+        return Promise.reject(
+          new QueryOffsetOutOfBoundsError(
+            `Query offset must be greater than or equal to 0`
+          )
+        );
       }
     } else {
       offset = 0;
@@ -192,7 +199,7 @@ export class ArticleService {
         .execute()
     ).at(0);
     if (user === undefined) {
-      return Promise.reject(new UserNotFoundError());
+      return Promise.reject(new UserNotFoundError("User not found"));
     }
 
     const [header] = await this.database
@@ -216,7 +223,7 @@ export class ArticleService {
       .execute();
 
     if (header.affectedRows === 0) {
-      return Promise.reject(new ArticleNotFoundError());
+      return Promise.reject(new ArticleNotFoundError("Article not found"));
     }
   }
 

@@ -1,6 +1,6 @@
 import { ImageNotFoundError } from "@/errors/service-errors";
 import { ImageService } from "@/services/image-service";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import fs from "fs/promises";
 import path from "path";
 import { z } from "zod";
@@ -12,15 +12,20 @@ export class ImageController {
     name: z.string(),
   });
 
-  public async get(req: Request, res: Response): Promise<void> {
+  public async get(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     const paramsParseResult = await ImageController.paramsSchema.safeParseAsync(
       req.params
     );
     if (!paramsParseResult.success) {
-      res.status(500).end();
+      next();
       return;
     }
     const params = paramsParseResult.data;
+
     try {
       const filePath = await this.service.get(params.name);
       res.status(200).sendFile(filePath);

@@ -1,7 +1,7 @@
 import { UserNotFoundError } from "@/errors/service-errors";
 import { UserService } from "@/services/user-service";
 import { UserValueTransformer } from "@/tranformers/user-value-transformers";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 
 export class UserController {
@@ -11,12 +11,16 @@ export class UserController {
     username: z.string().transform(UserValueTransformer.username),
   });
 
-  public async get(req: Request, res: Response): Promise<void> {
+  public async get(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     const paramsParseResult = await UserController.paramsSchema.safeParseAsync(
       req.params
     );
     if (!paramsParseResult.success) {
-      res.status(400).end();
+      next();
       return;
     }
     const params = paramsParseResult.data;

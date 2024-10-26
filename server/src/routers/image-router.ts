@@ -12,7 +12,7 @@ const service = new ImageService();
 const controller = new ImageController(service);
 
 imageRouter.get("/:name", (req, res, next) =>
-  controller.get(req, res).catch(next)
+  controller.get(req, res, next).catch(next)
 );
 
 const supportedMIMETypes = config.image.supportedFormats.map(

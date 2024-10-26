@@ -17,9 +17,9 @@ categoryRouter.post("/", authVerifier, (req, res, next) =>
 );
 
 categoryRouter.patch("/:id", authVerifier, (req, res, next) =>
-  controller.patch(req, res).catch(next)
+  controller.patch(req, res, next).catch(next)
 );
 
 categoryRouter.delete("/:id", authVerifier, (req, res, next) =>
-  controller.delete(req, res).catch(next)
+  controller.delete(req, res, next).catch(next)
 );

@@ -1,12 +1,21 @@
 import Express, { ErrorRequestHandler } from "express";
 import MySQLStore from "express-mysql-session";
 import session from "express-session";
+import status from "statuses";
 import { env } from "./env";
 import { apiRouter } from "./routers/api-router";
 import { logger } from "./utils/logger";
 import { NODE_ENV } from "./utils/node-env";
 
 export const express = Express();
+
+express.response.error = function (body) {
+  this.json({
+    statusCode: this.statusCode,
+    statusMessage: status.message[this.statusCode] ?? "",
+    ...body,
+  });
+};
 
 express.use((req, res, next) => {
   const startTime = Date.now();
@@ -67,5 +76,8 @@ express.use(((error, req, res, next) => {
   } else {
     logger.error(error);
   }
-  res.status(500).end();
+  res.status(500).error({
+    error: "UNKNOWN_ERROR",
+    message: "Unexcepted error occured",
+  });
 }) satisfies ErrorRequestHandler);

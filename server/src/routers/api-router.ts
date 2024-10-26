@@ -14,3 +14,9 @@ apiRouter.use("/users", userRouter);
 apiRouter.use("/categories", categoryRouter);
 apiRouter.use("/articles", articleRouter);
 apiRouter.use("/images", imageRouter);
+apiRouter.use((req, res) => {
+  res.status(404).error({
+    error: "API_NOT_FOUND",
+    message: "Requested api endpoint is not exists",
+  });
+});

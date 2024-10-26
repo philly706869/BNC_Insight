@@ -1,7 +1,7 @@
 import { CategoryNotFoundError } from "@/errors/service-errors";
 import { CategoryService } from "@/services/category-service";
 import { CategoryValueTransformer } from "@/tranformers/category-value-transformers";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 
 export class CategoryController {
@@ -38,11 +38,15 @@ export class CategoryController {
     name: z.string().transform(CategoryValueTransformer.name).optional(),
   });
 
-  public async patch(req: Request, res: Response): Promise<void> {
+  public async patch(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     const paramsParseResult =
       await CategoryController.paramsSchema.safeParseAsync(req.params);
     if (!paramsParseResult.success) {
-      res.status(400).end();
+      next();
       return;
     }
     const params = paramsParseResult.data;
@@ -68,11 +72,15 @@ export class CategoryController {
     }
   }
 
-  public async delete(req: Request, res: Response): Promise<void> {
+  public async delete(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     const paramsParseResult =
       await CategoryController.paramsSchema.safeParseAsync(req.params);
     if (!paramsParseResult.success) {
-      res.status(400).end();
+      next();
       return;
     }
     const params = paramsParseResult.data;

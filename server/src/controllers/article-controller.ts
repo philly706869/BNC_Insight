@@ -1,6 +1,5 @@
 import {
   ArticleNotFoundError,
-  CategoryNotFoundError,
   QueryLimitOutOfBoundsError,
   QueryOffsetOutOfBoundsError,
   UserNotFoundError,
@@ -8,7 +7,7 @@ import {
 import { ArticleService } from "@/services/article-service";
 import { ArticleValueTransformer } from "@/tranformers/article-value-transformers";
 import { CategoryValueTransformer } from "@/tranformers/category-value-transformers";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 
 export class ArticleController {
@@ -18,11 +17,15 @@ export class ArticleController {
     id: z.coerce.number().int().nonnegative(),
   });
 
-  public async getOne(req: Request, res: Response): Promise<void> {
+  public async getOne(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     const paramsParseResult =
       await ArticleController.paramsSchema.safeParseAsync(req.params);
     if (!paramsParseResult.success) {
-      res.status(400).end();
+      next();
       return;
     }
     const params = paramsParseResult.data;
@@ -32,7 +35,10 @@ export class ArticleController {
       res.status(200).json(response);
     } catch (error) {
       if (error instanceof ArticleNotFoundError) {
-        res.status(404).end();
+        res.status(404).error({
+          error: "ARTICLE_NOT_FOUND",
+          message: error.message,
+        });
       } else {
         return Promise.reject(error);
       }
@@ -63,11 +69,15 @@ export class ArticleController {
       res.status(200).json(articlesDTO);
     } catch (error) {
       if (error instanceof QueryOffsetOutOfBoundsError) {
-        res.status(400).end();
+        res.status(400).error({
+          error: "QUERY_OFFSET_OUT_OF_BOUNDS",
+          message: error.message,
+        });
       } else if (error instanceof QueryLimitOutOfBoundsError) {
-        res.status(400).end();
-      } else if (error instanceof CategoryNotFoundError) {
-        res.status(400).end();
+        res.status(400).error({
+          error: "QUERY_LIMIT_OUT_OF_BOUNDS",
+          message: error.message,
+        });
       } else {
         return Promise.reject(error);
       }
@@ -103,25 +113,15 @@ export class ArticleController {
     }
     const body = bodyParseResult.data;
 
-    try {
-      await this.articleService.post(
-        uploaderUid,
-        body.category,
-        body.thumbnail,
-        body.title,
-        body.subtitle,
-        body.content
-      );
-      res.status(201).end();
-    } catch (error) {
-      if (error instanceof UserNotFoundError) {
-        res.status(404).end();
-      } else if (error instanceof CategoryNotFoundError) {
-        res.status(400).end();
-      } else {
-        return Promise.reject(error);
-      }
-    }
+    await this.articleService.post(
+      uploaderUid,
+      body.category,
+      body.thumbnail,
+      body.title,
+      body.subtitle,
+      body.content
+    );
+    res.status(201).end();
   }
 
   private static readonly patchSchema = z.object({
@@ -142,7 +142,11 @@ export class ArticleController {
     content: z.string().transform(ArticleValueTransformer.content).optional(),
   });
 
-  public async patch(req: Request, res: Response): Promise<void> {
+  public async patch(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     const userUid = req.session.userUid;
     if (userUid === undefined) {
       res.status(401).end();
@@ -152,7 +156,7 @@ export class ArticleController {
     const paramsParseResult =
       await ArticleController.paramsSchema.safeParseAsync(req.params);
     if (!paramsParseResult.success) {
-      res.status(400).end();
+      next();
       return;
     }
     const params = paramsParseResult.data;
@@ -171,9 +175,7 @@ export class ArticleController {
       res.status(201).end();
     } catch (error) {
       if (error instanceof UserNotFoundError) {
-        res.status(400).end();
-      } else if (error instanceof CategoryNotFoundError) {
-        res.status(400).end();
+        res.status(400).error({ error: "USER_NOT_FOUND" });
       } else if (error instanceof ArticleNotFoundError) {
         res.status(404).end();
       } else {
@@ -182,20 +184,24 @@ export class ArticleController {
     }
   }
 
-  public async delete(req: Request, res: Response): Promise<void> {
+  public async delete(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const paramsParseResult =
+      await ArticleController.paramsSchema.safeParseAsync(req.params);
+    if (!paramsParseResult.success) {
+      next();
+      return;
+    }
+    const params = paramsParseResult.data;
+
     const userUid = req.session.userUid;
     if (userUid === undefined) {
       res.status(401).end();
       return;
     }
-
-    const paramsParseResult =
-      await ArticleController.paramsSchema.safeParseAsync(req.params);
-    if (!paramsParseResult.success) {
-      res.status(400).end();
-      return;
-    }
-    const params = paramsParseResult.data;
 
     try {
       await this.articleService.delete(userUid, params.id);

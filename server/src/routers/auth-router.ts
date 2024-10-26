@@ -12,10 +12,6 @@ authRouter.post("/verify-auth-token", (req, res, next) =>
   controller.verifyAuthToken(req, res).catch(next)
 );
 
-authRouter.post("/verify-username", (req, res, next) =>
-  controller.verifyUsername(req, res).catch(next)
-);
-
 authRouter.post("/signup", (req, res, next) =>
   controller.signup(req, res).catch(next)
 );

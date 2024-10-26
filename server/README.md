@@ -10,8 +10,6 @@
   - `/auth`
     - `POST /verify-auth-token`
       - 인증 토큰 사용 가능 여부 확인
-    - `POST /verify-username`
-      - 회원가입할 때 유저 아이디 사용 가능 여부 확인
     - `POST /signup`
       - 회원가입
     - `POST /signin`

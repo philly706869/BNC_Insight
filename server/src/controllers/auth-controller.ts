@@ -1,7 +1,6 @@
 import {
   IncorrectPasswordError,
   InvalidAuthTokenError,
-  InvalidUsernameError,
   UserNotFoundError,
 } from "@/errors/service-errors";
 import { AuthService } from "@/services/auth-service";
@@ -32,31 +31,6 @@ export class AuthController {
       res.status(422).end();
     } catch (error) {
       if (error instanceof InvalidAuthTokenError) {
-        res.status(422).end();
-      } else {
-        return Promise.reject(error);
-      }
-    }
-  }
-
-  private static readonly verifyUsernameSchema = z.object({
-    value: z.string(),
-  });
-
-  public async verifyUsername(req: Request, res: Response): Promise<void> {
-    const bodyParseResult =
-      await AuthController.verifyUsernameSchema.safeParseAsync(req.body);
-    if (!bodyParseResult.success) {
-      res.status(400).end();
-      return;
-    }
-    const body = bodyParseResult.data;
-
-    try {
-      await this.authService.verifyUsername(body.value);
-      res.status(200).end();
-    } catch (error) {
-      if (error instanceof InvalidUsernameError) {
         res.status(422).end();
       } else {
         return Promise.reject(error);

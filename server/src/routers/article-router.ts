@@ -9,7 +9,7 @@ const service = new ArticleService(database);
 const controller = new ArticleController(service);
 
 articleRouter.get("/:id", (req, res, next) =>
-  controller.getOne(req, res).catch(next)
+  controller.getOne(req, res, next).catch(next)
 );
 
 articleRouter.get("/", (req, res, next) =>
@@ -21,9 +21,9 @@ articleRouter.post("/", authVerifier, (req, res, next) =>
 );
 
 articleRouter.patch("/:id", authVerifier, (req, res, next) =>
-  controller.patch(req, res).catch(next)
+  controller.patch(req, res, next).catch(next)
 );
 
 articleRouter.delete("/:id", authVerifier, (req, res, next) =>
-  controller.delete(req, res).catch(next)
+  controller.delete(req, res, next).catch(next)
 );

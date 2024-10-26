@@ -9,7 +9,7 @@ const service = new UserService(database);
 const controller = new UserController(service);
 
 userRouter.get("/:username", (req, res, next) =>
-  controller.get(req, res).catch(next)
+  controller.get(req, res, next).catch(next)
 );
 
 userRouter.patch("/", authVerifier, (req, res, next) =>
