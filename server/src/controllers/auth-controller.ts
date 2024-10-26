@@ -71,7 +71,9 @@ export class AuthController {
     } catch (error) {
       if (error instanceof UserNotFoundError) {
         req.session.destroy((error) => {
-          logger.error(error);
+          if (error) {
+            logger.error(error);
+          }
         });
         res.status(404).end();
       } else {
