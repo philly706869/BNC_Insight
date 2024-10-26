@@ -39,9 +39,13 @@ export default function App() {
   );
 
   useEffect(() => {
-    getCurrentUser().then((currentUser) =>
-      setCurrentUser({ isInitialized: true, data: currentUser })
-    );
+    getCurrentUser()
+      .then((currentUser) =>
+        setCurrentUser({ isInitialized: true, data: currentUser })
+      )
+      .catch(() => {
+        setCurrentUser({ isInitialized: true, data: null });
+      });
 
     getCategories().then((category) =>
       setCategory({ isInitialized: true, data: category })

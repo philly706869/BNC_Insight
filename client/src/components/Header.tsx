@@ -29,6 +29,7 @@ export default function Header() {
                 onClick={async () => {
                   await signout();
                   navigate("/");
+                  navigate(0);
                 }}
               >
                 Logout
