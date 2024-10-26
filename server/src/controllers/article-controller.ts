@@ -143,6 +143,12 @@ export class ArticleController {
   });
 
   public async patch(req: Request, res: Response): Promise<void> {
+    const userUid = req.session.userUid;
+    if (userUid === undefined) {
+      res.status(401).end();
+      return;
+    }
+
     const paramsParseResult =
       await ArticleController.paramsSchema.safeParseAsync(req.params);
     if (!paramsParseResult.success) {
@@ -161,10 +167,12 @@ export class ArticleController {
     const body = bodyParseResult.data;
 
     try {
-      await this.articleService.patch(params.id, body);
+      await this.articleService.patch(userUid, params.id, body);
       res.status(201).end();
     } catch (error) {
-      if (error instanceof CategoryNotFoundError) {
+      if (error instanceof UserNotFoundError) {
+        res.status(400).end();
+      } else if (error instanceof CategoryNotFoundError) {
         res.status(400).end();
       } else if (error instanceof ArticleNotFoundError) {
         res.status(404).end();
@@ -190,10 +198,12 @@ export class ArticleController {
     const params = paramsParseResult.data;
 
     try {
-      await this.articleService.delete(params.id);
+      await this.articleService.delete(userUid, params.id);
       res.status(201).end();
     } catch (error) {
-      if (error instanceof ArticleNotFoundError) {
+      if (error instanceof UserNotFoundError) {
+        res.status(400).end();
+      } else if (error instanceof ArticleNotFoundError) {
         res.status(404).end();
       } else {
         return Promise.reject(error);

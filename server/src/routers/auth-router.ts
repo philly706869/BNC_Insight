@@ -28,7 +28,7 @@ authRouter.post("/signout", (req, res, next) =>
   controller.signout(req, res).catch(next)
 );
 
-authRouter.get("/current-user", (req, res, next) =>
+authRouter.get("/me", (req, res, next) =>
   controller.getCurrentUser(req, res).catch(next)
 );
 

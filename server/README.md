@@ -18,7 +18,7 @@
       - 로그인
     - `POST /signout`
       - 로그아웃
-    - `GET /current-user`
+    - `GET /me`
       - 현재 로그인한 유저 정보 확인
     - `POST /update-password`
       - 현재 로그인한 유저 비번 업데이트

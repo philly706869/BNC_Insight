@@ -9,10 +9,11 @@ import {
   ArticleNotFoundError,
   QueryLimitOutOfBoundsError,
   QueryOffsetOutOfBoundsError,
+  UserNotFoundError,
 } from "@/errors/service-errors";
 import { ArticleValue } from "@/value-objects/article-values";
 import { CategoryValue } from "@/value-objects/category-values";
-import { eq, isNull } from "drizzle-orm";
+import { and, eq, isNull } from "drizzle-orm";
 
 export class ArticleService {
   public constructor(private readonly database: Database) {}
@@ -164,10 +165,12 @@ export class ArticleService {
   }
 
   /**
+   * @throws {UserNotFoundError}
    * @throws {ArticleNotFoundError}
    */
   public async patch(
-    uid: number,
+    userUid: number,
+    articleUid: number,
     data: {
       categoryName?: CategoryValue.Name;
       thumbnail?: {
@@ -179,6 +182,19 @@ export class ArticleService {
       content?: ArticleValue.Content;
     }
   ): Promise<void> {
+    const user = (
+      await this.database
+        .select({
+          isAdmin: userTable.isAdmin,
+        })
+        .from(userTable)
+        .where(eq(userTable.uid, userUid))
+        .execute()
+    ).at(0);
+    if (user === undefined) {
+      return Promise.reject(new UserNotFoundError());
+    }
+
     const [header] = await this.database
       .update(articleTable)
       .set({
@@ -189,7 +205,14 @@ export class ArticleService {
         subtitle: data.subtitle?.value,
         content: data.content?.value,
       })
-      .where(eq(articleTable.uid, uid))
+      .where(
+        user.isAdmin
+          ? eq(articleTable.uid, articleUid)
+          : and(
+              eq(articleTable.uid, articleUid),
+              eq(articleTable.uploaderUid, userUid)
+            )
+      )
       .execute();
 
     if (header.affectedRows === 0) {
@@ -198,12 +221,33 @@ export class ArticleService {
   }
 
   /**
+   * @throws {UserNotFoundError}
    * @throws {ArticleNotFoundError}
    */
-  public async delete(uid: number): Promise<void> {
+  public async delete(userUid: number, articleUid: number): Promise<void> {
+    const user = (
+      await this.database
+        .select({
+          isAdmin: userTable.isAdmin,
+        })
+        .from(userTable)
+        .where(eq(userTable.uid, userUid))
+        .execute()
+    ).at(0);
+    if (user === undefined) {
+      return Promise.reject(new UserNotFoundError());
+    }
+
     const [header] = await this.database
       .delete(articleTable)
-      .where(eq(articleTable.uid, uid))
+      .where(
+        user.isAdmin
+          ? eq(articleTable.uid, articleUid)
+          : and(
+              eq(articleTable.uid, articleUid),
+              eq(articleTable.uploaderUid, userUid)
+            )
+      )
       .execute();
 
     if (header.affectedRows === 0) {
