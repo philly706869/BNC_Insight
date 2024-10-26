@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CategoryContext } from "../contexts/CategoryContext";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import { signout } from "../services/authService";
+import { signout } from "../services/auth-service";
 import fonts from "../styles/fonts.module.css";
 import styles from "../styles/Header.module.css";
 
@@ -45,7 +45,7 @@ export default function Header() {
       </nav>
       <nav className={styles.categories}>
         {categories.isInitialized
-          ? categories.data.map((category) => (
+          ? categories.data.map(({ name: category }) => (
               <Link key={category} to={`/category/${category}`}>
                 {category}
               </Link>

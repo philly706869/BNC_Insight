@@ -25,7 +25,7 @@ export default function NewArticle() {
         ref={categoryRef}
       >
         {categories.isInitialized
-          ? categories.data.map((category) => (
+          ? categories.data.map(({ name: category }) => (
               <ToggleButton value={category}>{category}</ToggleButton>
             ))
           : null}

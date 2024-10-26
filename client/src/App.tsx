@@ -21,8 +21,8 @@ import NotFound from "./pages/NotFound";
 import Signin from "./pages/Signin";
 import Signup from "./pages/Signup";
 import User from "./pages/User";
-import { getCategories } from "./services/articleService";
-import { getCurrentUser } from "./services/userService";
+import { getCurrentUser } from "./services/auth-service";
+import { getCategories } from "./services/category-service";
 import "./styles/global.css";
 
 export default function App() {
