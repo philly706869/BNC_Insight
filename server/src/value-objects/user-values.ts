@@ -1,4 +1,5 @@
 import { config } from "@/config";
+import { ValueObjectVerifyResult } from "@/types/value-object-verify-result";
 import { BCRYPT_MAX_BYTE_LENGTH } from "@/utils/bcrypt-constants";
 
 export namespace UserValue {
@@ -9,17 +10,23 @@ export namespace UserValue {
 
     private constructor(public readonly value: string) {}
 
-    public static verify(value: string): Username | null {
+    public static verify(value: string): ValueObjectVerifyResult<Username> {
       if (!this.regex.test(value)) {
-        return null;
+        return {
+          valid: false,
+          message: "Username can only contain letters and numbers",
+        };
       }
       if (value.length < 1) {
-        return null;
+        return { valid: false, message: "Username cannot be empty" };
       }
       if (value.length > conf.maxUsernameLength) {
-        return null;
+        return {
+          valid: false,
+          message: `Username cannot be greater than ${conf.maxUsernameLength} characters`,
+        };
       }
-      return new Username(value);
+      return { valid: true, data: new Username(value) };
     }
   }
 
@@ -29,39 +36,53 @@ export namespace UserValue {
 
     private constructor(public readonly value: string) {}
 
-    public static verify(value: string): Password | null {
+    public static verify(value: string): ValueObjectVerifyResult<Password> {
       if (!this.regex.test(value)) {
-        return null;
+        return {
+          valid: false,
+          message:
+            "Password can only contain letters, numbers, and common punctuation characters",
+        };
       }
       if (value.length < conf.minPasswordLength) {
-        return null;
+        return {
+          valid: false,
+          message: `Password cannot be shorter than ${conf.minPasswordLength} characters`,
+        };
       }
       if (value.length > conf.maxPasswordLength) {
-        return null;
+        return {
+          valid: false,
+          message: `Password cannot be greater than ${conf.maxPasswordLength} characters`,
+        };
       }
       if (Buffer.byteLength(value) > BCRYPT_MAX_BYTE_LENGTH) {
-        return null;
+        return {
+          valid: false,
+          message: `Password cannot be greater than ${BCRYPT_MAX_BYTE_LENGTH} bytes`,
+        };
       }
-      return new Password(value);
+      return { valid: true, data: new Password(value) };
     }
   }
 
   export class Name {
-    private static readonly regex = /^\w*$/;
-
     private constructor(public readonly value: string) {}
 
-    public static verify(value: string): Name | null {
-      if (!this.regex.test(value)) {
-        return null;
+    public static verify(value: string): ValueObjectVerifyResult<Name> {
+      if (value.includes("\n")) {
+        return { valid: false, message: "Name cannot contain line breaks" };
       }
       if (value.length < 1) {
-        return null;
+        return { valid: false, message: "Name cannot be empty" };
       }
       if (value.length > conf.maxNameLength) {
-        return null;
+        return {
+          valid: false,
+          message: `Name cannot be greater than ${conf.maxNameLength} characters`,
+        };
       }
-      return new Name(value);
+      return { valid: true, data: new Name(value) };
     }
   }
 }

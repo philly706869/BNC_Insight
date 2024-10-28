@@ -1,24 +1,29 @@
 import { config } from "@/config";
+import { ValueObjectVerifyResult } from "@/types/value-object-verify-result";
 
 export namespace CategoryValue {
   const conf = config.category;
 
   export class Name {
-    private static readonly regex = /^[^\n]*$/;
-
     private constructor(public readonly value: string) {}
 
-    public static verify(value: string): Name | null {
-      if (!this.regex.test(value)) {
-        return null;
+    public static verify(value: string): ValueObjectVerifyResult<Name> {
+      if (value.includes("\n")) {
+        return {
+          valid: false,
+          message: "Category name cannot contain line breaks",
+        };
       }
       if (value.length < 1) {
-        return null;
+        return { valid: false, message: "Category name be empty" };
       }
       if (value.length > conf.maxNameLength) {
-        return null;
+        return {
+          valid: false,
+          message: `Category name be greater than ${conf.maxNameLength} characters`,
+        };
       }
-      return new Name(value);
+      return { valid: true, data: new Name(value) };
     }
   }
 }

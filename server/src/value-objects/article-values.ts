@@ -1,4 +1,5 @@
 import { config } from "@/config";
+import { ValueObjectVerifyResult } from "@/types/value-object-verify-result";
 import validator, { IsURLOptions } from "validator";
 
 export namespace ArticleValue {
@@ -11,76 +12,87 @@ export namespace ArticleValue {
 
     private constructor(public readonly value: string) {}
 
-    public static verify(value: string): ThumbnailUrl | null {
+    public static verify(value: string): ValueObjectVerifyResult<ThumbnailUrl> {
       if (!validator.isURL(value, this.isURLOptions)) {
-        return null;
+        return { valid: false, message: "Thumbnail url is not valid" };
       }
       if (value.length > conf.maxThumbnailUrlLength) {
-        return null;
+        return {
+          valid: false,
+          message: `Thumbnail url cannot be greater than ${conf.maxThumbnailUrlLength} characters`,
+        };
       }
-      return new ThumbnailUrl(value);
+      return { valid: true, data: new ThumbnailUrl(value) };
     }
   }
 
   export class ThumbnailCaption {
-    private static readonly regex = /^[^\n]*$/;
-
     private constructor(public readonly value: string) {}
 
-    public static verify(value: string): ThumbnailCaption | null {
-      if (!this.regex.test(value)) {
-        return null;
+    public static verify(
+      value: string
+    ): ValueObjectVerifyResult<ThumbnailCaption> {
+      if (value.includes("\n")) {
+        return {
+          valid: false,
+          message: "Thumbnail caption cannot contain line breaks",
+        };
       }
       if (value.length > conf.maxThumbnailCaptionLength) {
-        return null;
+        return {
+          valid: false,
+          message: `Thumbnail caption cannot be greater than ${conf.maxThumbnailCaptionLength} characters`,
+        };
       }
-      return new ThumbnailCaption(value);
+      return { valid: true, data: new ThumbnailCaption(value) };
     }
   }
 
   export class Title {
-    private static readonly regex = /^[^\n]*$/;
-
     private constructor(public readonly value: string) {}
 
-    public static verify(value: string): Title | null {
-      if (!this.regex.test(value)) {
-        return null;
+    public static verify(value: string): ValueObjectVerifyResult<Title> {
+      if (value.includes("\n")) {
+        return { valid: false, message: "Title cannot contain line breaks" };
       }
       if (value.length < 1) {
-        return null;
+        return { valid: false, message: "Title cannot be empty" };
       }
       if (value.length > conf.maxTitleLength) {
-        return null;
+        return {
+          valid: false,
+          message: `Title cannot be greater than ${conf.maxTitleLength} characters`,
+        };
       }
-      return new Title(value);
+      return { valid: true, data: new Title(value) };
     }
   }
 
   export class Subtitle {
-    private static readonly regex = /^[^\n]*$/;
-
     private constructor(public readonly value: string) {}
 
-    public static verify(value: string): Title | null {
-      if (!this.regex.test(value)) {
-        return null;
+    public static verify(value: string): ValueObjectVerifyResult<Subtitle> {
+      if (value.includes("\n")) {
+        return { valid: false, message: "Subtitle cannot contain line breaks" };
       }
       if (value.length > conf.maxSubtitleLength) {
-        return null;
+        return {
+          valid: false,
+          message: `Subtitle cannot be greater than ${conf.maxSubtitleLength} characters`,
+        };
       }
-      return new Subtitle(value);
+      return { valid: true, data: new Subtitle(value) };
     }
   }
 
   export class Content {
     private constructor(public readonly value: string) {}
 
-    public static verify(value: string): Content | null {
+    public static verify(value: string): ValueObjectVerifyResult<Content> {
       if (value.length > conf.maxContentDeltaLength) {
-        return null;
+        return { valid: false, message: "Content is too long" };
       }
-      return new Content(value);
+      return { valid: true, data: new Content(value) };
     }
   }
 }

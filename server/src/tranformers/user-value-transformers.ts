@@ -6,32 +6,32 @@ export namespace UserValueTransformer {
     arg: string,
     ctx: z.RefinementCtx
   ): UserValue.Username => {
-    const username = UserValue.Username.verify(arg);
-    if (username === null) {
-      ctx.addIssue({ code: "custom" });
+    const verifyResult = UserValue.Username.verify(arg);
+    if (!verifyResult.valid) {
+      ctx.addIssue({ code: "custom", message: verifyResult.message });
       return z.NEVER;
     }
-    return username;
+    return verifyResult.data;
   };
 
   export const password = (
     arg: string,
     ctx: z.RefinementCtx
   ): UserValue.Password => {
-    const password = UserValue.Password.verify(arg);
-    if (password === null) {
-      ctx.addIssue({ code: "custom" });
+    const verifyResult = UserValue.Password.verify(arg);
+    if (!verifyResult.valid) {
+      ctx.addIssue({ code: "custom", message: verifyResult.message });
       return z.NEVER;
     }
-    return password;
+    return verifyResult.data;
   };
 
   export const name = (arg: string, ctx: z.RefinementCtx): UserValue.Name => {
-    const name = UserValue.Name.verify(arg);
-    if (name === null) {
-      ctx.addIssue({ code: "custom" });
+    const verifyResult = UserValue.Name.verify(arg);
+    if (!verifyResult.valid) {
+      ctx.addIssue({ code: "custom", message: verifyResult.message });
       return z.NEVER;
     }
-    return name;
+    return verifyResult.data;
   };
 }

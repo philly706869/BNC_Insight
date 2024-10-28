@@ -100,7 +100,7 @@ export class ArticleService {
       offset = 0;
     }
 
-    const articles = await this.database
+    const query = this.database
       .select({
         uid: articleTable.uid,
         uploaderUsername: userTable.username,
@@ -115,14 +115,17 @@ export class ArticleService {
       })
       .from(articleTable)
       .leftJoin(userTable, eq(userTable.uid, articleTable.uploaderUid))
-      .where(
-        categoryName
-          ? eq(articleTable.categoryName, categoryName.value)
-          : isNull(articleTable.categoryName)
-      )
       .limit(limit)
-      .offset(offset)
-      .execute();
+      .offset(offset);
+
+    const articles = await (categoryName !== undefined
+      ? query.where(
+          categoryName !== null
+            ? eq(articleTable.categoryName, categoryName.value)
+            : isNull(articleTable.categoryName)
+        )
+      : query
+    ).execute();
 
     return articles.map(
       (article) =>

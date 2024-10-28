@@ -46,7 +46,11 @@ export class ArticleController {
   }
 
   private static readonly getManySchema = z.object({
-    category: z.string().transform(CategoryValueTransformer.name).nullable(),
+    category: z
+      .string()
+      .transform(CategoryValueTransformer.name)
+      .or(z.literal("").transform(() => null))
+      .optional(),
     offset: z.number().int().optional(),
     limit: z.number().int().optional(),
   });
@@ -61,12 +65,12 @@ export class ArticleController {
     const query = queryParseResult.data;
 
     try {
-      const articlesDTO = await this.articleService.getMany(
+      const response = await this.articleService.getMany(
         query.category,
         query.offset,
         query.limit
       );
-      res.status(200).json(articlesDTO);
+      res.status(200).json(response);
     } catch (error) {
       if (error instanceof QueryOffsetOutOfBoundsError) {
         res.status(400).error({
@@ -175,7 +179,7 @@ export class ArticleController {
       res.status(201).end();
     } catch (error) {
       if (error instanceof UserNotFoundError) {
-        res.status(400).error({ error: "USER_NOT_FOUND" });
+        res.status(400).end();
       } else if (error instanceof ArticleNotFoundError) {
         res.status(404).end();
       } else {

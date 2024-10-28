@@ -1,10 +1,6 @@
-import { NextFunction, Request, Response } from "express";
+import { RequestHandler } from "express";
 
-export function authVerifier(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void {
+export const authVerifier: RequestHandler = (req, res, next): void => {
   if (req.session.userUid === undefined) {
     res.status(401).json({
       errorCode: "UNAUTHORIZED_REQUEST",
@@ -13,4 +9,4 @@ export function authVerifier(
     return;
   }
   next();
-}
+};

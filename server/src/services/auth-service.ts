@@ -6,8 +6,11 @@ import { ProtectedUserDTO } from "@/dto/protected-user-dto";
 import {
   IncorrectPasswordError,
   InvalidAuthTokenError,
+  InvalidUsernameError,
+  UsernameAlreadyTakenError,
   UserNotFoundError,
 } from "@/errors/service-errors";
+import { logger } from "@/utils/logger";
 import { AuthTokenValue } from "@/value-objects/auth-token-values";
 import { UserValue } from "@/value-objects/user-values";
 import { compare, hash } from "bcrypt";
@@ -18,29 +21,26 @@ export class AuthService {
   public constructor(private readonly database: Database) {}
 
   public async verifyAuthToken(value: string): Promise<{ valid: boolean }> {
-    const token = AuthTokenValue.Token.verify(value);
-    if (token === null) {
+    const tokenVerifyResult = AuthTokenValue.Token.verify(value);
+    if (!tokenVerifyResult.valid) {
       return { valid: false };
     }
 
     const result = await this.database
       .select({ exists: sql<number>`1` })
       .from(authTokenTable)
-      .where(eq(authTokenTable.token, token.value))
+      .where(eq(authTokenTable.token, tokenVerifyResult.data.value))
       .execute();
 
     return { valid: result.length !== 0 };
   }
 
-  /**
-   * @throws {UserNotFoundError}
-   */
   public async getCurrentUser(
-    session: Partial<SessionData>
-  ): Promise<ProtectedUserDTO> {
+    session: Session & Partial<SessionData>
+  ): Promise<ProtectedUserDTO | null> {
     const userUid = session.userUid;
     if (userUid === undefined) {
-      return Promise.reject(new UserNotFoundError());
+      return null;
     }
 
     const user = (
@@ -57,7 +57,12 @@ export class AuthService {
     ).at(0);
 
     if (user === undefined) {
-      return Promise.reject(new UserNotFoundError());
+      session.destroy((error) => {
+        if (error) {
+          logger.error(error);
+        }
+      });
+      return null;
     }
 
     return new ProtectedUserDTO({
@@ -68,53 +73,76 @@ export class AuthService {
 
   /**
    * @throws {InvalidAuthTokenError}
+   * @throws {UsernameAlreadyTakenError}
    */
   public async signup(
     session: Partial<SessionData>,
-    token: AuthTokenValue.Token,
+    token: string,
     username: UserValue.Username,
     password: UserValue.Password,
     name: UserValue.Name
   ): Promise<void> {
-    await this.database.transaction(async (tx) => {
-      const authToken = (
+    await this.database.transaction(
+      async (tx) => {
+        const verifiedToken = AuthTokenValue.Token.verify(token);
+        if (!verifiedToken.valid) {
+          return Promise.reject(new InvalidAuthTokenError());
+        }
+
+        const authToken = (
+          await tx
+            .select({ isAdminToken: authTokenTable.isAdminToken })
+            .from(authTokenTable)
+            .for("update")
+            .where(eq(authTokenTable.token, verifiedToken.data.value))
+            .execute()
+        ).at(0);
+        if (authToken === undefined) {
+          return Promise.reject(new InvalidAuthTokenError());
+        }
+
+        const existsUser = (
+          await tx
+            .select({ exists: sql<number>`1` })
+            .from(userTable)
+            .for("update")
+            .where(eq(userTable.username, username.value))
+            .execute()
+        ).at(0);
+        if (existsUser !== undefined) {
+          return Promise.reject(new UsernameAlreadyTakenError());
+        }
+
+        const user = (
+          await tx
+            .insert(userTable)
+            .values({
+              username: username.value,
+              passwordHash: Buffer.from(
+                await hash(password.value, config.user.passwordHashRounds)
+              ),
+              name: name.value,
+              isAdmin: authToken.isAdminToken,
+            })
+            .$returningId()
+            .execute()
+        )[0];
+
         await tx
-          .select({ isAdminToken: authTokenTable.isAdminToken })
-          .from(authTokenTable)
-          .for("update")
-          .where(eq(authTokenTable.token, token.value))
-          .execute()
-      ).at(0);
-      if (authToken === undefined) {
-        return Promise.reject(new InvalidAuthTokenError());
+          .delete(authTokenTable)
+          .where(eq(authTokenTable.token, verifiedToken.data.value))
+          .execute();
+
+        session.userUid = user.uid;
+      },
+      {
+        isolationLevel: "repeatable read",
       }
-
-      const user = (
-        await tx
-          .insert(userTable)
-          .values({
-            username: username.value,
-            passwordHash: Buffer.from(
-              await hash(password.value, config.user.passwordHashRounds)
-            ),
-            name: name.value,
-            isAdmin: authToken.isAdminToken,
-          })
-          .$returningId()
-          .execute()
-      )[0];
-
-      await tx
-        .delete(authTokenTable)
-        .where(eq(authTokenTable.token, token.value))
-        .execute();
-
-      session.userUid = user.uid;
-    });
+    );
   }
 
   /**
-   * @throws {UserNotFoundError}
+   * @throws {InvalidUsernameError}
    * @throws {IncorrectPasswordError}
    */
   public async signin(
@@ -133,7 +161,7 @@ export class AuthService {
         .execute()
     ).at(0);
     if (user === undefined) {
-      return Promise.reject(new UserNotFoundError());
+      return Promise.reject(new InvalidUsernameError());
     }
 
     const isCorrect = await compare(

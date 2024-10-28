@@ -6,11 +6,11 @@ export namespace CategoryValueTransformer {
     arg: string,
     ctx: z.RefinementCtx
   ): CategoryValue.Name => {
-    const name = CategoryValue.Name.verify(arg);
-    if (name === null) {
-      ctx.addIssue({ code: "custom" });
+    const verifyResult = CategoryValue.Name.verify(arg);
+    if (!verifyResult.valid) {
+      ctx.addIssue({ code: "custom", message: verifyResult.message });
       return z.NEVER;
     }
-    return name;
+    return verifyResult.data;
   };
 }

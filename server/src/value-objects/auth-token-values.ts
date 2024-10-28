@@ -1,4 +1,5 @@
 import { config } from "@/config";
+import { ValueObjectVerifyResult } from "@/types/value-object-verify-result";
 
 export namespace AuthTokenValue {
   const conf = config.authToken;
@@ -6,14 +7,18 @@ export namespace AuthTokenValue {
   export class Token {
     private constructor(public readonly value: string) {}
 
-    public static verify(value: string): Token | null {
+    public static verify(value: string): ValueObjectVerifyResult<Token> {
+      const invalid = {
+        valid: false,
+        message: "Auth token is not valid",
+      } as const;
       if (value.length < 1) {
-        return null;
+        return invalid;
       }
       if (value.length > conf.maxTokenLength) {
-        return null;
+        return invalid;
       }
-      return new Token(value);
+      return { valid: true, data: new Token(value) };
     }
   }
 }

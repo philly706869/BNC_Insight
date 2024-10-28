@@ -1,62 +1,14 @@
-import Express, { ErrorRequestHandler } from "express";
-import MySQLStore from "express-mysql-session";
-import session from "express-session";
-import status from "statuses";
-import { env } from "./env";
+import Express from "express";
+import { errorHandler } from "./middlewares/error-handler";
+import { requestLogger } from "./middlewares/request-logger";
+import { session } from "./middlewares/session";
 import { apiRouter } from "./routers/api-router";
-import { logger } from "./utils/logger";
 import { NODE_ENV } from "./utils/node-env";
 
 export const express = Express();
-
-express.response.error = function (body) {
-  this.json({
-    statusCode: this.statusCode,
-    statusMessage: status.message[this.statusCode] ?? "",
-    ...body,
-  });
-};
-
-express.use((req, res, next) => {
-  const startTime = Date.now();
-  res.on("finish", () => {
-    const httpVersion = `HTTP/${req.httpVersion}`;
-    const method = req.method;
-    const url = req.originalUrl;
-    const statusCode = res.statusCode;
-    const duration = Date.now() - startTime;
-    const contentSize = String(res.getHeader("content-length") ?? 0);
-    const ip = req.ip ?? "Unknown Ip";
-    const userAgent = req.headers["user-agent"];
-
-    logger.http(
-      `[${httpVersion}] ${method} ${url} ${statusCode} in ${duration}ms with ${contentSize}bytes to ${ip} ${userAgent}`
-    );
-  });
-  next();
-});
-
-express.use(
-  session({
-    secret: env.SERVER_SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      maxAge: 30 * 24 * 60 * 1000,
-    },
-    store: new (MySQLStore(await import("express-session")))({
-      user: env.DATABASE_USERNAME,
-      password: env.DATABASE_PASSWORD,
-      host: env.DATABASE_HOST,
-      port: env.DATABASE_PORT,
-      database: env.DATABASE_NAME,
-      clearExpired: true,
-      checkExpirationInterval: 3 * 60 * 1000,
-      expiration: 30 * 24 * 60 * 1000,
-    }),
-  })
-);
-
+express.response.error = express.response.json;
+express.use(requestLogger);
+express.use(session);
 express.use("/api", apiRouter);
 
 if (NODE_ENV === "production") {
@@ -66,18 +18,4 @@ if (NODE_ENV === "production") {
   });
 }
 
-express.use(((error, req, res, next) => {
-  if (error instanceof Error) {
-    if (error.stack) {
-      logger.error(error.stack);
-    } else {
-      logger.error(`${error.name} ${error.message}`);
-    }
-  } else {
-    logger.error(error);
-  }
-  res.status(500).error({
-    error: "UNKNOWN_ERROR",
-    message: "Unexcepted error occured",
-  });
-}) satisfies ErrorRequestHandler);
+express.use(errorHandler);

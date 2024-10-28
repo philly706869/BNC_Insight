@@ -6,59 +6,59 @@ export namespace ArticleValueTransformer {
     arg: string,
     ctx: z.RefinementCtx
   ): ArticleValue.ThumbnailUrl => {
-    const thumbnailUrl = ArticleValue.ThumbnailUrl.verify(arg);
-    if (thumbnailUrl === null) {
-      ctx.addIssue({ code: "custom" });
+    const verifyResult = ArticleValue.ThumbnailUrl.verify(arg);
+    if (!verifyResult.valid) {
+      ctx.addIssue({ code: "custom", message: verifyResult.message });
       return z.NEVER;
     }
-    return thumbnailUrl;
+    return verifyResult.data;
   };
 
   export const thumbnailCaption = (
     arg: string,
     ctx: z.RefinementCtx
   ): ArticleValue.ThumbnailCaption => {
-    const thumbnailCaption = ArticleValue.ThumbnailCaption.verify(arg);
-    if (thumbnailCaption === null) {
-      ctx.addIssue({ code: "custom" });
+    const verifyResult = ArticleValue.ThumbnailCaption.verify(arg);
+    if (!verifyResult.valid) {
+      ctx.addIssue({ code: "custom", message: verifyResult.message });
       return z.NEVER;
     }
-    return thumbnailCaption;
+    return verifyResult.data;
   };
 
   export const title = (
     arg: string,
     ctx: z.RefinementCtx
   ): ArticleValue.Title => {
-    const title = ArticleValue.Title.verify(arg);
-    if (title === null) {
-      ctx.addIssue({ code: "custom" });
+    const verifyResult = ArticleValue.Title.verify(arg);
+    if (!verifyResult.valid) {
+      ctx.addIssue({ code: "custom", message: verifyResult.message });
       return z.NEVER;
     }
-    return title;
+    return verifyResult.data;
   };
 
   export const subtitle = (
     arg: string,
     ctx: z.RefinementCtx
   ): ArticleValue.Subtitle => {
-    const subtitle = ArticleValue.Subtitle.verify(arg);
-    if (subtitle === null) {
-      ctx.addIssue({ code: "custom" });
+    const verifyResult = ArticleValue.Subtitle.verify(arg);
+    if (!verifyResult.valid) {
+      ctx.addIssue({ code: "custom", message: verifyResult.message });
       return z.NEVER;
     }
-    return subtitle;
+    return verifyResult.data;
   };
 
   export const content = (
     arg: string,
     ctx: z.RefinementCtx
   ): ArticleValue.Content => {
-    const content = ArticleValue.Content.verify(arg);
-    if (content === null) {
-      ctx.addIssue({ code: "custom" });
+    const verifyResult = ArticleValue.Content.verify(arg);
+    if (!verifyResult.valid) {
+      ctx.addIssue({ code: "custom", message: verifyResult.message });
       return z.NEVER;
     }
-    return content;
+    return verifyResult.data;
   };
 }

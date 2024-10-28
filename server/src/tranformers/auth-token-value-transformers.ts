@@ -6,11 +6,11 @@ export namespace AuthTokenValueTransformer {
     arg: string,
     ctx: z.RefinementCtx
   ): AuthTokenValue.Token => {
-    const token = AuthTokenValue.Token.verify(arg);
-    if (token === null) {
-      ctx.addIssue({ code: "custom" });
+    const verifyResult = AuthTokenValue.Token.verify(arg);
+    if (!verifyResult.valid) {
+      ctx.addIssue({ code: "custom", message: verifyResult.message });
       return z.NEVER;
     }
-    return token;
+    return verifyResult.data;
   };
 }

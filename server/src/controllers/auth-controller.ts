@@ -1,12 +1,12 @@
 import {
   IncorrectPasswordError,
   InvalidAuthTokenError,
+  InvalidUsernameError,
+  UsernameAlreadyTakenError,
   UserNotFoundError,
 } from "@/errors/service-errors";
 import { AuthService } from "@/services/auth-service";
-import { AuthTokenValueTransformer } from "@/tranformers/auth-token-value-transformers";
 import { UserValueTransformer } from "@/tranformers/user-value-transformers";
-import { logger } from "@/utils/logger";
 import { Request, Response } from "express";
 import { z } from "zod";
 
@@ -39,25 +39,12 @@ export class AuthController {
   }
 
   public async getCurrentUser(req: Request, res: Response): Promise<void> {
-    try {
-      const userDTO = await this.authService.getCurrentUser(req.session);
-      res.status(200).json(userDTO);
-    } catch (error) {
-      if (error instanceof UserNotFoundError) {
-        req.session.destroy((error) => {
-          if (error) {
-            logger.error(error);
-          }
-        });
-        res.status(404).end();
-      } else {
-        return Promise.reject(error);
-      }
-    }
+    const response = await this.authService.getCurrentUser(req.session);
+    res.status(200).json(response);
   }
 
   private static readonly signupSchema = z.object({
-    token: z.string().transform(AuthTokenValueTransformer.token),
+    token: z.string(),
     username: z.string().transform(UserValueTransformer.username),
     password: z.string().transform(UserValueTransformer.password),
     name: z.string().transform(UserValueTransformer.name),
@@ -68,25 +55,38 @@ export class AuthController {
       req.body
     );
     if (!bodyParseResult.success) {
-      res.status(400).end();
+      res.status(400).error({
+        error: "INVALID_CREDENTIALS",
+        message: "Provided credentials does not valid",
+        details: bodyParseResult.error.issues.map((issue) => ({
+          path: issue.path,
+          message: issue.message,
+        })),
+      });
       return;
     }
     const body = bodyParseResult.data;
 
     try {
-      const userDTO = await this.authService.signup(
+      await this.authService.signup(
         req.session,
         body.token,
         body.username,
         body.password,
         body.name
       );
-      res.status(201).json(userDTO);
+      res.status(201).end();
     } catch (error) {
       if (error instanceof InvalidAuthTokenError) {
         res.status(422).json({
           errorCode: "INVALID_AUTH_TOKEN",
           message: "Auth token is not valid.",
+        });
+      }
+      if (error instanceof UsernameAlreadyTakenError) {
+        res.status(422).json({
+          errorCode: "INVALID_USERNAME",
+          message: "Username is already taken",
         });
       } else {
         return Promise.reject(error);
@@ -110,22 +110,16 @@ export class AuthController {
     const body = bodyParseResult.data;
 
     try {
-      const userDTO = await this.authService.signin(
-        req.session,
-        body.username,
-        body.password
-      );
-      res.status(201).json(userDTO);
+      await this.authService.signin(req.session, body.username, body.password);
+      res.status(201).end();
     } catch (error) {
-      if (error instanceof UserNotFoundError) {
+      if (
+        error instanceof InvalidUsernameError ||
+        error instanceof IncorrectPasswordError
+      ) {
         res.status(401).json({
-          errorCode: "USER_NOT_FOUND",
-          message: "User is not found.",
-        });
-      } else if (error instanceof IncorrectPasswordError) {
-        res.status(401).json({
-          errorCode: "INCORRECT_PASSWORD",
-          message: "Password is not correct.",
+          errorCode: "INVALID_CREDENTIALS",
+          message: "Username or password is incorrect",
         });
       } else {
         return Promise.reject(error);
