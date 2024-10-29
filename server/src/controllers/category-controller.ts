@@ -25,7 +25,14 @@ export class CategoryController {
       req.body
     );
     if (!bodyParseResult.success) {
-      res.status(400).end();
+      res.status(400).error({
+        error: "INVALID_DATA",
+        message: "Provided data does not valid",
+        details: bodyParseResult.error.issues.map((issue) => ({
+          path: issue.path,
+          message: issue.message,
+        })),
+      });
       return;
     }
     const body = bodyParseResult.data;

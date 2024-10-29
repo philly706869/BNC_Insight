@@ -1,16 +1,15 @@
 import { TextField } from "@mui/material";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signin } from "../services/auth-service";
 
 export default function Signin() {
   const navigate = useNavigate();
-  const usernameInputRef = useRef<HTMLInputElement>(null);
+
   const [username, setUsername] = useState("");
   const [usernameErrorMessage, setUsernameErrorMessage] = useState<
     string | null
   >(null);
-  const passwordInputRef = useRef<HTMLInputElement>(null);
   const [password, setPassword] = useState("");
   const [passwordErrorMessage, setPasswordErrorMessage] = useState<
     string | null
@@ -27,7 +26,6 @@ export default function Signin() {
             navigate("/");
             navigate(0);
           } catch {
-            usernameInputRef.current!.focus();
             alert("Failed to sign in");
           }
         }}
@@ -35,7 +33,6 @@ export default function Signin() {
         <TextField
           label="Username"
           fullWidth
-          inputRef={usernameInputRef}
           value={username}
           onChange={({ target }) => {
             setUsername(target.value);
@@ -50,7 +47,6 @@ export default function Signin() {
         <TextField
           label="Password"
           fullWidth
-          inputRef={passwordInputRef}
           value={password}
           onChange={({ target }) => {
             setPassword(target.value);

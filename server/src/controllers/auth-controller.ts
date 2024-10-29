@@ -26,15 +26,11 @@ export class AuthController {
     }
     const body = bodyParseResult.data;
 
-    try {
-      await this.authService.verifyAuthToken(body.value);
+    const valid = await this.authService.verifyAuthToken(body.value);
+    if (valid) {
+      res.status(200).end();
+    } else {
       res.status(422).end();
-    } catch (error) {
-      if (error instanceof InvalidAuthTokenError) {
-        res.status(422).end();
-      } else {
-        return Promise.reject(error);
-      }
     }
   }
 

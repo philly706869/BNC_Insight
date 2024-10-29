@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import { ImageNotFoundError } from "@/errors/service-errors";
 import { ImageService } from "@/services/image-service";
 import { NextFunction, Request, Response } from "express";
@@ -47,8 +48,10 @@ export class ImageController {
 
     const imagePath = path.resolve(file.destination, file.filename);
     try {
-      await this.service.post(imagePath);
-      res.status(201).end();
+      const name = await this.service.post(imagePath);
+      res
+        .status(201)
+        .json({ url: `${env.SERVER_URL}${req.originalUrl}/${name}` });
     } finally {
       await fs.rm(imagePath);
     }

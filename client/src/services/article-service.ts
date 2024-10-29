@@ -1,6 +1,6 @@
 export type Article = {
   uid: number;
-  upload: {
+  uploader: {
     username: string;
     name: string;
   } | null;
@@ -26,12 +26,12 @@ export async function getArticle(uid: number): Promise<Article> {
 }
 
 export async function getArticles(
-  category: string,
+  category: string | null,
   limit: number,
   offset: number
 ): Promise<ContentLessArticle[]> {
   const response = await fetch(
-    `/api/articles?category=${category}&limit=${limit}&offset=${offset}`
+    `/api/articles?category=${category ?? ""}&limit=${limit}&offset=${offset}`
   );
   if (!response.ok) {
     return Promise.reject();
@@ -40,11 +40,12 @@ export async function getArticles(
 }
 
 export async function postArticle(
-  category: string,
+  category: string | null,
+  thumbnail: { url: string; caption: string } | null,
   title: string,
   subtitle: string,
   content: string
-): Promise<void> {
+): Promise<{ uid: number }> {
   const response = await fetch("/api/articles", {
     method: "POST",
     headers: {
@@ -52,14 +53,16 @@ export async function postArticle(
     },
     body: JSON.stringify({
       category,
+      thumbnail,
       title,
       subtitle,
       content,
     }),
   });
   if (!response.ok) {
-    return Promise.reject();
+    return Promise.reject(await response.json());
   }
+  return (await response.json()) as { uid: number };
 }
 
 export async function patchArticle(

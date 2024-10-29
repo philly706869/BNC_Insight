@@ -1,38 +1,35 @@
 import { TextField } from "@mui/material";
 import { useState } from "react";
-import { verifyAuthToken } from "../services/auth-service";
+import { useNavigate } from "react-router-dom";
+import { signup, verifyAuthToken } from "../services/auth-service";
 
 export default function Signup() {
-  const [token, setToken] = useState("");
-  const [tokenErrorMessage, setTokenErrorMessage] = useState<string | null>("");
-  const [username, setUsername] = useState("");
-  const [usernameErrorMessage, setUsernameErrorMessage] = useState<
-    string | null
-  >("");
-  const [password, setPassword] = useState("");
-  const [passwordErrorMessage, setPasswordErrorMessage] = useState<
-    string | null
-  >("");
-  const [name, setName] = useState("");
-  const [nameErrorMessage, setNameErrorMessage] = useState<string | null>("");
+  const navigate = useNavigate();
 
-  const [currentInputType, setCurrentInputType] = useState<
-    "token" | "username" | "password" | "name"
-  >("token");
+  const [token, setToken] = useState("");
+  const [tokenMessage, setTokenMessage] = useState<string | null>(null);
+  const [username, setUsername] = useState("");
+  const [usernameMessage, setUsernameMessage] = useState<string | null>(null);
+  const [password, setPassword] = useState("");
+  const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
+  const [name, setName] = useState("");
+  const [nameMessage, setNameMessage] = useState<string | null>(null);
+
+  const [hasToken, setHasToken] = useState<boolean>(false);
 
   return (
     <>
       <h1>Sign Up</h1>
-      {currentInputType === "token" && (
+      {!hasToken ? (
         <form
           onSubmit={async (event) => {
             event.preventDefault();
             const valid = await verifyAuthToken(token);
             if (!valid) {
-              setTokenErrorMessage("Invalid auth token");
+              setTokenMessage("Invalid auth token");
               return;
             }
-            setCurrentInputType("username");
+            setHasToken(true);
           }}
         >
           <TextField
@@ -41,21 +38,42 @@ export default function Signup() {
             value={token}
             onChange={({ target }) => {
               setToken(target.value);
-              setTokenErrorMessage(null);
+              setTokenMessage(null);
             }}
-            helperText={tokenErrorMessage ?? ""}
-            error={tokenErrorMessage !== null}
+            helperText={tokenMessage ?? ""}
+            error={tokenMessage !== null}
             autoComplete="off"
             spellCheck="false"
             autoFocus
           />
-          <input type="submit">Next</input>
+          <button type="submit">Next</button>
         </form>
-      )}
-      {currentInputType === "username" && (
+      ) : (
         <form
           onSubmit={async (event) => {
             event.preventDefault();
+            try {
+              await signup(token, username, password, name);
+              navigate("/");
+              navigate(0);
+            } catch (error: any) {
+              if (error.details) {
+                for (const issue of error.details as {
+                  path: string[];
+                  message: string;
+                }[]) {
+                  if (issue.path.includes("username")) {
+                    setUsernameMessage(issue.message);
+                  } else if (issue.path.includes("password")) {
+                    setPasswordMessage(issue.message);
+                  } else if (issue.path.includes("name")) {
+                    setNameMessage(issue.message);
+                  }
+                }
+              } else {
+                alert("Unknown error occured while signing up");
+              }
+            }
           }}
         >
           <TextField
@@ -64,61 +82,41 @@ export default function Signup() {
             value={username}
             onChange={({ target }) => {
               setUsername(target.value);
-              setUsernameErrorMessage(null);
+              setUsernameMessage(null);
             }}
-            helperText={usernameErrorMessage ?? ""}
-            error={usernameErrorMessage !== null}
+            helperText={usernameMessage ?? ""}
+            error={usernameMessage !== null}
             autoComplete="off"
             spellCheck="false"
             autoFocus
           />
-          <input type="submit">Next</input>
-        </form>
-      )}
-      {currentInputType === "password" && (
-        <form
-          onSubmit={async (event) => {
-            event.preventDefault();
-          }}
-        >
           <TextField
             label="Password"
             fullWidth
             value={password}
             onChange={({ target }) => {
               setPassword(target.value);
-              setPasswordErrorMessage(null);
+              setPasswordMessage(null);
             }}
-            helperText={usernameErrorMessage ?? ""}
-            error={usernameErrorMessage !== null}
+            helperText={passwordMessage ?? ""}
+            error={passwordMessage !== null}
             autoComplete="off"
             spellCheck="false"
-            autoFocus
           />
-          <input type="submit">Next</input>
-        </form>
-      )}
-      {currentInputType === "name" && (
-        <form
-          onSubmit={async (event) => {
-            event.preventDefault();
-          }}
-        >
           <TextField
             label="Name"
             fullWidth
             value={name}
             onChange={({ target }) => {
               setName(target.value);
-              setNameErrorMessage(null);
+              setNameMessage(null);
             }}
-            helperText={nameErrorMessage ?? ""}
-            error={nameErrorMessage !== null}
+            helperText={nameMessage ?? ""}
+            error={nameMessage !== null}
             autoComplete="off"
             spellCheck="false"
-            autoFocus
           />
-          <input type="submit">Sign Up</input>
+          <button type="submit">Sign Up</button>
         </form>
       )}
     </>

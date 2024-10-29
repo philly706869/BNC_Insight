@@ -20,10 +20,10 @@ import { Session, SessionData } from "express-session";
 export class AuthService {
   public constructor(private readonly database: Database) {}
 
-  public async verifyAuthToken(value: string): Promise<{ valid: boolean }> {
+  public async verifyAuthToken(value: string): Promise<boolean> {
     const tokenVerifyResult = AuthTokenValue.Token.verify(value);
     if (!tokenVerifyResult.valid) {
-      return { valid: false };
+      return false;
     }
 
     const result = await this.database
@@ -32,7 +32,7 @@ export class AuthService {
       .where(eq(authTokenTable.token, tokenVerifyResult.data.value))
       .execute();
 
-    return { valid: result.length !== 0 };
+    return result.length !== 0;
   }
 
   public async getCurrentUser(

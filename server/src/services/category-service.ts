@@ -1,21 +1,32 @@
 import { Database } from "@/database/database";
 import { categoryTable } from "@/database/tables/category-table";
-import { CategoryNameDTO } from "@/dto/category-name-dto";
+import { CategoryDTO } from "@/dto/category-dto";
 import { CategoryNotFoundError } from "@/errors/service-errors";
 import { CategoryValue } from "@/value-objects/category-values";
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 
 export class CategoryService {
   public constructor(private readonly database: Database) {}
 
-  public async getAll(): Promise<CategoryNameDTO[]> {
+  public async getAll(): Promise<CategoryDTO[]> {
     const categories = await this.database
       .select({
         name: categoryTable.name,
+        createdAt: categoryTable.createdAt,
+        updatedAt: categoryTable.updatedAt,
       })
       .from(categoryTable)
+      .orderBy(asc(categoryTable.name))
       .execute();
-    return categories.map((category) => new CategoryNameDTO(category));
+
+    return categories.map(
+      (category) =>
+        new CategoryDTO({
+          name: category.name,
+          createdAt: category.createdAt.toISOString(),
+          updatedAt: category.updatedAt.toISOString(),
+        })
+    );
   }
 
   public async post(name: CategoryValue.Name): Promise<void> {

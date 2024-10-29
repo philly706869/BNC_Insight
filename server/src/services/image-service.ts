@@ -39,9 +39,10 @@ export class ImageService {
       if (format === undefined || !supportedFormats.includes(format)) {
         return Promise.reject(new UnsupportedImageFormatError());
       }
-      const dest = path.resolve(config.image.path, `${uuidv4()}.${format}`);
+      const name = `${uuidv4()}.${format}`;
+      const dest = path.resolve(config.image.path, name);
       await image.toFile(dest);
-      return dest;
+      return name;
     } catch (error) {
       return Promise.reject(error);
     }

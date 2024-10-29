@@ -51,8 +51,8 @@ export class ArticleController {
       .transform(CategoryValueTransformer.name)
       .or(z.literal("").transform(() => null))
       .optional(),
-    offset: z.number().int().optional(),
-    limit: z.number().int().optional(),
+    offset: z.coerce.number().int().optional(),
+    limit: z.coerce.number().int().optional(),
   });
 
   public async getMany(req: Request, res: Response): Promise<void> {
@@ -112,12 +112,19 @@ export class ArticleController {
       req.body
     );
     if (!bodyParseResult.success) {
-      res.status(400).end();
+      res.status(400).error({
+        error: "INVALID_DATA",
+        message: "Provided data does not valid",
+        details: bodyParseResult.error.issues.map((issue) => ({
+          path: issue.path,
+          message: issue.message,
+        })),
+      });
       return;
     }
     const body = bodyParseResult.data;
 
-    await this.articleService.post(
+    const response = await this.articleService.post(
       uploaderUid,
       body.category,
       body.thumbnail,
@@ -125,7 +132,7 @@ export class ArticleController {
       body.subtitle,
       body.content
     );
-    res.status(201).end();
+    res.status(201).json(response);
   }
 
   private static readonly patchSchema = z.object({

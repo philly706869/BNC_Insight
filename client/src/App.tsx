@@ -64,11 +64,12 @@ export default function App() {
                   <Route path="/" element={<Home />} />
                   <Route path="/signin" element={<Signin />} />
                   <Route path="/signup" element={<Signup />} />
+                  <Route path="/category" element={<Category />} />
                   <Route path="/category/:category" element={<Category />} />
                   <Route path="/myarticles" element={<MyArticles />} />
-                  <Route path="/article/view/:id" element={<ViewArticle />} />
                   <Route path="/article/new" element={<NewArticle />} />
                   <Route path="/article/edit" element={<EditArticle />} />
+                  <Route path="/article/:uid" element={<ViewArticle />} />
                   <Route path="/myaccount" element={<MyAccount />} />
                   <Route path="/user/:username" element={<User />} />
                   <Route path="*" element={<NotFound />} />

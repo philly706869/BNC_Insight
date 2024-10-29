@@ -58,7 +58,7 @@ export async function signup(
     }),
   });
   if (!response.ok) {
-    return Promise.reject();
+    return Promise.reject(await response.json());
   }
 }
 

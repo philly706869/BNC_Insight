@@ -13,7 +13,7 @@ import {
 } from "@/errors/service-errors";
 import { ArticleValue } from "@/value-objects/article-values";
 import { CategoryValue } from "@/value-objects/category-values";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, desc, eq, isNull } from "drizzle-orm";
 
 export class ArticleService {
   public constructor(private readonly database: Database) {}
@@ -116,7 +116,8 @@ export class ArticleService {
       .from(articleTable)
       .leftJoin(userTable, eq(userTable.uid, articleTable.uploaderUid))
       .limit(limit)
-      .offset(offset);
+      .offset(offset)
+      .orderBy(desc(articleTable.createdAt));
 
     const articles = await (categoryName !== undefined
       ? query.where(
@@ -158,20 +159,24 @@ export class ArticleService {
     title: ArticleValue.Title,
     subtitle: ArticleValue.Subtitle,
     content: ArticleValue.Content
-  ): Promise<void> {
-    await this.database
-      .insert(articleTable)
-      .values({
-        uploaderUid,
-        categoryName: categoryName?.value ?? null,
-        thumbnailUrl:
-          thumbnail?.url.value ?? config.article.defaultThumbnailUrl,
-        thumbnailCaption: thumbnail?.caption.value ?? "",
-        title: title.value,
-        subtitle: subtitle.value,
-        content: content.value,
-      })
-      .execute();
+  ): Promise<{ uid: number }> {
+    const article = (
+      await this.database
+        .insert(articleTable)
+        .values({
+          uploaderUid,
+          categoryName: categoryName?.value ?? null,
+          thumbnailUrl:
+            thumbnail?.url.value ?? config.article.defaultThumbnailUrl,
+          thumbnailCaption: thumbnail?.caption.value ?? "",
+          title: title.value,
+          subtitle: subtitle.value,
+          content: content.value,
+        })
+        .$returningId()
+        .execute()
+    )[0];
+    return { uid: article.uid };
   }
 
   /**
