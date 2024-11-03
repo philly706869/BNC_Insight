@@ -21,8 +21,16 @@ article:
   maxSubtitleLength: 128
   maxContentDeltaLength: 10000
 
-image:
+uploads:
   tempPath: "./uploads/tmp"
+
+thumbnail:
+  path: "./uplaods/thumbnails"
+  width: 600
+  height: 400
+  maxBytes: 4194304
+
+image:
   path: "./uploads/images"
   maxBytes: 4194304
   supportedFormats:

@@ -11,7 +11,7 @@ export class UserService {
   /**
    * @throws {UserNotFoundError}
    */
-  public async get(username: UserValue.Username): Promise<PublicUserDTO> {
+  public async get(username: string): Promise<PublicUserDTO> {
     const user = (
       await this.database
         .select({
@@ -19,7 +19,7 @@ export class UserService {
           name: userTable.name,
         })
         .from(userTable)
-        .where(eq(userTable.username, username.value))
+        .where(eq(userTable.username, username))
         .execute()
     ).at(0);
 

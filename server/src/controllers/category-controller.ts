@@ -9,7 +9,7 @@ export class CategoryController {
   public constructor(private readonly categoryService: CategoryService) {}
 
   private static readonly paramsSchema = z.object({
-    name: z.string().transform(CategoryValueTransformer.name),
+    name: z.string(),
   });
 
   public async getAll(req: Request, res: Response): Promise<void> {

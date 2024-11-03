@@ -10,7 +10,7 @@ export class UserController {
   public constructor(private readonly userService: UserService) {}
 
   private static readonly paramsSchema = z.object({
-    username: z.string().transform(UserValueTransformer.username),
+    username: z.string(),
   });
 
   public async get(
