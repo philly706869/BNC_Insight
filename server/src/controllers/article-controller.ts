@@ -48,11 +48,8 @@ export class ArticleController {
   }
 
   private static readonly getManySchema = z.object({
-    category: z
-      .string()
-      .transform(CategoryValueTransformer.name)
-      .or(z.literal("").transform(() => null))
-      .optional(),
+    category: z.string().optional(),
+    uploader: z.string().optional(),
     offset: z.coerce.number().int().optional(),
     limit: z.coerce.number().int().optional(),
   });
@@ -118,12 +115,9 @@ export class ArticleController {
     );
     if (!bodyParseResult.success) {
       res.status(400).error({
-        error: "INVALID_DATA",
-        message: "Provided data does not valid",
-        details: bodyParseResult.error.issues.map((issue) => ({
-          path: issue.path,
-          message: issue.message,
-        })),
+        error: "INVALID_PAYLOAD",
+        message: "Payload is not valid",
+        details: extractIssue(bodyParseResult.error),
       });
       return;
     }
@@ -180,7 +174,11 @@ export class ArticleController {
       req.body
     );
     if (!bodyParseResult.success) {
-      res.status(400).end();
+      res.status(400).error({
+        error: "INVALID_PAYLOAD",
+        message: "Payload is not valid",
+        details: extractIssue(bodyParseResult.error),
+      });
       return;
     }
     const body = bodyParseResult.data;
@@ -190,7 +188,7 @@ export class ArticleController {
       res.status(201).end();
     } catch (error) {
       if (error instanceof UserNotFoundError) {
-        res.status(400).end();
+        res.status(401).end();
       } else if (error instanceof ArticleNotFoundError) {
         res.status(404).end();
       } else {
@@ -222,7 +220,7 @@ export class ArticleController {
       res.status(201).end();
     } catch (error) {
       if (error instanceof UserNotFoundError) {
-        res.status(400).end();
+        res.status(401).end();
       } else if (error instanceof ArticleNotFoundError) {
         res.status(404).end();
       } else {

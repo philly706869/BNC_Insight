@@ -73,7 +73,7 @@ export class ArticleService {
    * @throws {CategoryNotFoundError}
    */
   public async getMany(
-    categoryName: CategoryValue.Name | null | undefined,
+    categoryName: string | null | undefined,
     offset: number | undefined,
     limit: number | undefined
   ): Promise<{ total: number; items: ContentlessArticleDTO[] }> {
@@ -108,7 +108,7 @@ export class ArticleService {
         await this.database
           .select({ exists: sql<1>`1` })
           .from(categoryTable)
-          .where(eq(categoryTable.name, categoryName.value))
+          .where(eq(categoryTable.name, categoryName))
           .execute()
       ).at(0);
       if (category === undefined) {
@@ -144,7 +144,7 @@ export class ArticleService {
         ? await (async () => {
             const condition =
               categoryName !== null
-                ? eq(articleTable.categoryName, categoryName.value)
+                ? eq(articleTable.categoryName, categoryName)
                 : isNull(articleTable.categoryName);
 
             const articles = await articleQuery.where(condition).execute();

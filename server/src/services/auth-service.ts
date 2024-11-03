@@ -147,8 +147,8 @@ export class AuthService {
    */
   public async signin(
     session: Partial<SessionData>,
-    username: UserValue.Username,
-    password: UserValue.Password
+    username: string,
+    password: string
   ): Promise<void> {
     const user = (
       await this.database
@@ -157,17 +157,14 @@ export class AuthService {
           passwordHash: userTable.passwordHash,
         })
         .from(userTable)
-        .where(eq(userTable.username, username.value))
+        .where(eq(userTable.username, username))
         .execute()
     ).at(0);
     if (user === undefined) {
       return Promise.reject(new InvalidUsernameError());
     }
 
-    const isCorrect = await compare(
-      password.value,
-      user.passwordHash.toString()
-    );
+    const isCorrect = await compare(password, user.passwordHash.toString());
     if (!isCorrect) {
       return Promise.reject(new IncorrectPasswordError());
     }
@@ -190,7 +187,7 @@ export class AuthService {
    */
   public async updatePassword(
     uid: number,
-    currentPassword: UserValue.Password,
+    currentPassword: string,
     newPassword: UserValue.Password
   ): Promise<void> {
     await this.database.transaction(async (tx) => {
@@ -207,7 +204,7 @@ export class AuthService {
       }
 
       const isCorrect = await compare(
-        currentPassword.value,
+        currentPassword,
         user.passwordHash.toString()
       );
       if (!isCorrect) {

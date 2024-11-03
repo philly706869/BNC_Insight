@@ -8,6 +8,7 @@ import {
 import { AuthService } from "@/services/auth-service";
 import { UserValueTransformer } from "@/tranformers/user-value-transformers";
 import { authorize } from "@/utils/authorize";
+import { extractIssue } from "@/utils/extract-issue";
 import { Request, Response } from "express";
 import { z } from "zod";
 
@@ -22,7 +23,11 @@ export class AuthController {
     const bodyParseResult =
       await AuthController.verifyAuthTokenSchema.safeParseAsync(req.body);
     if (!bodyParseResult.success) {
-      res.status(400).end();
+      res.status(400).error({
+        error: "INVALID_PAYLOAD",
+        message: "Payload is not valid",
+        details: extractIssue(bodyParseResult.error),
+      });
       return;
     }
     const body = bodyParseResult.data;
@@ -55,10 +60,7 @@ export class AuthController {
       res.status(400).error({
         error: "INVALID_CREDENTIALS",
         message: "Provided credentials does not valid",
-        details: bodyParseResult.error.issues.map((issue) => ({
-          path: issue.path,
-          message: issue.message,
-        })),
+        details: extractIssue(bodyParseResult.error),
       });
       return;
     }
@@ -92,8 +94,8 @@ export class AuthController {
   }
 
   private static readonly signinSchema = z.object({
-    username: z.string().transform(UserValueTransformer.username),
-    password: z.string().transform(UserValueTransformer.password),
+    username: z.string(),
+    password: z.string(),
   });
 
   public async signin(req: Request, res: Response): Promise<void> {
@@ -101,7 +103,11 @@ export class AuthController {
       req.body
     );
     if (!bodyParseResult.success) {
-      res.status(400).end();
+      res.status(400).error({
+        error: "INVALID_PAYLOAD",
+        message: "Payload is not valid",
+        details: extractIssue(bodyParseResult.error),
+      });
       return;
     }
     const body = bodyParseResult.data;
@@ -130,7 +136,7 @@ export class AuthController {
   }
 
   private static readonly updatePasswordSchema = z.object({
-    currentPassword: z.string().transform(UserValueTransformer.password),
+    currentPassword: z.string(),
     newPassword: z.string().transform(UserValueTransformer.password),
   });
 
@@ -143,7 +149,11 @@ export class AuthController {
     const bodyParseResult =
       await AuthController.updatePasswordSchema.safeParseAsync(req.body);
     if (!bodyParseResult.success) {
-      res.status(400).end();
+      res.status(400).error({
+        error: "INVALID_PAYLOAD",
+        message: "Payload is not valid",
+        details: extractIssue(bodyParseResult.error),
+      });
       return;
     }
     const body = bodyParseResult.data;
@@ -157,7 +167,7 @@ export class AuthController {
       res.status(201).end();
     } catch (error) {
       if (error instanceof UserNotFoundError) {
-        res.status(400).end();
+        res.status(401).end();
       } else if (error instanceof IncorrectPasswordError) {
         res.status(401).end();
       } else {
