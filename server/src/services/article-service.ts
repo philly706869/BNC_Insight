@@ -1,19 +1,21 @@
 import { config } from "@/config";
 import { Database } from "@/database/database";
 import { articleTable } from "@/database/tables/article-table";
+import { categoryTable } from "@/database/tables/category-table";
 import { userTable } from "@/database/tables/user-table";
 import { ArticleDTO } from "@/dto/article-dto";
 import { ContentlessArticleDTO } from "@/dto/contentless-article-dto";
 import { PublicUserDTO } from "@/dto/public-user-dto";
 import {
   ArticleNotFoundError,
+  CategoryNotFoundError,
   QueryLimitOutOfBoundsError,
   QueryOffsetOutOfBoundsError,
   UserNotFoundError,
 } from "@/errors/service-errors";
 import { ArticleValue } from "@/value-objects/article-values";
 import { CategoryValue } from "@/value-objects/category-values";
-import { and, desc, eq, isNull } from "drizzle-orm";
+import { and, count, desc, eq, isNull, sql } from "drizzle-orm";
 
 export class ArticleService {
   public constructor(private readonly database: Database) {}
@@ -68,12 +70,13 @@ export class ArticleService {
   /**
    * @throws {QueryLimitOutOfBoundsError}
    * @throws {QueryOffsetOutOfBoundsError}
+   * @throws {CategoryNotFoundError}
    */
   public async getMany(
     categoryName: CategoryValue.Name | null | undefined,
     offset: number | undefined,
     limit: number | undefined
-  ): Promise<ContentlessArticleDTO[]> {
+  ): Promise<{ total: number; items: ContentlessArticleDTO[] }> {
     if (limit !== undefined) {
       const min = 1;
       const max = config.article.maxQueryLimit;
@@ -100,7 +103,20 @@ export class ArticleService {
       offset = 0;
     }
 
-    const query = this.database
+    if (categoryName !== null && categoryName !== undefined) {
+      const category = (
+        await this.database
+          .select({ exists: sql<1>`1` })
+          .from(categoryTable)
+          .where(eq(categoryTable.name, categoryName.value))
+          .execute()
+      ).at(0);
+      if (category === undefined) {
+        return Promise.reject(new CategoryNotFoundError());
+      }
+    }
+
+    const articleQuery = this.database
       .select({
         uid: articleTable.uid,
         uploaderUsername: userTable.username,
@@ -119,34 +135,52 @@ export class ArticleService {
       .offset(offset)
       .orderBy(desc(articleTable.createdAt));
 
-    const articles = await (categoryName !== undefined
-      ? query.where(
-          categoryName !== null
-            ? eq(articleTable.categoryName, categoryName.value)
-            : isNull(articleTable.categoryName)
-        )
-      : query
-    ).execute();
+    const totalQuery = this.database
+      .select({ count: count() })
+      .from(articleTable);
 
-    return articles.map(
-      (article) =>
-        new ContentlessArticleDTO({
-          ...article,
-          uploader:
-            article.uploaderUsername && article.uploaderName
-              ? new PublicUserDTO({
-                  username: article.uploaderUsername,
-                  name: article.uploaderName,
-                })
-              : null,
-          thumbnail: {
-            url: article.thumbnailUrl,
-            caption: article.thumbnailCaption,
-          },
-          createdAt: article.createdAt.toISOString(),
-          updatedAt: article.updatedAt.toISOString(),
-        })
-    );
+    const [articles, total] =
+      categoryName !== undefined
+        ? await (async () => {
+            const condition =
+              categoryName !== null
+                ? eq(articleTable.categoryName, categoryName.value)
+                : isNull(articleTable.categoryName);
+
+            const articles = await articleQuery.where(condition).execute();
+            const total = (await totalQuery.where(condition))[0].count;
+
+            return [articles, total];
+          })()
+        : await (async () => {
+            const articles = await articleQuery.execute();
+            const total = (await totalQuery.execute())[0].count;
+
+            return [articles, total];
+          })();
+
+    return {
+      total,
+      items: articles.map(
+        (article) =>
+          new ContentlessArticleDTO({
+            ...article,
+            uploader:
+              article.uploaderUsername && article.uploaderName
+                ? new PublicUserDTO({
+                    username: article.uploaderUsername,
+                    name: article.uploaderName,
+                  })
+                : null,
+            thumbnail: {
+              url: article.thumbnailUrl,
+              caption: article.thumbnailCaption,
+            },
+            createdAt: article.createdAt.toISOString(),
+            updatedAt: article.updatedAt.toISOString(),
+          })
+      ),
+    };
   }
 
   public async post(
@@ -176,6 +210,7 @@ export class ArticleService {
         .$returningId()
         .execute()
     )[0];
+
     return { uid: article.uid };
   }
 

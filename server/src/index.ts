@@ -1,4 +1,5 @@
 import fs from "fs/promises";
+import http from "http";
 import { exit } from "process";
 import { express } from "./express";
 import { logger } from "./utils/logger";
@@ -18,7 +19,8 @@ try {
 
   logger.info("Starting express server...");
   const port = env.SERVER_PORT;
-  await new Promise<void>((resolve) => express.listen(port, resolve));
+  const server = http.createServer(express);
+  await new Promise<void>((resolve) => server.listen(port, () => resolve()));
   logger.info(`Completed starting express server (port: ${port})`);
 } catch (error) {
   logger.error(error);

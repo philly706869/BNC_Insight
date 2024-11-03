@@ -11,6 +11,7 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
   } else {
     logger.error(error);
   }
+
   res.status(500).error({
     error: "UNKNOWN_ERROR",
     message: "Unexcepted error occured",

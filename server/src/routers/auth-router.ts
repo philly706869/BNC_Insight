@@ -1,6 +1,5 @@
 import { AuthController } from "@/controllers/auth-controller";
 import { database } from "@/database/database";
-import { authVerifier } from "@/middlewares/auth-verifier";
 import { AuthService } from "@/services/auth-service";
 import { Router } from "express";
 
@@ -28,6 +27,6 @@ authRouter.get("/me", (req, res, next) =>
   controller.getCurrentUser(req, res).catch(next)
 );
 
-authRouter.post("/update-password", authVerifier, (req, res, next) =>
+authRouter.post("/update-password", (req, res, next) =>
   controller.updatePassword(req, res).catch(next)
 );

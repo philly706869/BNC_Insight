@@ -1,20 +1,62 @@
-import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { CategoryContext } from "../contexts/CategoryContext";
-import { ContentLessArticle } from "../services/article-service";
+import { useEffect, useState } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
+import { ContentLessArticle, getArticles } from "../services/article-service";
 
 export default function Category() {
   const params = useParams();
-  const categories = useContext(CategoryContext);
-
-  const [articles, setArticles] = useState<ContentLessArticle[] | "unloaded">(
-    "unloaded"
-  );
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [page, setPage] = useState<number>(1);
+  const [articles, setArticles] = useState<ContentLessArticle[]>([]);
 
   useEffect(() => {
-    if (categories.isInitialized) {
+    const rawPage = searchParams.get("page");
+    const page = rawPage !== null ? Number(rawPage) : NaN;
+    if (isNaN(page) || page < 1) {
+      searchParams.set("page", "1");
+      setSearchParams(searchParams);
+      setPage(1);
+    } else {
+      setPage(page);
     }
-  }, [params, categories]);
+  }, [searchParams, setSearchParams]);
 
-  return <></>;
+  useEffect(() => {
+    const category = params.category;
+
+    getArticles({
+      category: category ?? null,
+      limit: 30,
+      offset: 30 * (page - 1),
+    })
+      .then((data) => {
+        setArticles(data);
+      })
+      .catch(() => {
+        setArticles([]);
+      });
+  }, [page, params.category]);
+
+  return (
+    <>
+      {articles.length === 0 ? (
+        <>
+          <h2>Article does not exists</h2>
+        </>
+      ) : (
+        <ol>
+          {articles.map((article) => (
+            <>
+              <li>
+                <img alt="Thumbnail" src={article.thumbnail.url} />
+                <h1>{article.title}</h1>
+                <h2>{article.subtitle}</h2>
+                <span>By {article.uploader?.name ?? "Deleted User"}</span>
+                <time>{new Date(article.createdAt).toDateString()}</time>
+              </li>
+            </>
+          ))}
+        </ol>
+      )}
+    </>
+  );
 }

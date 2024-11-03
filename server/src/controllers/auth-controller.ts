@@ -7,6 +7,7 @@ import {
 } from "@/errors/service-errors";
 import { AuthService } from "@/services/auth-service";
 import { UserValueTransformer } from "@/tranformers/user-value-transformers";
+import { authorize } from "@/utils/authorize";
 import { Request, Response } from "express";
 import { z } from "zod";
 
@@ -134,9 +135,8 @@ export class AuthController {
   });
 
   public async updatePassword(req: Request, res: Response): Promise<void> {
-    const userUid = req.session.userUid;
+    const userUid = authorize(req, res);
     if (userUid === undefined) {
-      res.status(401).end();
       return;
     }
 

@@ -1,6 +1,7 @@
 import { CategoryNotFoundError } from "@/errors/service-errors";
 import { CategoryService } from "@/services/category-service";
 import { CategoryValueTransformer } from "@/tranformers/category-value-transformers";
+import { authorize } from "@/utils/authorize";
 import { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 
@@ -21,6 +22,11 @@ export class CategoryController {
   });
 
   public async post(req: Request, res: Response): Promise<void> {
+    const userUid = authorize(req, res);
+    if (userUid === undefined) {
+      return;
+    }
+
     const bodyParseResult = await CategoryController.postSchema.safeParseAsync(
       req.body
     );
@@ -50,6 +56,11 @@ export class CategoryController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
+    const userUid = authorize(req, res);
+    if (userUid === undefined) {
+      return;
+    }
+
     const paramsParseResult =
       await CategoryController.paramsSchema.safeParseAsync(req.params);
     if (!paramsParseResult.success) {
@@ -84,6 +95,11 @@ export class CategoryController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
+    const userUid = authorize(req, res);
+    if (userUid === undefined) {
+      return;
+    }
+
     const paramsParseResult =
       await CategoryController.paramsSchema.safeParseAsync(req.params);
     if (!paramsParseResult.success) {

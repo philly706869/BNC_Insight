@@ -25,13 +25,20 @@ export async function getArticle(uid: number): Promise<Article> {
   return (await response.json()) as Article;
 }
 
-export async function getArticles(
-  category: string | null,
-  limit: number,
-  offset: number
-): Promise<ContentLessArticle[]> {
+export async function getArticles(params: {
+  category?: string | null;
+  limit: number;
+  offset: number;
+}): Promise<ContentLessArticle[]> {
   const response = await fetch(
-    `/api/articles?category=${category ?? ""}&limit=${limit}&offset=${offset}`
+    "/api/articles?" +
+      new URLSearchParams({
+        ...(params.category !== undefined && {
+          category: params.category ?? "",
+        }),
+        limit: String(params.limit),
+        offset: String(params.offset),
+      })
   );
   if (!response.ok) {
     return Promise.reject();

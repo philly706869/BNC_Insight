@@ -1,4 +1,5 @@
 import Express from "express";
+import { env } from "./env";
 import { errorHandler } from "./middlewares/error-handler";
 import { requestLogger } from "./middlewares/request-logger";
 import { session } from "./middlewares/session";
@@ -12,10 +13,9 @@ express.use(session);
 express.use("/api", apiRouter);
 
 if (NODE_ENV === "production") {
-  express.use("*", (req, res) => {
-    // TODO
-    res.status(200).end();
-  });
+  express.use(
+    Express.static(env.STATIC_SERVE_PATH, { index: env.INDEX_DOCUMENT_PATH })
+  );
 }
 
 express.use(errorHandler);

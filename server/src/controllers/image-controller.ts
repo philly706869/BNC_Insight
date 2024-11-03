@@ -1,6 +1,7 @@
 import { env } from "@/env";
 import { ImageNotFoundError } from "@/errors/service-errors";
 import { ImageService } from "@/services/image-service";
+import { authorize } from "@/utils/authorize";
 import { NextFunction, Request, Response } from "express";
 import fs from "fs/promises";
 import path from "path";
@@ -40,6 +41,11 @@ export class ImageController {
   }
 
   public async post(req: Request, res: Response): Promise<void> {
+    const userUid = authorize(req, res);
+    if (userUid === undefined) {
+      return;
+    }
+
     const file = req.file;
     if (file === undefined) {
       res.status(400).end();

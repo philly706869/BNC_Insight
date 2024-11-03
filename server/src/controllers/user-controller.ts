@@ -1,6 +1,8 @@
 import { UserNotFoundError } from "@/errors/service-errors";
 import { UserService } from "@/services/user-service";
 import { UserValueTransformer } from "@/tranformers/user-value-transformers";
+import { authorize } from "@/utils/authorize";
+import { extractIssue } from "@/utils/extract-issue";
 import { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 
@@ -30,7 +32,10 @@ export class UserController {
       res.status(200).json(response);
     } catch (error) {
       if (error instanceof UserNotFoundError) {
-        res.status(404).end();
+        res.status(404).error({
+          error: "USER_NOT_FOUND",
+          message: "User not found",
+        });
       } else {
         return Promise.reject(error);
       }
@@ -43,9 +48,8 @@ export class UserController {
   });
 
   public async patch(req: Request, res: Response): Promise<void> {
-    const userUid = req.session.userUid;
+    const userUid = authorize(req, res);
     if (userUid === undefined) {
-      res.status(401).end();
       return;
     }
 
@@ -53,7 +57,11 @@ export class UserController {
       req.body
     );
     if (!bodyParseResult.success) {
-      res.status(400).end();
+      res.status(400).error({
+        error: "INVALID_PAYLOAD",
+        message: "Payload is not valid",
+        details: extractIssue(bodyParseResult.error),
+      });
       return;
     }
     const body = bodyParseResult.data;
@@ -63,7 +71,7 @@ export class UserController {
       res.status(201).end();
     } catch (error) {
       if (error instanceof UserNotFoundError) {
-        res.status(500).end();
+        res.status(401).end();
       } else {
         return Promise.reject(error);
       }
@@ -71,9 +79,8 @@ export class UserController {
   }
 
   public async delete(req: Request, res: Response): Promise<void> {
-    const userUid = req.session.userUid;
+    const userUid = authorize(req, res);
     if (userUid === undefined) {
-      res.status(401).end();
       return;
     }
 

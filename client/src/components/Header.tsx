@@ -47,7 +47,7 @@ export default function Header() {
       <nav className={styles.categories}>
         {categories.isInitialized ? (
           <>
-            <Link to="/category/">Uncategorized</Link>
+            <Link to="/category">Uncategorized</Link>
             {categories.data.map(({ name: category }) => (
               <Link key={category} to={`/category/${category}`}>
                 {category}
@@ -55,7 +55,7 @@ export default function Header() {
             ))}
           </>
         ) : (
-          <p>Loading...</p>
+          <p>Loading categories...</p>
         )}
       </nav>
     </header>

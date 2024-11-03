@@ -40,8 +40,8 @@ const configSchema = z
       .readonly(),
     image: z
       .object({
-        tempPath: z.string(),
-        path: z.string(),
+        tempPath: z.string().transform((arg) => path.resolve(arg)),
+        path: z.string().transform((arg) => path.resolve(arg)),
         maxBytes: z.number(),
         supportedFormats: z.array(z.string()).readonly(),
       })

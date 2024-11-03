@@ -13,6 +13,9 @@ const envSchema = z
     SERVER_PORT: z.coerce.number(),
     SERVER_SESSION_SECRET: z.string(),
 
+    STATIC_SERVE_PATH: z.string().transform((arg) => path.resolve(arg)),
+    INDEX_DOCUMENT_PATH: z.string().transform((arg) => path.resolve(arg)),
+
     DATABASE_USERNAME: z.string(),
     DATABASE_PASSWORD: z.string(),
     DATABASE_HOST: z.string(),

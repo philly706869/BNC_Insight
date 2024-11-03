@@ -1,6 +1,5 @@
 import { config } from "@/config";
 import { ImageController } from "@/controllers/image-controller";
-import { authVerifier } from "@/middlewares/auth-verifier";
 import { ImageService } from "@/services/image-service";
 import { Router } from "express";
 import { rateLimit } from "express-rate-limit";
@@ -34,12 +33,17 @@ const upload = multer({
 const rateLimiter = rateLimit({
   windowMs: 60000,
   limit: 10,
+  handler(req, res) {
+    res.status(429).error({
+      error: "TOO_MANY_REQUESTS",
+      message: "Too many requests, please try again later",
+    });
+  },
 });
 
 imageRouter.post(
   "/",
   rateLimiter,
-  authVerifier,
   (req, res, next) => {
     upload(req, res, (error) => {
       if (!(error instanceof MulterError)) {
@@ -47,11 +51,17 @@ imageRouter.post(
         return;
       }
       if (error.code === "LIMIT_FILE_SIZE") {
-        res.status(413).end();
+        res.status(413).error({
+          error: "FILE_TOO_LARGE",
+          message: `File cannot bigger than ${config.image.maxBytes} bytes`,
+        });
         return;
       }
       if (error.code === "LIMIT_UNEXPECTED_FILE") {
-        res.status(400).end();
+        res.status(415).error({
+          error: "UNSUPPORTED_FILE",
+          message: "Unsupported file format",
+        });
         return;
       }
       next(error);

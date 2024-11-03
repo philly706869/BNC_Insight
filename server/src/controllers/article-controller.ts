@@ -7,6 +7,8 @@ import {
 import { ArticleService } from "@/services/article-service";
 import { ArticleValueTransformer } from "@/tranformers/article-value-transformers";
 import { CategoryValueTransformer } from "@/tranformers/category-value-transformers";
+import { authorize } from "@/utils/authorize";
+import { extractIssue } from "@/utils/extract-issue";
 import { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 
@@ -59,7 +61,11 @@ export class ArticleController {
     const queryParseResult =
       await ArticleController.getManySchema.safeParseAsync(req.query);
     if (!queryParseResult.success) {
-      res.status(400).end();
+      res.status(400).error({
+        error: "INVALID_QUERY",
+        message: "Query is not valid",
+        details: extractIssue(queryParseResult.error),
+      });
       return;
     }
     const query = queryParseResult.data;
@@ -102,9 +108,8 @@ export class ArticleController {
   });
 
   public async post(req: Request, res: Response): Promise<void> {
-    const uploaderUid = req.session.userUid;
-    if (uploaderUid === undefined) {
-      res.status(401).end();
+    const userUid = authorize(req, res);
+    if (userUid === undefined) {
       return;
     }
 
@@ -125,7 +130,7 @@ export class ArticleController {
     const body = bodyParseResult.data;
 
     const response = await this.articleService.post(
-      uploaderUid,
+      userUid,
       body.category,
       body.thumbnail,
       body.title,
@@ -158,9 +163,8 @@ export class ArticleController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const userUid = req.session.userUid;
+    const userUid = authorize(req, res);
     if (userUid === undefined) {
-      res.status(401).end();
       return;
     }
 
@@ -200,6 +204,11 @@ export class ArticleController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
+    const userUid = authorize(req, res);
+    if (userUid === undefined) {
+      return;
+    }
+
     const paramsParseResult =
       await ArticleController.paramsSchema.safeParseAsync(req.params);
     if (!paramsParseResult.success) {
@@ -207,12 +216,6 @@ export class ArticleController {
       return;
     }
     const params = paramsParseResult.data;
-
-    const userUid = req.session.userUid;
-    if (userUid === undefined) {
-      res.status(401).end();
-      return;
-    }
 
     try {
       await this.articleService.delete(userUid, params.id);
