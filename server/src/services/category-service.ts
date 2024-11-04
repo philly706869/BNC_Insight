@@ -1,7 +1,12 @@
 import { Database } from "@/database/database";
 import { categoryTable } from "@/database/tables/category-table";
+import { userTable } from "@/database/tables/user-table";
 import { CategoryDTO } from "@/dto/category-dto";
-import { CategoryNotFoundError } from "@/errors/service-errors";
+import {
+  CategoryNotFoundError,
+  PermissionDeniedError,
+  UserNotFoundError,
+} from "@/errors/service-errors";
 import { CategoryValue } from "@/value-objects/category-values";
 import { asc, eq } from "drizzle-orm";
 
@@ -29,7 +34,28 @@ export class CategoryService {
     );
   }
 
-  public async post(name: CategoryValue.Name): Promise<void> {
+  /**
+   * @throws {UserNotFoundError}
+   * @throws {PermissionDeniedError}
+   */
+  public async post(userUid: number, name: CategoryValue.Name): Promise<void> {
+    const user = (
+      await this.database
+        .select({
+          isAdmin: userTable.isAdmin,
+        })
+        .from(userTable)
+        .where(eq(userTable.uid, userUid))
+        .execute()
+    ).at(0);
+    if (user === undefined) {
+      return Promise.reject(new UserNotFoundError());
+    }
+
+    if (!user.isAdmin) {
+      return Promise.reject(new PermissionDeniedError());
+    }
+
     await this.database
       .insert(categoryTable)
       .values({ name: name.value })
@@ -37,12 +63,32 @@ export class CategoryService {
   }
 
   /**
+   * @throws {UserNotFoundError}
+   * @throws {PermissionDeniedError}
    * @throws {CategoryNotFoundError}
    */
   public async patch(
+    userUid: number,
     categoryName: string,
     data: { name?: CategoryValue.Name }
   ): Promise<void> {
+    const user = (
+      await this.database
+        .select({
+          isAdmin: userTable.isAdmin,
+        })
+        .from(userTable)
+        .where(eq(userTable.uid, userUid))
+        .execute()
+    ).at(0);
+    if (user === undefined) {
+      return Promise.reject(new UserNotFoundError());
+    }
+
+    if (!user.isAdmin) {
+      return Promise.reject(new PermissionDeniedError());
+    }
+
     const [header] = await this.database
       .update(categoryTable)
       .set({ name: data.name?.value })
@@ -55,9 +101,28 @@ export class CategoryService {
   }
 
   /**
+   * @throws {UserNotFoundError}
+   * @throws {PermissionDeniedError}
    * @throws {CategoryNotFoundError}
    */
-  public async delete(categoryName: string): Promise<void> {
+  public async delete(userUid: number, categoryName: string): Promise<void> {
+    const user = (
+      await this.database
+        .select({
+          isAdmin: userTable.isAdmin,
+        })
+        .from(userTable)
+        .where(eq(userTable.uid, userUid))
+        .execute()
+    ).at(0);
+    if (user === undefined) {
+      return Promise.reject(new UserNotFoundError());
+    }
+
+    if (!user.isAdmin) {
+      return Promise.reject(new PermissionDeniedError());
+    }
+
     const [header] = await this.database
       .delete(categoryTable)
       .where(eq(categoryTable.name, categoryName))

@@ -1,3 +1,9 @@
+export class PermissionDeniedError extends Error {
+  public constructor(message?: string) {
+    super(message);
+  }
+}
+
 export class InvalidAuthTokenError extends Error {
   public constructor(message?: string) {
     super(message);

@@ -1,4 +1,8 @@
-import { CategoryNotFoundError } from "@/errors/service-errors";
+import {
+  CategoryNotFoundError,
+  PermissionDeniedError,
+  UserNotFoundError,
+} from "@/errors/service-errors";
 import { CategoryService } from "@/services/category-service";
 import { CategoryValueTransformer } from "@/tranformers/category-value-transformers";
 import { authorize } from "@/utils/authorize";
@@ -43,7 +47,17 @@ export class CategoryController {
     }
     const body = bodyParseResult.data;
 
-    await this.categoryService.post(body.name);
+    try {
+      await this.categoryService.post(userUid, body.name);
+    } catch (error) {
+      if (error instanceof UserNotFoundError) {
+        res.status(401).end();
+      } else if (error instanceof PermissionDeniedError) {
+        res.status(403).end();
+      } else {
+        return Promise.reject(error);
+      }
+    }
     res.status(201).end();
   }
 
@@ -79,10 +93,14 @@ export class CategoryController {
     const body = bodyParseResult.data;
 
     try {
-      await this.categoryService.patch(params.name, body);
+      await this.categoryService.patch(userUid, params.name, body);
       res.status(201).end();
     } catch (error) {
-      if (error instanceof CategoryNotFoundError) {
+      if (error instanceof UserNotFoundError) {
+        res.status(401).end();
+      } else if (error instanceof PermissionDeniedError) {
+        res.status(403).end();
+      } else if (error instanceof CategoryNotFoundError) {
         res.status(404).end();
       } else {
         return Promise.reject(error);
@@ -109,9 +127,13 @@ export class CategoryController {
     const params = paramsParseResult.data;
 
     try {
-      await this.categoryService.delete(params.name);
+      await this.categoryService.delete(userUid, params.name);
     } catch (error) {
-      if (error instanceof CategoryNotFoundError) {
+      if (error instanceof UserNotFoundError) {
+        res.status(401).end();
+      } else if (error instanceof PermissionDeniedError) {
+        res.status(403).end();
+      } else if (error instanceof CategoryNotFoundError) {
         res.status(404).end();
       } else {
         return Promise.reject(error);
