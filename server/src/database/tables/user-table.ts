@@ -13,11 +13,11 @@ const conf = config.user;
 
 export const userTable = mysqlTable("users", {
   uid: smallint({ unsigned: true }).primaryKey().autoincrement(),
-  username: varchar({ length: conf.maxUsernameLength }).unique().notNull(),
+  username: varchar({ length: conf.nameConstraints.max }).unique().notNull(),
   passwordHash: binary({ length: BCRYPT_HASH_LENGTH })
     .$type<Buffer>()
     .notNull(),
-  name: varchar({ length: conf.maxNameLength }).notNull(),
+  name: varchar({ length: conf.nameConstraints.max }).notNull(),
   isAdmin: boolean().default(false).notNull(),
   createdAt,
   updatedAt,

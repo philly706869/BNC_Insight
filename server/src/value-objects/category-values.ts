@@ -8,22 +8,13 @@ export namespace CategoryValue {
     private constructor(public readonly value: string) {}
 
     public static verify(value: string): ValueObjectVerifyResult<Name> {
-      if (value.includes("\n")) {
-        return {
-          valid: false,
-          message: "Category name cannot contain line breaks",
-        };
-      }
-      if (value.length < 1) {
-        return { valid: false, message: "Category name be empty" };
-      }
-      if (value.length > conf.maxNameLength) {
-        return {
-          valid: false,
-          message: `Category name be greater than ${conf.maxNameLength} characters`,
-        };
-      }
-      return { valid: true, data: new Name(value) };
+      const { success, message } = conf.nameConstraints.check(value);
+      return success
+        ? {
+            success,
+            data: new Name(value),
+          }
+        : { success, message };
     }
   }
 }

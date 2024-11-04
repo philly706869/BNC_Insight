@@ -29,7 +29,7 @@ export async function getArticles(params: {
   category?: string | null;
   limit: number;
   offset: number;
-}): Promise<ContentLessArticle[]> {
+}): Promise<{ total: number; items: ContentLessArticle[] }> {
   const response = await fetch(
     "/api/articles?" +
       new URLSearchParams({
@@ -43,7 +43,7 @@ export async function getArticles(params: {
   if (!response.ok) {
     return Promise.reject();
   }
-  return (await response.json()) as ContentLessArticle[];
+  return await response.json();
 }
 
 export async function postArticle(

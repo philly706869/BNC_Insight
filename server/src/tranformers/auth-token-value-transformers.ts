@@ -7,7 +7,7 @@ export namespace AuthTokenValueTransformer {
     ctx: z.RefinementCtx
   ): AuthTokenValue.Token => {
     const verifyResult = AuthTokenValue.Token.verify(arg);
-    if (!verifyResult.valid) {
+    if (!verifyResult.success) {
       ctx.addIssue({ code: "custom", message: verifyResult.message });
       return z.NEVER;
     }

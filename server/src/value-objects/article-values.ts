@@ -1,28 +1,20 @@
 import { config } from "@/config";
 import { ValueObjectVerifyResult } from "@/types/value-object-verify-result";
-import validator, { IsURLOptions } from "validator";
 
 export namespace ArticleValue {
   const conf = config.article;
 
   export class ThumbnailUrl {
-    private static readonly isURLOptions: IsURLOptions = {
-      protocols: ["http", "https"],
-    };
-
     private constructor(public readonly value: string) {}
 
     public static verify(value: string): ValueObjectVerifyResult<ThumbnailUrl> {
-      if (!validator.isURL(value, this.isURLOptions)) {
-        return { valid: false, message: "Thumbnail url is not valid" };
-      }
-      if (value.length > conf.maxThumbnailUrlLength) {
-        return {
-          valid: false,
-          message: `Thumbnail url cannot be greater than ${conf.maxThumbnailUrlLength} characters`,
-        };
-      }
-      return { valid: true, data: new ThumbnailUrl(value) };
+      const { success, message } = conf.thumbnailUrlConstraints.check(value);
+      return success
+        ? {
+            success,
+            data: new ThumbnailUrl(value),
+          }
+        : { success, message };
     }
   }
 
@@ -32,19 +24,14 @@ export namespace ArticleValue {
     public static verify(
       value: string
     ): ValueObjectVerifyResult<ThumbnailCaption> {
-      if (value.includes("\n")) {
-        return {
-          valid: false,
-          message: "Thumbnail caption cannot contain line breaks",
-        };
-      }
-      if (value.length > conf.maxThumbnailCaptionLength) {
-        return {
-          valid: false,
-          message: `Thumbnail caption cannot be greater than ${conf.maxThumbnailCaptionLength} characters`,
-        };
-      }
-      return { valid: true, data: new ThumbnailCaption(value) };
+      const { success, message } =
+        conf.thumbnailCaptionConstraints.check(value);
+      return success
+        ? {
+            success,
+            data: new ThumbnailCaption(value),
+          }
+        : { success, message };
     }
   }
 
@@ -52,19 +39,13 @@ export namespace ArticleValue {
     private constructor(public readonly value: string) {}
 
     public static verify(value: string): ValueObjectVerifyResult<Title> {
-      if (value.includes("\n")) {
-        return { valid: false, message: "Title cannot contain line breaks" };
-      }
-      if (value.length < 1) {
-        return { valid: false, message: "Title cannot be empty" };
-      }
-      if (value.length > conf.maxTitleLength) {
-        return {
-          valid: false,
-          message: `Title cannot be greater than ${conf.maxTitleLength} characters`,
-        };
-      }
-      return { valid: true, data: new Title(value) };
+      const { success, message } = conf.titleConstraints.check(value);
+      return success
+        ? {
+            success,
+            data: new Title(value),
+          }
+        : { success, message };
     }
   }
 
@@ -72,16 +53,13 @@ export namespace ArticleValue {
     private constructor(public readonly value: string) {}
 
     public static verify(value: string): ValueObjectVerifyResult<Subtitle> {
-      if (value.includes("\n")) {
-        return { valid: false, message: "Subtitle cannot contain line breaks" };
-      }
-      if (value.length > conf.maxSubtitleLength) {
-        return {
-          valid: false,
-          message: `Subtitle cannot be greater than ${conf.maxSubtitleLength} characters`,
-        };
-      }
-      return { valid: true, data: new Subtitle(value) };
+      const { success, message } = conf.subtitleConstraints.check(value);
+      return success
+        ? {
+            success,
+            data: new Subtitle(value),
+          }
+        : { success, message };
     }
   }
 
@@ -89,10 +67,13 @@ export namespace ArticleValue {
     private constructor(public readonly value: string) {}
 
     public static verify(value: string): ValueObjectVerifyResult<Content> {
-      if (value.length > conf.maxContentDeltaLength) {
-        return { valid: false, message: "Content is too long" };
-      }
-      return { valid: true, data: new Content(value) };
+      const { success, message } = conf.contentDeltaConstraints.check(value);
+      return success
+        ? {
+            success,
+            data: new Content(value),
+          }
+        : { success, message };
     }
   }
 }

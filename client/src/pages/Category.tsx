@@ -28,8 +28,8 @@ export default function Category() {
       limit: 30,
       offset: 30 * (page - 1),
     })
-      .then((data) => {
-        setArticles(data);
+      .then(({ items: articles }) => {
+        setArticles(articles);
       })
       .catch(() => {
         setArticles([]);

@@ -36,7 +36,10 @@ export class ImageService {
       const metadata = await image.metadata();
       const format = metadata.format;
       const supportedFormats = config.image.supportedFormats;
-      if (format === undefined || !supportedFormats.includes(format)) {
+      if (
+        format === undefined ||
+        !(supportedFormats as string[]).includes(format)
+      ) {
         return Promise.reject(new UnsupportedImageFormatError());
       }
       const name = `${uuidv4()}.${format}`;

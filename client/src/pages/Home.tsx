@@ -32,7 +32,7 @@ export default function Home() {
   const [articles, setArticles] = useState<ContentLessArticle[] | null>(null);
 
   useEffect(() => {
-    getArticles({ limit: 4, offset: 0 }).then((articles) => {
+    getArticles({ limit: 4, offset: 0 }).then(({ items: articles }) => {
       setArticles(articles);
     });
   }, []);

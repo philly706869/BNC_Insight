@@ -1,3 +1,3 @@
 export type ValueObjectVerifyResult<Data> =
-  | { valid: true; data: Data }
-  | { valid: false; message: string };
+  | { success: true; data: Data }
+  | { success: false; message: string };

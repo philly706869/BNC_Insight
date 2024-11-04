@@ -7,7 +7,7 @@ export namespace CategoryValueTransformer {
     ctx: z.RefinementCtx
   ): CategoryValue.Name => {
     const verifyResult = CategoryValue.Name.verify(arg);
-    if (!verifyResult.valid) {
+    if (!verifyResult.success) {
       ctx.addIssue({ code: "custom", message: verifyResult.message });
       return z.NEVER;
     }

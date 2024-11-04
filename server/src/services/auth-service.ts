@@ -22,7 +22,7 @@ export class AuthService {
 
   public async verifyAuthToken(value: string): Promise<boolean> {
     const tokenVerifyResult = AuthTokenValue.Token.verify(value);
-    if (!tokenVerifyResult.valid) {
+    if (!tokenVerifyResult.success) {
       return false;
     }
 
@@ -85,7 +85,7 @@ export class AuthService {
     await this.database.transaction(
       async (tx) => {
         const verifiedToken = AuthTokenValue.Token.verify(token);
-        if (!verifiedToken.valid) {
+        if (!verifiedToken.success) {
           return Promise.reject(new InvalidAuthTokenError());
         }
 

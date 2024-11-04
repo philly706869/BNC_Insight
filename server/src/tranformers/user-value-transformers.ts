@@ -7,7 +7,7 @@ export namespace UserValueTransformer {
     ctx: z.RefinementCtx
   ): UserValue.Username => {
     const verifyResult = UserValue.Username.verify(arg);
-    if (!verifyResult.valid) {
+    if (!verifyResult.success) {
       ctx.addIssue({ code: "custom", message: verifyResult.message });
       return z.NEVER;
     }
@@ -19,7 +19,7 @@ export namespace UserValueTransformer {
     ctx: z.RefinementCtx
   ): UserValue.Password => {
     const verifyResult = UserValue.Password.verify(arg);
-    if (!verifyResult.valid) {
+    if (!verifyResult.success) {
       ctx.addIssue({ code: "custom", message: verifyResult.message });
       return z.NEVER;
     }
@@ -28,7 +28,7 @@ export namespace UserValueTransformer {
 
   export const name = (arg: string, ctx: z.RefinementCtx): UserValue.Name => {
     const verifyResult = UserValue.Name.verify(arg);
-    if (!verifyResult.valid) {
+    if (!verifyResult.success) {
       ctx.addIssue({ code: "custom", message: verifyResult.message });
       return z.NEVER;
     }

@@ -12,17 +12,19 @@ export const articleTable = mysqlTable("articles", {
     onDelete: "set null",
     onUpdate: "cascade",
   }),
-  categoryName: varchar({ length: config.category.maxNameLength }).references(
-    () => categoryTable.name,
-    { onDelete: "set null", onUpdate: "cascade" }
-  ),
-  thumbnailUrl: varchar({ length: conf.maxThumbnailUrlLength }).notNull(),
+  categoryName: varchar({
+    length: config.category.nameConstraints.max,
+  }).references(() => categoryTable.name, {
+    onDelete: "set null",
+    onUpdate: "cascade",
+  }),
+  thumbnailUrl: varchar({ length: conf.thumbnailUrlConstraints.max }).notNull(),
   thumbnailCaption: varchar({
-    length: conf.maxThumbnailCaptionLength,
+    length: conf.thumbnailCaptionConstraints.max,
   }).notNull(),
-  title: varchar({ length: conf.maxTitleLength }).notNull(),
-  subtitle: varchar({ length: conf.maxSubtitleLength }).notNull(),
-  content: varchar({ length: conf.maxContentDeltaLength }).notNull(),
+  title: varchar({ length: conf.titleConstraints.max }).notNull(),
+  subtitle: varchar({ length: conf.subtitleConstraints.max }).notNull(),
+  content: varchar({ length: conf.contentDeltaConstraints.max }).notNull(),
   createdAt,
   updatedAt,
 });

@@ -8,17 +8,13 @@ export namespace AuthTokenValue {
     private constructor(public readonly value: string) {}
 
     public static verify(value: string): ValueObjectVerifyResult<Token> {
-      const invalid = {
-        valid: false,
-        message: "Auth token is not valid",
-      } as const;
-      if (value.length < 1) {
-        return invalid;
-      }
-      if (value.length > conf.maxTokenLength) {
-        return invalid;
-      }
-      return { valid: true, data: new Token(value) };
+      const { success, message } = conf.tokenContraints.check(value);
+      return success
+        ? {
+            success,
+            data: new Token(value),
+          }
+        : { success, message };
     }
   }
 }

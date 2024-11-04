@@ -1,68 +1,208 @@
-import fs from "fs/promises";
 import path from "path";
-import yaml from "yaml";
-import { z } from "zod";
+import validator, { IsURLOptions } from "validator";
+import { BCRYPT_MAX_BYTE_LENGTH } from "./utils/bcrypt-constants";
+import { StringConstraint, stringConstraints } from "./utils/constraint";
 
-const configPath = path.resolve("./config.yaml");
+export type Config = {
+  readonly authToken: {
+    readonly tokenContraints: StringConstraint;
+  };
 
-const configSchema = z
-  .object({
-    authToken: z
-      .object({
-        maxTokenLength: z.number(),
-      })
-      .readonly(),
-    user: z
-      .object({
-        maxUsernameLength: z.number(),
-        minPasswordLength: z.number(),
-        maxPasswordLength: z.number(),
-        passwordHashRounds: z.number(),
-        maxNameLength: z.number(),
-      })
-      .readonly(),
-    category: z
-      .object({
-        maxNameLength: z.number(),
-      })
-      .readonly(),
-    article: z
-      .object({
-        defaultQueryLimit: z.number(),
-        maxQueryLimit: z.number(),
-        defaultThumbnailUrl: z.string(),
-        maxThumbnailUrlLength: z.number(),
-        maxThumbnailCaptionLength: z.number(),
-        maxTitleLength: z.number(),
-        maxSubtitleLength: z.number(),
-        maxContentDeltaLength: z.number(),
-      })
-      .readonly(),
-    image: z
-      .object({
-        tempPath: z.string().transform((arg) => path.resolve(arg)),
-        path: z.string().transform((arg) => path.resolve(arg)),
-        maxBytes: z.number(),
-        supportedFormats: z.array(z.string()).readonly(),
-      })
-      .readonly(),
-  })
-  .readonly();
+  readonly user: {
+    readonly usernameConstraints: StringConstraint;
+    readonly passwordConstraints: StringConstraint;
+    readonly nameConstraints: StringConstraint;
+    readonly passwordHashRounds: number;
+  };
 
-export const config = await (async () => {
-  try {
-    const rawConfig = await fs.readFile(configPath, "utf8");
-    try {
-      const parsedConfig = yaml.parse(rawConfig);
-      try {
-        return await configSchema.parseAsync(parsedConfig);
-      } catch {
-        return Promise.reject(new Error("Config format is not valid"));
-      }
-    } catch {
-      return Promise.reject(new Error("Failed to parse config"));
-    }
-  } catch {
-    return Promise.reject(new Error(`Failed to read config \`${configPath}\``));
-  }
-})();
+  readonly category: {
+    readonly nameConstraints: StringConstraint;
+  };
+
+  readonly article: {
+    readonly defaultQueryLimit: number;
+    readonly maxQueryLimit: number;
+    readonly defaultThumbnailUrl: string;
+    readonly thumbnailUrlConstraints: StringConstraint;
+    readonly thumbnailCaptionConstraints: StringConstraint;
+    readonly titleConstraints: StringConstraint;
+    readonly subtitleConstraints: StringConstraint;
+    readonly contentDeltaConstraints: StringConstraint;
+  };
+
+  readonly thumbnail: {
+    readonly tempPath: string;
+    readonly path: string;
+    readonly width: number;
+    readonly height: number;
+    readonly maxBytes: number;
+    readonly supportedFormats: string[];
+  };
+
+  readonly image: {
+    readonly tempPath: string;
+    readonly path: string;
+    readonly maxBytes: number;
+    readonly supportedFormats: string[];
+  };
+};
+
+export const config = {
+  authToken: {
+    tokenContraints: stringConstraints([
+      {
+        min: 1,
+        message: "Token cannot be empty",
+      },
+      {
+        max: 128,
+        message: "Token cannot be greater than 128 characters",
+      },
+    ]),
+  },
+
+  user: {
+    usernameConstraints: stringConstraints([
+      {
+        min: 1,
+        message: "Username cannot be empty",
+      },
+      {
+        max: 32,
+        message: "Username cannot be greater than 32 characters",
+      },
+      {
+        pattern: /^[a-z\d]*$/,
+        message: "Username can only contain letters and numbers",
+      },
+    ]),
+    passwordConstraints: stringConstraints([
+      {
+        min: 8,
+        message: "Password cannot be shorter than 8 characters",
+      },
+      {
+        max: 72,
+        message: "Password cannot be greater than 72 characters",
+      },
+      {
+        pattern: /^[!`#$%&'()*+,\-./0-9:;<=>?@A-Z[\\\]^_`a-z{|}~]*$/,
+        message:
+          "Password can only contain letters, numbers, and common punctuation characters",
+      },
+      {
+        // important
+        validator: (value) =>
+          Buffer.byteLength(value) <= BCRYPT_MAX_BYTE_LENGTH,
+        message: `Password cannot be greater than ${BCRYPT_MAX_BYTE_LENGTH} bytes`,
+      },
+    ]),
+    nameConstraints: stringConstraints([
+      {
+        min: 1,
+        message: "Name cannot be empty",
+      },
+      {
+        max: 16,
+        message: "Name cannot be greater than 16 characters",
+      },
+      {
+        validator: (value) => !value.includes("\n"),
+        message: "Name cannot contain line breaks",
+      },
+    ]),
+    passwordHashRounds: 10,
+  },
+
+  category: {
+    nameConstraints: stringConstraints([
+      {
+        min: 1,
+        message: "Category name be empty",
+      },
+      {
+        max: 16,
+        message: "Category name be greater than 16 characters",
+      },
+      {
+        validator: (value) => !value.includes("\n"),
+        message: "Category name cannot contain line breaks",
+      },
+    ]),
+  },
+
+  article: {
+    defaultQueryLimit: 30,
+    maxQueryLimit: 30,
+    defaultThumbnailUrl: "",
+    thumbnailUrlConstraints: stringConstraints([
+      {
+        max: 2048,
+        message: "Thumbnail url cannot be greater than 2048 characters",
+      },
+      {
+        validator: (() => {
+          const options: IsURLOptions = { protocols: ["http", "https"] };
+          return (value) => validator.isURL(value, options);
+        })(),
+        message: "Thumbnail url is not valid",
+      },
+    ]),
+    thumbnailCaptionConstraints: stringConstraints([
+      {
+        max: 64,
+        message: "Thumbnail caption cannot be greater than 64 characters",
+      },
+      {
+        validator: (value) => !value.includes("\n"),
+        message: "Thumbnail caption cannot contain line breaks",
+      },
+    ]),
+    titleConstraints: stringConstraints([
+      {
+        min: 1,
+        message: "Title cannot be empty",
+      },
+      {
+        max: 64,
+        message: "Title cannot be greater than 64 characters",
+      },
+      {
+        validator: (value) => !value.includes("\n"),
+        message: "Title cannot contain line breaks",
+      },
+    ]),
+    subtitleConstraints: stringConstraints([
+      {
+        max: 128,
+        message: "Subtitle cannot be greater than 128 characters",
+      },
+      {
+        validator: (value) => !value.includes("\n"),
+        message: "Subtitle cannot contain line breaks",
+      },
+    ]),
+    contentDeltaConstraints: stringConstraints([
+      {
+        max: 10000,
+        message: "Content is too long",
+      },
+    ]),
+  },
+
+  thumbnail: {
+    tempPath: path.resolve("./uploads/tmp"),
+    path: path.resolve("./uplaods/thumbnails"),
+    width: 1280,
+    height: 720,
+    maxBytes: 4 * 1024 * 1024 /* 4MB */,
+    supportedFormats: ["jpeg", "png", "webp"],
+  },
+
+  image: {
+    tempPath: path.resolve("./uploads/tmp"),
+    path: path.resolve("./uploads/images"),
+    maxBytes: 4 * 1024 * 1024 /* 4MB */,
+    supportedFormats: ["jpeg", "png", "webp"],
+  },
+} as const satisfies Config;
