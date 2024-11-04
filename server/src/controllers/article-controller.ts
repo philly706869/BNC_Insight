@@ -48,8 +48,8 @@ export class ArticleController {
   }
 
   private static readonly getManySchema = z.object({
-    category: z.string().optional(),
     uploader: z.string().optional(),
+    category: z.string().optional(),
     offset: z.coerce.number().int().optional(),
     limit: z.coerce.number().int().optional(),
   });
@@ -68,11 +68,7 @@ export class ArticleController {
     const query = queryParseResult.data;
 
     try {
-      const response = await this.articleService.getMany(
-        query.category,
-        query.offset,
-        query.limit
-      );
+      const response = await this.articleService.getMany(query);
       res.status(200).json(response);
     } catch (error) {
       if (error instanceof QueryOffsetOutOfBoundsError) {

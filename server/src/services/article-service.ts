@@ -15,7 +15,7 @@ import {
 } from "@/errors/service-errors";
 import { ArticleValue } from "@/value-objects/article-values";
 import { CategoryValue } from "@/value-objects/category-values";
-import { and, count, desc, eq, isNull, sql } from "drizzle-orm";
+import { and, count, desc, eq, isNull, SQL, sql } from "drizzle-orm";
 
 export class ArticleService {
   public constructor(private readonly database: Database) {}
@@ -70,14 +70,20 @@ export class ArticleService {
   /**
    * @throws {QueryLimitOutOfBoundsError}
    * @throws {QueryOffsetOutOfBoundsError}
+   * @throws {UserNotFoundError}
    * @throws {CategoryNotFoundError}
    */
-  public async getMany(
-    categoryName: string | null | undefined,
-    offset: number | undefined,
-    limit: number | undefined
-  ): Promise<{ total: number; items: ContentlessArticleDTO[] }> {
-    if (limit !== undefined) {
+  public async getMany(query: {
+    uploaderUsername?: string;
+    categoryName?: string | null;
+    offset?: number;
+    limit?: number;
+  }): Promise<{ total: number; items: ContentlessArticleDTO[] }> {
+    const limit = await (async () => {
+      const limit = query.limit;
+      if (limit === undefined) {
+        return config.article.maxQueryLimit;
+      }
       const min = 1;
       const max = config.article.maxQueryLimit;
       if (limit < min || limit > max) {
@@ -87,11 +93,14 @@ export class ArticleService {
           )
         );
       }
-    } else {
-      limit = config.article.maxQueryLimit;
-    }
+      return limit;
+    })();
 
-    if (offset !== undefined) {
+    const offset = await (async () => {
+      const offset = query.offset;
+      if (offset === undefined) {
+        return 0;
+      }
       if (offset < 0) {
         return Promise.reject(
           new QueryOffsetOutOfBoundsError(
@@ -99,11 +108,34 @@ export class ArticleService {
           )
         );
       }
-    } else {
-      offset = 0;
-    }
+      return offset;
+    })();
 
-    if (categoryName !== null && categoryName !== undefined) {
+    const uploaderUid: number | undefined = await (async () => {
+      const uploaderUsername = query.uploaderUsername;
+      if (uploaderUsername === undefined) {
+        return undefined;
+      }
+
+      const uploader = (
+        await this.database
+          .select({ uid: userTable.uid })
+          .from(userTable)
+          .where(eq(userTable.username, uploaderUsername))
+          .execute()
+      ).at(0);
+      if (uploader === undefined) {
+        return Promise.reject(new UserNotFoundError());
+      }
+      return uploader.uid;
+    })();
+
+    const categoryName: string | null | undefined = await (async () => {
+      const categoryName = query.categoryName;
+      if (categoryName === undefined || categoryName === null) {
+        return categoryName;
+      }
+
       const category = (
         await this.database
           .select({ exists: sql<1>`1` })
@@ -114,9 +146,24 @@ export class ArticleService {
       if (category === undefined) {
         return Promise.reject(new CategoryNotFoundError());
       }
-    }
 
-    const articleQuery = this.database
+      return categoryName;
+    })();
+
+    const conditions: SQL[] = [];
+    if (uploaderUid !== undefined) {
+      conditions.push(eq(articleTable.uploaderUid, uploaderUid));
+    }
+    if (categoryName !== undefined) {
+      if (categoryName !== null) {
+        conditions.push(eq(articleTable.categoryName, categoryName));
+      } else {
+        conditions.push(isNull(articleTable.categoryName));
+      }
+    }
+    const condition = and(...conditions);
+
+    const articles = await this.database
       .select({
         uid: articleTable.uid,
         uploaderUsername: userTable.username,
@@ -133,31 +180,17 @@ export class ArticleService {
       .leftJoin(userTable, eq(userTable.uid, articleTable.uploaderUid))
       .limit(limit)
       .offset(offset)
-      .orderBy(desc(articleTable.createdAt));
+      .orderBy(desc(articleTable.createdAt))
+      .where(condition)
+      .execute();
 
-    const totalQuery = this.database
-      .select({ count: count() })
-      .from(articleTable);
-
-    const [articles, total] =
-      categoryName !== undefined
-        ? await (async () => {
-            const condition =
-              categoryName !== null
-                ? eq(articleTable.categoryName, categoryName)
-                : isNull(articleTable.categoryName);
-
-            const articles = await articleQuery.where(condition).execute();
-            const total = (await totalQuery.where(condition))[0].count;
-
-            return [articles, total];
-          })()
-        : await (async () => {
-            const articles = await articleQuery.execute();
-            const total = (await totalQuery.execute())[0].count;
-
-            return [articles, total];
-          })();
+    const total = (
+      await this.database
+        .select({ count: count() })
+        .from(articleTable)
+        .where(condition)
+        .execute()
+    )[0].count;
 
     return {
       total,
