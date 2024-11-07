@@ -59,13 +59,7 @@ export class AuthController {
     }
     const body = bodyParseResult.data;
 
-    await this.authService.signup(
-      req.session,
-      body.token,
-      body.username,
-      body.password,
-      body.name
-    );
+    await this.authService.signup(req.session, body);
     res.status(StatusCodes.CREATED).end();
   }
 
@@ -87,7 +81,7 @@ export class AuthController {
     }
     const body = bodyParseResult.data;
 
-    await this.authService.signin(req.session, body.username, body.password);
+    await this.authService.signin(req.session, body);
     res.status(StatusCodes.CREATED).end();
   }
 

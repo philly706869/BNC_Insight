@@ -71,20 +71,18 @@ export class AuthService {
     });
   }
 
-  /**
-   * @throws {InvalidAuthTokenError}
-   * @throws {UsernameAlreadyTakenError}
-   */
   public async signup(
     session: Partial<SessionData>,
-    token: string,
-    username: UserValue.Username,
-    password: UserValue.Password,
-    name: UserValue.Name
+    credentials: {
+      token: string;
+      username: UserValue.Username;
+      password: UserValue.Password;
+      name: UserValue.Name;
+    }
   ): Promise<void> {
     await this.database.transaction(
       async (tx) => {
-        const verifiedToken = AuthTokenValue.Token.verify(token);
+        const verifiedToken = AuthTokenValue.Token.verify(credentials.token);
         if (!verifiedToken.success) {
           return Promise.reject(new InvalidAuthTokenError());
         }
@@ -106,7 +104,7 @@ export class AuthService {
             .select({ exists: sql<number>`1` })
             .from(userTable)
             .for("update")
-            .where(eq(userTable.username, username.value))
+            .where(eq(userTable.username, credentials.username.value))
             .execute()
         ).at(0);
         if (existsUser !== undefined) {
@@ -117,11 +115,14 @@ export class AuthService {
           await tx
             .insert(userTable)
             .values({
-              username: username.value,
+              username: credentials.username.value,
               passwordHash: Buffer.from(
-                await hash(password.value, config.user.passwordHashRounds)
+                await hash(
+                  credentials.password.value,
+                  config.user.passwordHashRounds
+                )
               ),
-              name: name.value,
+              name: credentials.name.value,
               isAdmin: authToken.isAdminToken,
             })
             .$returningId()
@@ -141,14 +142,12 @@ export class AuthService {
     );
   }
 
-  /**
-   * @throws {InvalidUsernameError}
-   * @throws {IncorrectPasswordError}
-   */
   public async signin(
     session: Partial<SessionData>,
-    username: string,
-    password: string
+    credentials: {
+      username: string;
+      password: string;
+    }
   ): Promise<void> {
     const user = (
       await this.database
@@ -157,14 +156,17 @@ export class AuthService {
           passwordHash: userTable.passwordHash,
         })
         .from(userTable)
-        .where(eq(userTable.username, username))
+        .where(eq(userTable.username, credentials.username))
         .execute()
     ).at(0);
     if (user === undefined) {
       return Promise.reject(new InvalidUsernameError());
     }
 
-    const isCorrect = await compare(password, user.passwordHash.toString());
+    const isCorrect = await compare(
+      credentials.password,
+      user.passwordHash.toString()
+    );
     if (!isCorrect) {
       return Promise.reject(new IncorrectPasswordError());
     }
@@ -175,16 +177,15 @@ export class AuthService {
   public async signout(session: Session & Partial<SessionData>): Promise<void> {
     return new Promise((resolve, reject) => {
       session.destroy((error) => {
-        if (error) reject(error);
-        else resolve();
+        if (error) {
+          reject(error);
+          return;
+        }
+        resolve();
       });
     });
   }
 
-  /**
-   * @throws {UserNotFoundError}
-   * @throws {IncorrectPasswordError}
-   */
   public async updatePassword(
     uid: number,
     currentPassword: string,

@@ -8,9 +8,6 @@ import { eq } from "drizzle-orm";
 export class UserService {
   public constructor(private readonly database: Database) {}
 
-  /**
-   * @throws {UserNotFoundError}
-   */
   public async get(username: string): Promise<PublicUserDTO> {
     const user = (
       await this.database
@@ -30,9 +27,6 @@ export class UserService {
     return new PublicUserDTO(user);
   }
 
-  /**
-   * @throws {UserNotFoundError}
-   */
   public async patch(
     uid: number,
     data: { username?: UserValue.Username; name?: UserValue.Name }
@@ -51,9 +45,6 @@ export class UserService {
     }
   }
 
-  /**
-   * @throws {UserNotFoundError}
-   */
   public async delete(uid: number): Promise<void> {
     const [header] = await this.database
       .delete(userTable)

@@ -1,28 +1,23 @@
 import { config } from "@/config";
 import { Database } from "@/database/database";
 import { articleTable } from "@/database/tables/article-table";
-import { categoryTable } from "@/database/tables/category-table";
 import { userTable } from "@/database/tables/user-table";
 import { ArticleDTO } from "@/dto/article-dto";
 import { ContentlessArticleDTO } from "@/dto/contentless-article-dto";
 import { PublicUserDTO } from "@/dto/public-user-dto";
 import {
   ArticleNotFoundError,
-  CategoryNotFoundError,
   QueryLimitOutOfBoundsError,
   QueryOffsetOutOfBoundsError,
   UserNotFoundError,
 } from "@/errors/service-errors";
 import { ArticleValue } from "@/value-objects/article-values";
 import { CategoryValue } from "@/value-objects/category-values";
-import { and, count, desc, eq, isNull, SQL, sql } from "drizzle-orm";
+import { and, count, desc, eq, isNull, SQL } from "drizzle-orm";
 
 export class ArticleService {
   public constructor(private readonly database: Database) {}
 
-  /**
-   * @throws {ArticleNotFoundError}
-   */
   public async getOne(uid: number): Promise<ArticleDTO> {
     const article = (
       await this.database
@@ -46,7 +41,7 @@ export class ArticleService {
     ).at(0);
 
     if (article === undefined) {
-      return Promise.reject(new ArticleNotFoundError("Article not found"));
+      return Promise.reject(new ArticleNotFoundError());
     }
 
     return new ArticleDTO({
@@ -67,12 +62,6 @@ export class ArticleService {
     });
   }
 
-  /**
-   * @throws {QueryLimitOutOfBoundsError}
-   * @throws {QueryOffsetOutOfBoundsError}
-   * @throws {UserNotFoundError}
-   * @throws {CategoryNotFoundError}
-   */
   public async getMany(query: {
     uploaderUsername?: string;
     categoryName?: string | null;
@@ -125,30 +114,12 @@ export class ArticleService {
           .execute()
       ).at(0);
       if (uploader === undefined) {
-        return Promise.reject(new UserNotFoundError(""));
+        return Promise.reject(new UserNotFoundError());
       }
       return uploader.uid;
     })();
 
-    const categoryName: string | null | undefined = await (async () => {
-      const categoryName = query.categoryName;
-      if (categoryName === undefined || categoryName === null) {
-        return categoryName;
-      }
-
-      const category = (
-        await this.database
-          .select({ exists: sql<1>`1` })
-          .from(categoryTable)
-          .where(eq(categoryTable.name, categoryName))
-          .execute()
-      ).at(0);
-      if (category === undefined) {
-        return Promise.reject(new CategoryNotFoundError(""));
-      }
-
-      return categoryName;
-    })();
+    const categoryName = query.categoryName;
 
     const conditions: SQL[] = [];
     if (uploaderUid !== undefined) {
@@ -247,10 +218,6 @@ export class ArticleService {
     return { uid: article.uid };
   }
 
-  /**
-   * @throws {UserNotFoundError}
-   * @throws {ArticleNotFoundError}
-   */
   public async patch(
     userUid: number,
     articleUid: number,
@@ -275,7 +242,7 @@ export class ArticleService {
         .execute()
     ).at(0);
     if (user === undefined) {
-      return Promise.reject(new UserNotFoundError("User not found"));
+      return Promise.reject(new UserNotFoundError());
     }
 
     const [header] = await this.database
@@ -299,14 +266,10 @@ export class ArticleService {
       .execute();
 
     if (header.affectedRows === 0) {
-      return Promise.reject(new ArticleNotFoundError("Article not found"));
+      return Promise.reject(new ArticleNotFoundError());
     }
   }
 
-  /**
-   * @throws {UserNotFoundError}
-   * @throws {ArticleNotFoundError}
-   */
   public async delete(userUid: number, articleUid: number): Promise<void> {
     const user = (
       await this.database
@@ -318,7 +281,7 @@ export class ArticleService {
         .execute()
     ).at(0);
     if (user === undefined) {
-      return Promise.reject(new UserNotFoundError(""));
+      return Promise.reject(new UserNotFoundError());
     }
 
     const [header] = await this.database
@@ -334,7 +297,7 @@ export class ArticleService {
       .execute();
 
     if (header.affectedRows === 0) {
-      return Promise.reject(new ArticleNotFoundError(""));
+      return Promise.reject(new ArticleNotFoundError());
     }
   }
 }

@@ -34,10 +34,6 @@ export class CategoryService {
     );
   }
 
-  /**
-   * @throws {UserNotFoundError}
-   * @throws {PermissionDeniedError}
-   */
   public async post(userUid: number, name: CategoryValue.Name): Promise<void> {
     const user = (
       await this.database
@@ -62,11 +58,6 @@ export class CategoryService {
       .execute();
   }
 
-  /**
-   * @throws {UserNotFoundError}
-   * @throws {PermissionDeniedError}
-   * @throws {CategoryNotFoundError}
-   */
   public async patch(
     userUid: number,
     categoryName: string,
@@ -100,11 +91,6 @@ export class CategoryService {
     }
   }
 
-  /**
-   * @throws {UserNotFoundError}
-   * @throws {PermissionDeniedError}
-   * @throws {CategoryNotFoundError}
-   */
   public async delete(userUid: number, categoryName: string): Promise<void> {
     const user = (
       await this.database

@@ -11,9 +11,6 @@ import { v4 as uuidv4 } from "uuid";
 export class ImageService {
   public constructor() {}
 
-  /**
-   * @throws {ImageNotFoundError}
-   */
   public async get(name: string): Promise<string> {
     try {
       const imagePath = path.resolve(config.image.path, name);
@@ -27,9 +24,6 @@ export class ImageService {
     }
   }
 
-  /**
-   * @throws {UnsupportedImageFormatError}
-   */
   public async post(imagePath: string): Promise<string> {
     try {
       const image = sharp(imagePath);
