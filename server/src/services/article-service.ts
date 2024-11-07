@@ -125,7 +125,7 @@ export class ArticleService {
           .execute()
       ).at(0);
       if (uploader === undefined) {
-        return Promise.reject(new UserNotFoundError());
+        return Promise.reject(new UserNotFoundError(""));
       }
       return uploader.uid;
     })();
@@ -144,7 +144,7 @@ export class ArticleService {
           .execute()
       ).at(0);
       if (category === undefined) {
-        return Promise.reject(new CategoryNotFoundError());
+        return Promise.reject(new CategoryNotFoundError(""));
       }
 
       return categoryName;
@@ -318,7 +318,7 @@ export class ArticleService {
         .execute()
     ).at(0);
     if (user === undefined) {
-      return Promise.reject(new UserNotFoundError());
+      return Promise.reject(new UserNotFoundError(""));
     }
 
     const [header] = await this.database
@@ -334,7 +334,7 @@ export class ArticleService {
       .execute();
 
     if (header.affectedRows === 0) {
-      return Promise.reject(new ArticleNotFoundError());
+      return Promise.reject(new ArticleNotFoundError(""));
     }
   }
 }

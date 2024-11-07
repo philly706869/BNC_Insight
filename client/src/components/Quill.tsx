@@ -1,8 +1,9 @@
 import katex from "katex";
 import { RefObject, useEffect, useMemo, useRef } from "react";
 import ReactQuill, { Quill as QuillType } from "react-quill";
+
 import "react-quill/dist/quill.snow.css";
-import "../styles/Editor.css";
+import "../styles/Editor.scss";
 
 window.katex = katex;
 

@@ -1,14 +1,16 @@
 import { TextField, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useContext, useRef, useState } from "react";
 import ReactQuill from "react-quill";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import validator from "validator";
 import Quill from "../../components/Quill";
 import { CategoryContext } from "../../contexts/CategoryContext";
 import { postArticle } from "../../services/article-service";
 import { postImage } from "../../services/image-service";
 
-export default function NewArticle() {
+export function WriteArticle() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const navigate = useNavigate();
 
   const categories = useContext(CategoryContext);

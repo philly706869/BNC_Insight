@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 export default function MyArticles() {
   return (
     <>
-      <Link to="/article/new">New Article</Link>
+      <Link to="/article/write">New Article</Link>
     </>
   );
 }

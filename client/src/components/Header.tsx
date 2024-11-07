@@ -3,8 +3,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { CategoryContext } from "../contexts/CategoryContext";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import { signout } from "../services/auth-service";
-import fonts from "../styles/fonts.module.css";
-import styles from "../styles/Header.module.css";
+
+import fonts from "../styles/fonts.module.scss";
+import styles from "../styles/Header.module.scss";
 
 export default function Header() {
   const currentUser = useContext(CurrentUserContext);
@@ -45,17 +46,15 @@ export default function Header() {
         ) : null}
       </nav>
       <nav className={styles.categories}>
-        {categories.isInitialized ? (
+        {categories.isInitialized && (
           <>
-            <Link to="/category">Uncategorized</Link>
+            <Link to="/articles?category=">Uncategorized</Link>
             {categories.data.map(({ name: category }) => (
-              <Link key={category} to={`/category/${category}`}>
+              <Link key={category} to={`/articles?category=${category}`}>
                 {category}
               </Link>
             ))}
           </>
-        ) : (
-          <p>Loading categories...</p>
         )}
       </nav>
     </header>

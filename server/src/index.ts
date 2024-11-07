@@ -18,7 +18,20 @@ try {
   logger.info("Completed connecting database");
 
   logger.info("Starting express server...");
-  const port = env.SERVER_PORT;
+  const port: number = (() => {
+    const raw = parseInt(env.SERVER_URL.port);
+    if (isNaN(raw)) {
+      const protocol = env.SERVER_URL.protocol;
+      switch (protocol) {
+        case "http:":
+          return 80;
+        case "https:":
+          return 443;
+      }
+      protocol satisfies never;
+    }
+    return raw;
+  })();
   const server = http.createServer(express);
   await new Promise<void>((resolve) => server.listen(port, () => resolve()));
   logger.info(`Completed starting express server (port: ${port})`);

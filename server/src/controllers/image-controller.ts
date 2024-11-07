@@ -1,10 +1,14 @@
 import { config } from "@/config";
 import { env } from "@/env";
-import { ImageNotFoundError } from "@/errors/service-errors";
+import {
+  FileTooLargeError,
+  UnsupportedFileError,
+} from "@/errors/controller-error";
 import { ImageService } from "@/services/image-service";
 import { authorize } from "@/utils/authorize";
 import { NextFunction, Request, Response } from "express";
 import fs from "fs/promises";
+import { StatusCodes } from "http-status-codes";
 import multer, { MulterError } from "multer";
 import path from "path";
 import { z } from "zod";
@@ -21,25 +25,16 @@ export class ImageController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const paramsParseResult = await ImageController.paramsSchema.safeParseAsync(
-      req.params
-    );
+    const paramsSchema = ImageController.paramsSchema;
+    const paramsParseResult = await paramsSchema.safeParseAsync(req.params);
     if (!paramsParseResult.success) {
       next();
       return;
     }
     const params = paramsParseResult.data;
 
-    try {
-      const filePath = await this.service.get(params.name);
-      res.status(200).sendFile(filePath);
-    } catch (error) {
-      if (error instanceof ImageNotFoundError) {
-        res.status(404).end();
-      } else {
-        return Promise.reject(error);
-      }
-    }
+    const filePath = await this.service.get(params.name);
+    res.status(StatusCodes.OK).sendFile(filePath);
   }
 
   private static readonly upload = multer({
@@ -56,8 +51,12 @@ export class ImageController {
     },
   }).single("image");
 
-  public async post(req: Request, res: Response): Promise<void> {
-    const userUid = authorize(req, res);
+  public async post(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const userUid = authorize(req, res, next);
     if (userUid === undefined) {
       return;
     }
@@ -67,9 +66,9 @@ export class ImageController {
         ImageController.upload(req, res, (error) => {
           if (error) {
             reject(error);
-          } else {
-            resolve();
+            return;
           }
+          resolve();
         });
       });
     } catch (error) {
@@ -77,17 +76,15 @@ export class ImageController {
         return Promise.reject(error);
       }
       if (error.code === "LIMIT_FILE_SIZE") {
-        res.status(413).error({
-          error: "FILE_TOO_LARGE",
-          message: `File cannot bigger than ${config.image.maxBytes} bytes`,
-        });
+        next(
+          new FileTooLargeError(
+            `File cannot bigger than ${config.image.maxBytes} bytes`
+          )
+        );
         return;
       }
       if (error.code === "LIMIT_UNEXPECTED_FILE") {
-        res.status(415).error({
-          error: "UNSUPPORTED_FILE",
-          message: "Unsupported file format",
-        });
+        next(new UnsupportedFileError());
         return;
       }
       return Promise.reject(error);
@@ -98,9 +95,8 @@ export class ImageController {
     const imagePath = path.resolve(file.destination, file.filename);
     try {
       const name = await this.service.post(imagePath);
-      res
-        .status(201)
-        .json({ url: `${env.SERVER_URL}${req.originalUrl}/${name}` });
+      const url = `${env.SERVER_URL}${req.originalUrl}/${name}`;
+      res.status(StatusCodes.CREATED).json({ url });
     } finally {
       await fs.rm(imagePath);
     }

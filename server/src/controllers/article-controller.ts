@@ -1,15 +1,13 @@
 import {
-  ArticleNotFoundError,
-  QueryLimitOutOfBoundsError,
-  QueryOffsetOutOfBoundsError,
-  UserNotFoundError,
-} from "@/errors/service-errors";
+  InvalidBodyFormatError,
+  InvalidQueryFormatError,
+} from "@/errors/controller-error";
 import { ArticleService } from "@/services/article-service";
 import { ArticleValueTransformer } from "@/tranformers/article-value-transformers";
 import { CategoryValueTransformer } from "@/tranformers/category-value-transformers";
 import { authorize } from "@/utils/authorize";
-import { extractIssue } from "@/utils/extract-issue";
 import { NextFunction, Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
 export class ArticleController {
@@ -24,27 +22,16 @@ export class ArticleController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const paramsParseResult =
-      await ArticleController.paramsSchema.safeParseAsync(req.params);
+    const paramsSchema = ArticleController.paramsSchema;
+    const paramsParseResult = await paramsSchema.safeParseAsync(req.params);
     if (!paramsParseResult.success) {
       next();
       return;
     }
     const params = paramsParseResult.data;
 
-    try {
-      const response = await this.articleService.getOne(params.id);
-      res.status(200).json(response);
-    } catch (error) {
-      if (error instanceof ArticleNotFoundError) {
-        res.status(404).error({
-          error: "ARTICLE_NOT_FOUND",
-          message: error.message,
-        });
-      } else {
-        return Promise.reject(error);
-      }
-    }
+    const response = await this.articleService.getOne(params.id);
+    res.status(StatusCodes.OK).json(response);
   }
 
   private static readonly getManySchema = z.object({
@@ -54,37 +41,31 @@ export class ArticleController {
     limit: z.coerce.number().int().optional(),
   });
 
-  public async getMany(req: Request, res: Response): Promise<void> {
-    const queryParseResult =
-      await ArticleController.getManySchema.safeParseAsync(req.query);
+  public async getMany(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const querySchema = ArticleController.getManySchema;
+    const queryParseResult = await querySchema.safeParseAsync(req.query);
     if (!queryParseResult.success) {
-      res.status(400).error({
-        error: "INVALID_QUERY",
-        message: "Query is not valid",
-        details: extractIssue(queryParseResult.error),
-      });
+      next(new InvalidQueryFormatError(queryParseResult.error));
       return;
     }
     const query = queryParseResult.data;
 
-    try {
-      const response = await this.articleService.getMany(query);
-      res.status(200).json(response);
-    } catch (error) {
-      if (error instanceof QueryOffsetOutOfBoundsError) {
-        res.status(400).error({
-          error: "QUERY_OFFSET_OUT_OF_BOUNDS",
-          message: error.message,
-        });
-      } else if (error instanceof QueryLimitOutOfBoundsError) {
-        res.status(400).error({
-          error: "QUERY_LIMIT_OUT_OF_BOUNDS",
-          message: error.message,
-        });
-      } else {
-        return Promise.reject(error);
-      }
-    }
+    const response = await this.articleService.getMany({
+      uploaderUsername: query.uploader,
+      categoryName:
+        query.category !== undefined
+          ? query.category.length === 0
+            ? null
+            : query.category
+          : undefined,
+      offset: query.offset,
+      limit: query.limit,
+    });
+    res.status(StatusCodes.OK).json(response);
   }
 
   private static readonly postSchema = z.object({
@@ -100,21 +81,20 @@ export class ArticleController {
     content: z.string().transform(ArticleValueTransformer.content),
   });
 
-  public async post(req: Request, res: Response): Promise<void> {
-    const userUid = authorize(req, res);
+  public async post(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const userUid = authorize(req, res, next);
     if (userUid === undefined) {
       return;
     }
 
-    const bodyParseResult = await ArticleController.postSchema.safeParseAsync(
-      req.body
-    );
+    const bodySchema = ArticleController.postSchema;
+    const bodyParseResult = await bodySchema.safeParseAsync(req.body);
     if (!bodyParseResult.success) {
-      res.status(400).error({
-        error: "INVALID_PAYLOAD",
-        message: "Payload is not valid",
-        details: extractIssue(bodyParseResult.error),
-      });
+      next(new InvalidBodyFormatError(bodyParseResult.error));
       return;
     }
     const body = bodyParseResult.data;
@@ -127,7 +107,7 @@ export class ArticleController {
       body.subtitle,
       body.content
     );
-    res.status(201).json(response);
+    res.status(StatusCodes.CREATED).json(response);
   }
 
   private static readonly patchSchema = z.object({
@@ -153,44 +133,29 @@ export class ArticleController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const userUid = authorize(req, res);
+    const userUid = authorize(req, res, next);
     if (userUid === undefined) {
       return;
     }
 
-    const paramsParseResult =
-      await ArticleController.paramsSchema.safeParseAsync(req.params);
+    const paramsSchema = ArticleController.paramsSchema;
+    const paramsParseResult = await paramsSchema.safeParseAsync(req.params);
     if (!paramsParseResult.success) {
       next();
       return;
     }
     const params = paramsParseResult.data;
 
-    const bodyParseResult = await ArticleController.patchSchema.safeParseAsync(
-      req.body
-    );
+    const bodySchema = ArticleController.patchSchema;
+    const bodyParseResult = await bodySchema.safeParseAsync(req.body);
     if (!bodyParseResult.success) {
-      res.status(400).error({
-        error: "INVALID_PAYLOAD",
-        message: "Payload is not valid",
-        details: extractIssue(bodyParseResult.error),
-      });
+      next(new InvalidBodyFormatError(bodyParseResult.error));
       return;
     }
     const body = bodyParseResult.data;
 
-    try {
-      await this.articleService.patch(userUid, params.id, body);
-      res.status(201).end();
-    } catch (error) {
-      if (error instanceof UserNotFoundError) {
-        res.status(401).end();
-      } else if (error instanceof ArticleNotFoundError) {
-        res.status(404).end();
-      } else {
-        return Promise.reject(error);
-      }
-    }
+    await this.articleService.patch(userUid, params.id, body);
+    res.status(StatusCodes.CREATED).end();
   }
 
   public async delete(
@@ -198,30 +163,20 @@ export class ArticleController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const userUid = authorize(req, res);
+    const userUid = authorize(req, res, next);
     if (userUid === undefined) {
       return;
     }
 
-    const paramsParseResult =
-      await ArticleController.paramsSchema.safeParseAsync(req.params);
+    const paramsSchema = ArticleController.paramsSchema;
+    const paramsParseResult = await paramsSchema.safeParseAsync(req.params);
     if (!paramsParseResult.success) {
       next();
       return;
     }
     const params = paramsParseResult.data;
 
-    try {
-      await this.articleService.delete(userUid, params.id);
-      res.status(201).end();
-    } catch (error) {
-      if (error instanceof UserNotFoundError) {
-        res.status(401).end();
-      } else if (error instanceof ArticleNotFoundError) {
-        res.status(404).end();
-      } else {
-        return Promise.reject(error);
-      }
-    }
+    await this.articleService.delete(userUid, params.id);
+    res.status(StatusCodes.CREATED).end();
   }
 }

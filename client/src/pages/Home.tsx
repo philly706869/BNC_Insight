@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ContentLessArticle, getArticles } from "../services/article-service";
-import styles from "../styles/Home.module.css";
+import styles from "../styles/Home.module.scss";
 
 function Article({
   className,
@@ -40,9 +40,7 @@ export default function Home() {
   return (
     <>
       <div className={styles.articles}>
-        {articles === null ? (
-          <p>Loading articles...</p>
-        ) : (
+        {articles !== null && (
           <>
             <Article className={styles.main} article={articles.at(0)} />
             <Article className={styles.sub1} article={articles.at(1)} />

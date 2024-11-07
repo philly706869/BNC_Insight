@@ -1,5 +1,7 @@
+import { ResponsibleError } from "@/errors/responsible-error";
+import { APINotFoundError } from "@/errors/router-error";
 import cors from "cors";
-import { json, Router } from "express";
+import { ErrorRequestHandler, json, Router } from "express";
 import { articleRouter } from "./article-router";
 import { authRouter } from "./auth-router";
 import { categoryRouter } from "./category-router";
@@ -14,9 +16,14 @@ apiRouter.use("/users", userRouter);
 apiRouter.use("/categories", categoryRouter);
 apiRouter.use("/articles", articleRouter);
 apiRouter.use("/images", imageRouter);
-apiRouter.use((req, res) => {
-  res.status(404).error({
-    error: "API_NOT_FOUND",
-    message: "Requested api endpoint is not exists",
-  });
+apiRouter.use((req, res, next) => {
+  next(new APINotFoundError());
 });
+
+apiRouter.use(((error, req, res, next) => {
+  if (error instanceof ResponsibleError) {
+    error.response(res);
+    return;
+  }
+  next(error);
+}) satisfies ErrorRequestHandler);

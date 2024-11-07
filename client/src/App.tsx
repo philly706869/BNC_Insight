@@ -10,11 +10,8 @@ import {
   CurrentUserContextData,
 } from "./contexts/CurrentUserContext";
 import Layout from "./Layout";
-import EditArticle from "./pages/article/EditArticle";
 import MyArticles from "./pages/article/MyArticles";
-import NewArticle from "./pages/article/NewArticle";
 import ViewArticle from "./pages/article/ViewArticle";
-import Category from "./pages/Category";
 import Home from "./pages/Home";
 import MyAccount from "./pages/MyAccount";
 import NotFound from "./pages/NotFound";
@@ -23,7 +20,11 @@ import Signup from "./pages/Signup";
 import User from "./pages/User";
 import { getCurrentUser } from "./services/auth-service";
 import { getCategories } from "./services/category-service";
-import "./styles/global.css";
+
+import "normalize.css";
+import { WriteArticle } from "./pages/article/WriteArticle";
+import Articles from "./pages/Articles";
+import "./styles/global.scss";
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState<CurrentUserContextData>({
@@ -64,14 +65,12 @@ export default function App() {
                   <Route path="/" element={<Home />} />
                   <Route path="/signin" element={<Signin />} />
                   <Route path="/signup" element={<Signup />} />
-                  <Route path="/category" element={<Category />} />
-                  <Route path="/category/:category" element={<Category />} />
+                  <Route path="/articles" element={<Articles />} />
                   <Route path="/myarticles" element={<MyArticles />} />
-                  <Route path="/article/new" element={<NewArticle />} />
-                  <Route path="/article/edit" element={<EditArticle />} />
+                  <Route path="/article/write" element={<WriteArticle />} />
                   <Route path="/article/:uid" element={<ViewArticle />} />
                   <Route path="/myaccount" element={<MyAccount />} />
-                  <Route path="/user/:username" element={<User />} />
+                  <Route path="/:username" element={<User />} />
                   <Route path="*" element={<NotFound />} />
                 </Route>
               </Routes>

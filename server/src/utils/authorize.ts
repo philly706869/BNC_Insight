@@ -1,12 +1,15 @@
-import { Request, Response } from "express";
+import { UnauthorizedRequestError } from "@/errors/controller-error";
+import { NextFunction, Request, Response } from "express";
 
-export function authorize(req: Request, res: Response): number | undefined {
+export function authorize(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): number | undefined {
   const userUid = req.session.userUid;
   if (userUid === undefined) {
-    res.status(401).json({
-      errorCode: "UNAUTHORIZED_REQUEST",
-      message: "Access denied. Please login to continue.",
-    });
+    next(new UnauthorizedRequestError());
+    return;
   }
   return userUid;
 }

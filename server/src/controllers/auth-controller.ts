@@ -1,15 +1,9 @@
-import {
-  IncorrectPasswordError,
-  InvalidAuthTokenError,
-  InvalidUsernameError,
-  UsernameAlreadyTakenError,
-  UserNotFoundError,
-} from "@/errors/service-errors";
+import { InvalidBodyFormatError } from "@/errors/controller-error";
 import { AuthService } from "@/services/auth-service";
 import { UserValueTransformer } from "@/tranformers/user-value-transformers";
 import { authorize } from "@/utils/authorize";
-import { extractIssue } from "@/utils/extract-issue";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
 import { z } from "zod";
 
 export class AuthController {
@@ -19,30 +13,30 @@ export class AuthController {
     value: z.string(),
   });
 
-  public async verifyAuthToken(req: Request, res: Response): Promise<void> {
-    const bodyParseResult =
-      await AuthController.verifyAuthTokenSchema.safeParseAsync(req.body);
+  public async verifyAuthToken(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const bodySchema = AuthController.verifyAuthTokenSchema;
+    const bodyParseResult = await bodySchema.safeParseAsync(req.body);
     if (!bodyParseResult.success) {
-      res.status(400).error({
-        error: "INVALID_PAYLOAD",
-        message: "Payload is not valid",
-        details: extractIssue(bodyParseResult.error),
-      });
+      next(new InvalidBodyFormatError(bodyParseResult.error));
       return;
     }
     const body = bodyParseResult.data;
 
     const valid = await this.authService.verifyAuthToken(body.value);
-    if (valid) {
-      res.status(200).end();
-    } else {
-      res.status(422).end();
-    }
+    res.status(valid ? StatusCodes.OK : StatusCodes.UNPROCESSABLE_ENTITY).end();
   }
 
-  public async getCurrentUser(req: Request, res: Response): Promise<void> {
+  public async getCurrentUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     const response = await this.authService.getCurrentUser(req.session);
-    res.status(200).json(response);
+    res.status(StatusCodes.OK).json(response);
   }
 
   private static readonly signupSchema = z.object({
@@ -52,45 +46,27 @@ export class AuthController {
     name: z.string().transform(UserValueTransformer.name),
   });
 
-  public async signup(req: Request, res: Response): Promise<void> {
-    const bodyParseResult = await AuthController.signupSchema.safeParseAsync(
-      req.body
-    );
+  public async signup(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const bodySchema = AuthController.signupSchema;
+    const bodyParseResult = await bodySchema.safeParseAsync(req.body);
     if (!bodyParseResult.success) {
-      res.status(400).error({
-        error: "INVALID_CREDENTIALS",
-        message: "Provided credentials does not valid",
-        details: extractIssue(bodyParseResult.error),
-      });
+      next(new InvalidBodyFormatError(bodyParseResult.error));
       return;
     }
     const body = bodyParseResult.data;
 
-    try {
-      await this.authService.signup(
-        req.session,
-        body.token,
-        body.username,
-        body.password,
-        body.name
-      );
-      res.status(201).end();
-    } catch (error) {
-      if (error instanceof InvalidAuthTokenError) {
-        res.status(422).json({
-          errorCode: "INVALID_AUTH_TOKEN",
-          message: "Auth token is not valid.",
-        });
-      }
-      if (error instanceof UsernameAlreadyTakenError) {
-        res.status(422).json({
-          errorCode: "INVALID_USERNAME",
-          message: "Username is already taken",
-        });
-      } else {
-        return Promise.reject(error);
-      }
-    }
+    await this.authService.signup(
+      req.session,
+      body.token,
+      body.username,
+      body.password,
+      body.name
+    );
+    res.status(StatusCodes.CREATED).end();
   }
 
   private static readonly signinSchema = z.object({
@@ -98,41 +74,30 @@ export class AuthController {
     password: z.string(),
   });
 
-  public async signin(req: Request, res: Response): Promise<void> {
-    const bodyParseResult = await AuthController.signinSchema.safeParseAsync(
-      req.body
-    );
+  public async signin(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const bodySchema = AuthController.signinSchema;
+    const bodyParseResult = await bodySchema.safeParseAsync(req.body);
     if (!bodyParseResult.success) {
-      res.status(400).error({
-        error: "INVALID_PAYLOAD",
-        message: "Payload is not valid",
-        details: extractIssue(bodyParseResult.error),
-      });
+      next(new InvalidBodyFormatError(bodyParseResult.error));
       return;
     }
     const body = bodyParseResult.data;
 
-    try {
-      await this.authService.signin(req.session, body.username, body.password);
-      res.status(201).end();
-    } catch (error) {
-      if (
-        error instanceof InvalidUsernameError ||
-        error instanceof IncorrectPasswordError
-      ) {
-        res.status(401).json({
-          errorCode: "INVALID_CREDENTIALS",
-          message: "Username or password is incorrect",
-        });
-      } else {
-        return Promise.reject(error);
-      }
-    }
+    await this.authService.signin(req.session, body.username, body.password);
+    res.status(StatusCodes.CREATED).end();
   }
 
-  public async signout(req: Request, res: Response): Promise<void> {
+  public async signout(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     await this.authService.signout(req.session);
-    res.status(201).end();
+    res.status(StatusCodes.CREATED).end();
   }
 
   private static readonly updatePasswordSchema = z.object({
@@ -140,39 +105,29 @@ export class AuthController {
     newPassword: z.string().transform(UserValueTransformer.password),
   });
 
-  public async updatePassword(req: Request, res: Response): Promise<void> {
-    const userUid = authorize(req, res);
+  public async updatePassword(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const userUid = authorize(req, res, next);
     if (userUid === undefined) {
       return;
     }
 
-    const bodyParseResult =
-      await AuthController.updatePasswordSchema.safeParseAsync(req.body);
+    const bodySchema = AuthController.updatePasswordSchema;
+    const bodyParseResult = await bodySchema.safeParseAsync(req.body);
     if (!bodyParseResult.success) {
-      res.status(400).error({
-        error: "INVALID_PAYLOAD",
-        message: "Payload is not valid",
-        details: extractIssue(bodyParseResult.error),
-      });
+      next(new InvalidBodyFormatError(bodyParseResult.error));
       return;
     }
     const body = bodyParseResult.data;
 
-    try {
-      await this.authService.updatePassword(
-        userUid,
-        body.currentPassword,
-        body.newPassword
-      );
-      res.status(201).end();
-    } catch (error) {
-      if (error instanceof UserNotFoundError) {
-        res.status(401).end();
-      } else if (error instanceof IncorrectPasswordError) {
-        res.status(401).end();
-      } else {
-        return Promise.reject(error);
-      }
-    }
+    await this.authService.updatePassword(
+      userUid,
+      body.currentPassword,
+      body.newPassword
+    );
+    res.status(StatusCodes.CREATED).end();
   }
 }

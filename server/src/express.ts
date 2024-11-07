@@ -7,7 +7,6 @@ import { apiRouter } from "./routers/api-router";
 import { NODE_ENV } from "./utils/node-env";
 
 export const express = Express();
-express.response.error = express.response.json;
 express.use(requestLogger);
 express.use(session);
 express.use("/api", apiRouter);
