@@ -1,32 +1,15 @@
 import { AuthController } from "@/controllers/auth-controller";
 import { database } from "@/database/database";
 import { AuthService } from "@/services/auth-service";
+import { safeAsyncHandler as safe } from "@/utils/safe-async-handler";
 import { Router } from "express";
 
 export const authRouter = Router();
 const service = new AuthService(database);
 const controller = new AuthController(service);
-
-authRouter.post("/verify-auth-token", (req, res, next) => {
-  controller.verifyAuthToken(req, res, next).catch(next);
-});
-
-authRouter.post("/signup", (req, res, next) => {
-  controller.signup(req, res, next).catch(next);
-});
-
-authRouter.post("/signin", (req, res, next) => {
-  controller.signin(req, res, next).catch(next);
-});
-
-authRouter.post("/signout", (req, res, next) => {
-  controller.signout(req, res, next).catch(next);
-});
-
-authRouter.get("/me", (req, res, next) => {
-  controller.getCurrentUser(req, res, next).catch(next);
-});
-
-authRouter.post("/update-password", (req, res, next) => {
-  controller.updatePassword(req, res, next).catch(next);
-});
+authRouter.post("/verify-auth-token", safe(controller.verifyAuthToken));
+authRouter.post("/signup", safe(controller.signup));
+authRouter.post("/signin", safe(controller.signin));
+authRouter.post("/signout", safe(controller.signout));
+authRouter.get("/me", safe(controller.getCurrentUser));
+authRouter.post("/update-password", safe(controller.updatePassword));

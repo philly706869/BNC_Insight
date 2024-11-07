@@ -1,3 +1,4 @@
+import { InternalError } from "@/errors/controller-error";
 import { logger } from "@/utils/logger";
 import { ErrorRequestHandler } from "express";
 
@@ -12,8 +13,5 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
     logger.error(error);
   }
 
-  res.status(500).error({
-    error: "UNKNOWN_ERROR",
-    message: "Unexcepted error occured",
-  });
+  next(new InternalError());
 };

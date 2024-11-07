@@ -4,8 +4,8 @@ import {
   FileTooLargeError,
   UnsupportedFileError,
 } from "@/errors/controller-error";
+import { authorize } from "@/middlewares/authorize";
 import { ImageService } from "@/services/image-service";
-import { authorize } from "@/utils/authorize";
 import { NextFunction, Request, Response } from "express";
 import fs from "fs/promises";
 import { StatusCodes } from "http-status-codes";

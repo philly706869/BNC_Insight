@@ -1,7 +1,7 @@
 import { InvalidBodyFormatError } from "@/errors/controller-error";
+import { authorize } from "@/middlewares/authorize";
 import { CategoryService } from "@/services/category-service";
 import { CategoryValueTransformer } from "@/tranformers/category-value-transformers";
-import { authorize } from "@/utils/authorize";
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { z } from "zod";

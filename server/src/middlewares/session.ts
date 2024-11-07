@@ -7,7 +7,7 @@ export const session = Session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 30 * 24 * 60 * 1000,
+    maxAge: 30 * 24 * 60 * 1000 /* almost 1 month */,
   },
   store: new (MySQLStore(await import("express-session")))({
     user: env.DATABASE_USERNAME,
@@ -16,7 +16,7 @@ export const session = Session({
     port: env.DATABASE_PORT,
     database: env.DATABASE_NAME,
     clearExpired: true,
-    checkExpirationInterval: 3 * 60 * 1000,
-    expiration: 30 * 24 * 60 * 1000,
+    checkExpirationInterval: 3 * 60 * 1000 /* 3 mins */,
+    expiration: 30 * 24 * 60 * 1000 /* almost 1 month */,
   }),
 });

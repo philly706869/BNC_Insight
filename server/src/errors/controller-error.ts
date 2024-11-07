@@ -62,3 +62,9 @@ export class UnsupportedFileError extends ControllerError {
     super(StatusCodes.UNSUPPORTED_MEDIA_TYPE, "UNSUPPORTED_FILE", message);
   }
 }
+
+export class InternalError extends ControllerError {
+  public constructor(message: string = "Unexcepted error occured") {
+    super(StatusCodes.INTERNAL_SERVER_ERROR, "UNKNOWN_INTERNAL_ERROR", message);
+  }
+}

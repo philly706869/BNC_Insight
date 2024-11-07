@@ -2,10 +2,10 @@ import {
   InvalidBodyFormatError,
   InvalidQueryFormatError,
 } from "@/errors/controller-error";
+import { authorize } from "@/middlewares/authorize";
 import { ArticleService } from "@/services/article-service";
 import { ArticleValueTransformer } from "@/tranformers/article-value-transformers";
 import { CategoryValueTransformer } from "@/tranformers/category-value-transformers";
-import { authorize } from "@/utils/authorize";
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { z } from "zod";
