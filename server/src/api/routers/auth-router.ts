@@ -1,9 +1,9 @@
-import { AuthController } from "@/controllers/auth-controller";
 import { database } from "@/database/database";
-import { AuthService } from "@/services/auth-service";
 import { bound } from "@/utils/bound";
 import { safeAsyncHandler as safe } from "@/utils/safe-async-handler";
 import { Router } from "express";
+import { AuthController } from "../controllers/auth-controller";
+import { AuthService } from "../services/auth-service";
 
 export const authRouter = Router();
 const service = new AuthService(database);

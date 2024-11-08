@@ -48,6 +48,7 @@ export default function Header() {
       <nav className={styles.categories}>
         {categories.isInitialized && (
           <>
+            <Link to="/articles">All</Link>
             <Link to="/articles?category=">Uncategorized</Link>
             {categories.data.map(({ name: category }) => (
               <Link key={category} to={`/articles?category=${category}`}>

@@ -2,7 +2,6 @@ import { TextField, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useContext, useRef, useState } from "react";
 import ReactQuill from "react-quill";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import validator from "validator";
 import Quill from "../../components/Quill";
 import { CategoryContext } from "../../contexts/CategoryContext";
 import { postArticle } from "../../services/article-service";
@@ -20,10 +19,6 @@ export function WriteArticle() {
     url: string;
     caption: string;
   } | null>(null);
-  const [thumbnailUrl, setThumbnailUrl] = useState<string>("");
-  const [thumbnailUrlMessage, setThumbnailUrlMessage] = useState<string | null>(
-    null
-  );
   const [thumbnailCaptionMessage, setThumnailCaptionMessage] = useState<
     string | null
   >(null);
@@ -108,33 +103,6 @@ export function WriteArticle() {
               }
             }}
           />
-          <p>or</p>
-          <TextField
-            label="Thumbnail Image Url"
-            fullWidth
-            value={thumbnailUrl}
-            onChange={({ target }) => {
-              setThumbnailUrl(target.value);
-              setThumbnailUrlMessage(null);
-            }}
-            helperText={thumbnailUrlMessage}
-            error={thumbnailUrlMessage !== null}
-            autoComplete="off"
-            spellCheck="false"
-          />
-          <button
-            onClick={() => {
-              if (
-                validator.isURL(thumbnailUrl, { protocols: ["http", "https"] })
-              ) {
-                setThumbnail({ url: thumbnailUrl, caption: "" });
-              } else {
-                setThumbnailUrlMessage("Invalid url");
-              }
-            }}
-          >
-            Use
-          </button>
         </>
       )}
       <TextField

@@ -5,13 +5,13 @@ import {
   UnsupportedFileError,
 } from "@/errors/controller-error";
 import { authorize } from "@/middlewares/authorize";
-import { ImageService } from "@/services/image-service";
 import { NextFunction, Request, Response } from "express";
 import fs from "fs/promises";
 import { StatusCodes } from "http-status-codes";
 import multer, { MulterError } from "multer";
 import path from "path";
 import { z } from "zod";
+import { ImageService } from "../services/image-service";
 
 export class ImageController {
   public constructor(private readonly service: ImageService) {}
@@ -95,7 +95,7 @@ export class ImageController {
     const imagePath = path.resolve(file.destination, file.filename);
     try {
       const name = await this.service.post(imagePath);
-      const url = `${env.SERVER_URL}${req.originalUrl}/${name}`;
+      const url = `${env.SERVER_URL.origin}${req.originalUrl}/${name}`;
       res.status(StatusCodes.CREATED).json({ url });
     } finally {
       await fs.rm(imagePath);

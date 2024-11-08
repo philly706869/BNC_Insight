@@ -29,6 +29,7 @@ export class ImageService {
       const image = sharp(imagePath);
       const metadata = await image.metadata();
       const format = metadata.format;
+      const conf = config.image;
       const supportedFormats = config.image.supportedFormats;
       if (
         format === undefined ||
@@ -36,9 +37,10 @@ export class ImageService {
       ) {
         return Promise.reject(new UnsupportedImageFormatError());
       }
-      const name = `${uuidv4()}.${format}`;
+      const saveFormat = conf.saveFormat;
+      const name = `${uuidv4()}.${saveFormat}`;
       const dest = path.resolve(config.image.path, name);
-      await image.toFile(dest);
+      await image.toFormat(saveFormat).toFile(dest);
       return name;
     } catch (error) {
       return Promise.reject(error);

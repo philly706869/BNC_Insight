@@ -1,4 +1,5 @@
 import path from "path";
+import sharp from "sharp";
 import validator, { IsURLOptions } from "validator";
 import { BCRYPT_MAX_BYTE_LENGTH } from "./utils/bcrypt-constants";
 import { StringConstraint, stringConstraints } from "./utils/constraint";
@@ -37,6 +38,7 @@ export type Config = {
     readonly height: number;
     readonly maxBytes: number;
     readonly supportedFormats: string[];
+    readonly saveFormat: keyof sharp.FormatEnum;
   };
 
   readonly image: {
@@ -44,6 +46,7 @@ export type Config = {
     readonly path: string;
     readonly maxBytes: number;
     readonly supportedFormats: string[];
+    readonly saveFormat: keyof sharp.FormatEnum;
   };
 };
 
@@ -197,6 +200,7 @@ export const config = {
     height: 720,
     maxBytes: 4 * 1024 * 1024 /* 4MB */,
     supportedFormats: ["jpeg", "png", "webp"],
+    saveFormat: "jpeg",
   },
 
   image: {
@@ -204,5 +208,6 @@ export const config = {
     path: path.resolve("./uploads/images"),
     maxBytes: 4 * 1024 * 1024 /* 4MB */,
     supportedFormats: ["jpeg", "png", "webp"],
+    saveFormat: "jpeg",
   },
 } as const satisfies Config;

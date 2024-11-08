@@ -1,10 +1,10 @@
 import { InvalidBodyFormatError } from "@/errors/controller-error";
 import { authorize } from "@/middlewares/authorize";
-import { CategoryService } from "@/services/category-service";
 import { CategoryValueTransformer } from "@/tranformers/category-value-transformers";
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { z } from "zod";
+import { CategoryService } from "../services/category-service";
 
 export class CategoryController {
   public constructor(private readonly categoryService: CategoryService) {}

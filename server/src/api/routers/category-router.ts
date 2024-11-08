@@ -1,9 +1,9 @@
-import { CategoryController } from "@/controllers/category-controller";
 import { database } from "@/database/database";
-import { CategoryService } from "@/services/category-service";
 import { bound } from "@/utils/bound";
 import { safeAsyncHandler as safe } from "@/utils/safe-async-handler";
 import { Router } from "express";
+import { CategoryController } from "../controllers/category-controller";
+import { CategoryService } from "../services/category-service";
 
 export const categoryRouter = Router();
 const service = new CategoryService(database);

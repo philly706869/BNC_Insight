@@ -12,3 +12,9 @@ export class APINotFoundError extends RouterError {
     super(StatusCodes.NOT_FOUND, "API_NOT_FOUND", message);
   }
 }
+
+export class ResourceNotFoundError extends RouterError {
+  public constructor(message: string = "") {
+    super(StatusCodes.NOT_FOUND, "RESOURCE_NOT_FOUND", message);
+  }
+}
