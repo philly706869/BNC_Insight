@@ -1,7 +1,8 @@
-import { TextField } from "@mui/material";
-import { useState } from "react";
+import { FormEvent, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { GeneralTextField } from "../components/GeneralTextField";
 import { signin } from "../services/auth-service";
+import { TextFieldChangeEvent } from "../types/mui";
 
 export default function Signin() {
   const navigate = useNavigate();
@@ -15,48 +16,55 @@ export default function Signin() {
     string | null
   >(null);
 
+  const formSubmitHandler = useCallback(
+    async (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      try {
+        await signin(username, password);
+        navigate("/");
+        navigate(0);
+      } catch {
+        alert("Failed to sign in");
+      }
+    },
+    [password, username, navigate]
+  );
+
+  const usernameChangeHandler = useCallback(
+    ({ target }: TextFieldChangeEvent) => {
+      setUsername(target.value);
+      setUsernameErrorMessage(null);
+    },
+    []
+  );
+
+  const passwordChangeHandler = useCallback(
+    ({ target }: TextFieldChangeEvent) => {
+      setPassword(target.value);
+      setPasswordErrorMessage(null);
+    },
+    []
+  );
+
   return (
     <>
       <h1>Sign In</h1>
-      <form
-        onSubmit={async (event) => {
-          event.preventDefault();
-          try {
-            await signin(username, password);
-            navigate("/");
-            navigate(0);
-          } catch {
-            alert("Failed to sign in");
-          }
-        }}
-      >
-        <TextField
+      <form onSubmit={formSubmitHandler}>
+        <GeneralTextField
           label="Username"
-          fullWidth
           value={username}
-          onChange={({ target }) => {
-            setUsername(target.value);
-            setUsernameErrorMessage(null);
-          }}
+          onChange={usernameChangeHandler}
           helperText={usernameErrorMessage ?? ""}
           error={usernameErrorMessage !== null}
-          autoComplete="off"
-          spellCheck="false"
           autoFocus
         />
-        <TextField
+        <GeneralTextField
           label="Password"
-          fullWidth
+          type="password"
           value={password}
-          onChange={({ target }) => {
-            setPassword(target.value);
-            setPasswordErrorMessage(null);
-          }}
+          onChange={passwordChangeHandler}
           helperText={passwordErrorMessage ?? ""}
           error={passwordErrorMessage !== null}
-          type="password"
-          autoComplete="off"
-          spellCheck="false"
         />
         <button type="submit">Sign In</button>
       </form>

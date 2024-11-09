@@ -26,6 +26,7 @@ export async function getArticle(uid: number): Promise<Article> {
 }
 
 export async function getArticles(params: {
+  uploader?: string;
   category?: string | null;
   limit: number;
   offset: number;

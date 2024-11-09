@@ -1,7 +1,8 @@
-import { TextField } from "@mui/material";
-import { useState } from "react";
+import { FormEvent, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { GeneralTextField } from "../components/GeneralTextField";
 import { signup, verifyAuthToken } from "../services/auth-service";
+import { TextFieldChangeEvent } from "../types/mui";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -17,104 +18,115 @@ export default function Signup() {
 
   const [hasToken, setHasToken] = useState<boolean>(false);
 
+  const authTokenSubmitHandler = useCallback(
+    async (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      const valid = await verifyAuthToken(token);
+      if (!valid) {
+        setTokenMessage("Invalid auth token");
+        return;
+      }
+      setHasToken(true);
+    },
+    [token]
+  );
+
+  const authTokenChangeHandler = useCallback(
+    ({ target }: TextFieldChangeEvent) => {
+      setToken(target.value);
+      setTokenMessage(null);
+    },
+    []
+  );
+
+  const credentialSubmitHandler = useCallback(
+    async (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      try {
+        await signup(token, username, password, name);
+        navigate("/");
+        navigate(0);
+      } catch (error: any) {
+        if (error.details) {
+          for (const issue of error.details as {
+            path: string[];
+            message: string;
+          }[]) {
+            if (issue.path.includes("username")) {
+              setUsernameMessage(issue.message);
+            } else if (issue.path.includes("password")) {
+              setPasswordMessage(issue.message);
+            } else if (issue.path.includes("name")) {
+              setNameMessage(issue.message);
+            }
+          }
+        } else {
+          alert("Unknown error occured while signing up");
+        }
+      }
+    },
+    [name, password, token, username, navigate]
+  );
+
+  const usernameChangeHandler = useCallback(
+    ({ target }: TextFieldChangeEvent) => {
+      setUsername(target.value);
+      setUsernameMessage(null);
+    },
+    []
+  );
+
+  const passwordChangeHandler = useCallback(
+    ({ target }: TextFieldChangeEvent) => {
+      setPassword(target.value);
+      setPasswordMessage(null);
+    },
+    []
+  );
+
+  const nameChangeHandler = useCallback(({ target }: TextFieldChangeEvent) => {
+    setName(target.value);
+    setNameMessage(null);
+  }, []);
+
   return (
     <>
       <h1>Sign Up</h1>
       {!hasToken ? (
-        <form
-          onSubmit={async (event) => {
-            event.preventDefault();
-            const valid = await verifyAuthToken(token);
-            if (!valid) {
-              setTokenMessage("Invalid auth token");
-              return;
-            }
-            setHasToken(true);
-          }}
-        >
-          <TextField
+        <form onSubmit={authTokenSubmitHandler}>
+          <GeneralTextField
             label="Auth Token"
-            fullWidth
             value={token}
-            onChange={({ target }) => {
-              setToken(target.value);
-              setTokenMessage(null);
-            }}
+            onChange={authTokenChangeHandler}
             helperText={tokenMessage ?? ""}
             error={tokenMessage !== null}
-            autoComplete="off"
-            spellCheck="false"
             autoFocus
           />
           <button type="submit">Next</button>
         </form>
       ) : (
-        <form
-          onSubmit={async (event) => {
-            event.preventDefault();
-            try {
-              await signup(token, username, password, name);
-              navigate("/");
-              navigate(0);
-            } catch (error: any) {
-              if (error.details) {
-                for (const issue of error.details as {
-                  path: string[];
-                  message: string;
-                }[]) {
-                  if (issue.path.includes("username")) {
-                    setUsernameMessage(issue.message);
-                  } else if (issue.path.includes("password")) {
-                    setPasswordMessage(issue.message);
-                  } else if (issue.path.includes("name")) {
-                    setNameMessage(issue.message);
-                  }
-                }
-              } else {
-                alert("Unknown error occured while signing up");
-              }
-            }
-          }}
-        >
-          <TextField
+        <form onSubmit={credentialSubmitHandler}>
+          <GeneralTextField
             label="Username"
-            fullWidth
             value={username}
-            onChange={({ target }) => {
-              setUsername(target.value);
-              setUsernameMessage(null);
-            }}
+            onChange={usernameChangeHandler}
             helperText={usernameMessage ?? ""}
             error={usernameMessage !== null}
-            autoComplete="off"
-            spellCheck="false"
             autoFocus
           />
-          <TextField
+          <GeneralTextField
             label="Password"
-            fullWidth
             value={password}
-            onChange={({ target }) => {
-              setPassword(target.value);
-              setPasswordMessage(null);
-            }}
+            onChange={passwordChangeHandler}
             helperText={passwordMessage ?? ""}
             error={passwordMessage !== null}
-            autoComplete="off"
-            spellCheck="false"
           />
-          <TextField
+          <GeneralTextField
             label="Name"
-            fullWidth
             value={name}
-            onChange={({ target }) => {
-              setName(target.value);
-              setNameMessage(null);
-            }}
+            onChange={nameChangeHandler}
             helperText={nameMessage ?? ""}
             error={nameMessage !== null}
-            autoComplete="off"
-            spellCheck="false"
           />
           <button type="submit">Sign Up</button>
         </form>

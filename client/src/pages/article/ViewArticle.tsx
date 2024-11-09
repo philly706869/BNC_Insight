@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Quill from "../../components/Quill";
 import { Article, getArticle } from "../../services/article-service";
 import NotFound from "../NotFound";
 
@@ -44,7 +43,6 @@ export default function ViewArticle() {
   return (
     <>
       <h1>{article.title}</h1>
-      <Quill viewMode />
     </>
   );
 }

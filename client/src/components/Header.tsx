@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CategoryContext } from "../contexts/CategoryContext";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
@@ -10,31 +10,35 @@ import styles from "../styles/Header.module.scss";
 export default function Header() {
   const currentUser = useContext(CurrentUserContext);
   const categories = useContext(CategoryContext);
-  const date = new Date();
   const navigate = useNavigate();
+
+  const [dateTime, dateString] = useMemo(() => {
+    const date = new Date();
+    const dateTime = date.toISOString().split(`T`)[0];
+    const dateString = date.toDateString();
+    return [dateTime, dateString];
+  }, []);
+
+  const logoutHandler = useCallback(async () => {
+    await signout();
+    navigate("/");
+    navigate(0);
+  }, [navigate]);
 
   return (
     <header className={`${styles.container} ${fonts.robotoSlab}`}>
-      <time className={styles.time} dateTime={date.toISOString().split(`T`)[0]}>
-        {date.toDateString()}
+      <time className={styles.time} dateTime={dateTime}>
+        {dateString}
       </time>
       <Link className={`${styles.logo} ${fonts.cormorant}`} to="/">
         BNC_Insight
       </Link>
       <nav className={styles.user}>
-        {currentUser.isInitialized ? (
-          currentUser.data ? (
+        {currentUser.isInitialized &&
+          (currentUser.data !== null ? (
             <>
               <Link to="/myaccount">{currentUser.data.name}</Link>
-              <button
-                onClick={async () => {
-                  await signout();
-                  navigate("/");
-                  navigate(0);
-                }}
-              >
-                Logout
-              </button>
+              <button onClick={logoutHandler}>Logout</button>
               <Link to="/myarticles">My Articles</Link>
             </>
           ) : (
@@ -42,8 +46,7 @@ export default function Header() {
               <Link to="/signup">Sign up</Link>
               <Link to="/signin">Sign in</Link>
             </>
-          )
-        ) : null}
+          ))}
       </nav>
       <nav className={styles.categories}>
         {categories.isInitialized && (
