@@ -32,14 +32,13 @@ export async function getArticles(params: {
   offset: number;
 }): Promise<{ total: number; items: ContentLessArticle[] }> {
   const response = await fetch(
-    "/api/articles?" +
-      new URLSearchParams({
-        ...(params.category !== undefined && {
-          category: params.category ?? "",
-        }),
-        limit: String(params.limit),
-        offset: String(params.offset),
-      })
+    `/api/articles?${new URLSearchParams({
+      ...(params.category !== undefined && {
+        category: params.category ?? "",
+      }),
+      limit: String(params.limit),
+      offset: String(params.offset),
+    })}`
   );
   if (!response.ok) {
     return Promise.reject();

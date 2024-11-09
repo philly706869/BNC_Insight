@@ -45,7 +45,9 @@ export function ArticleEditor<Category extends string>(props: Props<Category>) {
 
   const categoryChangeHandler = useCallback(
     (event: MouseEvent<HTMLElement>, value: any) => {
-      setCategory(value);
+      if (value !== null) {
+        setCategory(value);
+      }
     },
     []
   );
