@@ -1,3 +1,3 @@
-export default function User() {
+export function User() {
   return <></>;
 }

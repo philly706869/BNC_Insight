@@ -4,7 +4,7 @@ import { GeneralTextField } from "../components/GeneralTextField";
 import { signin } from "../services/auth-service";
 import { TextFieldChangeEvent } from "../types/mui";
 
-export default function Signin() {
+export function Signin() {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");

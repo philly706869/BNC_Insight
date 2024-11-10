@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { Article, getArticle } from "../../services/article-service";
 import NotFound from "../NotFound";
 
-export default function ViewArticle() {
+export function ViewArticle() {
   const params = useParams();
 
   const [article, setArticle] = useState<Article | "not found" | "unloaded">(

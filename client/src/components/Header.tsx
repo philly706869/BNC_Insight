@@ -7,9 +7,10 @@ import { signout } from "../services/auth-service";
 import fonts from "../styles/fonts.module.scss";
 import styles from "../styles/Header.module.scss";
 
-export default function Header() {
+export function Header() {
   const currentUser = useContext(CurrentUserContext);
   const categories = useContext(CategoryContext);
+
   const navigate = useNavigate();
 
   const [dateTime, dateString] = useMemo(() => {

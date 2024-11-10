@@ -28,7 +28,7 @@ function Article({
   );
 }
 
-export default function Home() {
+export function Home() {
   const [articles, setArticles] = useState<ContentLessArticle[] | null>(null);
 
   useEffect(() => {

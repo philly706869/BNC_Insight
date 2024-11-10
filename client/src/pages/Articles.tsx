@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { ContentLessArticle, getArticles } from "../services/article-service";
 
-export default function Articles() {
+export function Articles() {
   const [searchParams] = useSearchParams();
 
   const category: string | null = useMemo(

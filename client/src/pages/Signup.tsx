@@ -4,7 +4,7 @@ import { GeneralTextField } from "../components/GeneralTextField";
 import { signup, verifyAuthToken } from "../services/auth-service";
 import { TextFieldChangeEvent } from "../types/mui";
 
-export default function Signup() {
+export function Signup() {
   const navigate = useNavigate();
 
   const [token, setToken] = useState("");

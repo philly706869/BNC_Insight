@@ -1,3 +1,3 @@
-export default function MyAccount() {
+export function MyAccount() {
   return <></>;
 }

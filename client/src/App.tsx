@@ -9,24 +9,24 @@ import {
   CurrentUserContext,
   CurrentUserContextData,
 } from "./contexts/CurrentUserContext";
-import Layout from "./Layout";
-import MyArticles from "./pages/article/MyArticles";
-import ViewArticle from "./pages/article/ViewArticle";
-import Home from "./pages/Home";
-import MyAccount from "./pages/MyAccount";
-import NotFound from "./pages/NotFound";
-import Signin from "./pages/Signin";
-import Signup from "./pages/Signup";
-import User from "./pages/User";
+import { Layout } from "./Layout";
+import { ViewArticle } from "./pages/article/ViewArticle";
+import { WriteArticle } from "./pages/article/WriteArticle";
+import { Articles } from "./pages/Articles";
+import { Home } from "./pages/Home";
+import { MyAccount } from "./pages/MyAccount";
+import { MyArticles } from "./pages/MyArticles";
+import { NotFound } from "./pages/NotFound";
+import { Signin } from "./pages/Signin";
+import { Signup } from "./pages/Signup";
+import { User } from "./pages/User";
 import { getCurrentUser } from "./services/auth-service";
 import { getCategories } from "./services/category-service";
 
 import "normalize.css";
-import { WriteArticle } from "./pages/article/WriteArticle";
-import Articles from "./pages/Articles";
 import "./styles/global.scss";
 
-export default function App() {
+export function App() {
   const [currentUser, setCurrentUser] = useState<CurrentUserContextData>({
     isInitialized: false,
   });
