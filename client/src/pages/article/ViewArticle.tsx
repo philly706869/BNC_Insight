@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Article, getArticle } from "../../services/article-service";
-import NotFound from "../NotFound";
+import { NotFound } from "../NotFound";
 
 export function ViewArticle() {
   const params = useParams();
