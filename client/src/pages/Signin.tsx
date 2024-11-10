@@ -1,22 +1,18 @@
-import { FormEvent, useCallback, useState } from "react";
+import { FC, FormEvent, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GeneralTextField } from "../components/GeneralTextField";
 import { signin } from "../services/auth-service";
 import { TextFieldChangeEvent } from "../types/mui";
 
-export function Signin() {
+export const Signin: FC = () => {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
-  const [usernameErrorMessage, setUsernameErrorMessage] = useState<
-    string | null
-  >(null);
+  const [usernameMessage, setUsernameMessage] = useState<string | null>(null);
   const [password, setPassword] = useState("");
-  const [passwordErrorMessage, setPasswordErrorMessage] = useState<
-    string | null
-  >(null);
+  const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
 
-  const formSubmitHandler = useCallback(
+  const handleCredentialsSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       try {
@@ -30,18 +26,18 @@ export function Signin() {
     [password, username, navigate]
   );
 
-  const usernameChangeHandler = useCallback(
+  const handleUsernameChange = useCallback(
     ({ target }: TextFieldChangeEvent) => {
       setUsername(target.value);
-      setUsernameErrorMessage(null);
+      setUsernameMessage(null);
     },
     []
   );
 
-  const passwordChangeHandler = useCallback(
+  const handlePasswordChange = useCallback(
     ({ target }: TextFieldChangeEvent) => {
       setPassword(target.value);
-      setPasswordErrorMessage(null);
+      setPasswordMessage(null);
     },
     []
   );
@@ -49,25 +45,25 @@ export function Signin() {
   return (
     <>
       <h1>Sign In</h1>
-      <form onSubmit={formSubmitHandler}>
+      <form onSubmit={handleCredentialsSubmit}>
         <GeneralTextField
           label="Username"
           value={username}
-          onChange={usernameChangeHandler}
-          helperText={usernameErrorMessage ?? ""}
-          error={usernameErrorMessage !== null}
+          onChange={handleUsernameChange}
+          helperText={usernameMessage ?? ""}
+          error={usernameMessage !== null}
           autoFocus
         />
         <GeneralTextField
           label="Password"
           type="password"
           value={password}
-          onChange={passwordChangeHandler}
-          helperText={passwordErrorMessage ?? ""}
-          error={passwordErrorMessage !== null}
+          onChange={handlePasswordChange}
+          helperText={passwordMessage ?? ""}
+          error={passwordMessage !== null}
         />
         <button type="submit">Sign In</button>
       </form>
     </>
   );
-}
+};

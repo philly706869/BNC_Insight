@@ -1,13 +1,13 @@
-import { useCallback, useContext, useMemo } from "react";
+import fonts from "../styles/fonts.module.scss";
+import styles from "../styles/Header.module.scss";
+
+import { FC, useCallback, useContext, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CategoryContext } from "../contexts/category-context";
 import { CurrentUserContext } from "../contexts/current-user-context";
 import { signout } from "../services/auth-service";
 
-import fonts from "../styles/fonts.module.scss";
-import styles from "../styles/Header.module.scss";
-
-export function Header() {
+export const Header: FC = () => {
   const currentUser = useContext(CurrentUserContext);
   const categories = useContext(CategoryContext);
 
@@ -20,7 +20,7 @@ export function Header() {
     return [dateTime, dateString];
   }, []);
 
-  const logoutHandler = useCallback(async () => {
+  const handleLogout = useCallback(async () => {
     await signout();
     navigate("/");
     navigate(0);
@@ -35,11 +35,11 @@ export function Header() {
         BNC_Insight
       </Link>
       <nav className={styles.user}>
-        {currentUser.isInitialized &&
-          (currentUser.data !== null ? (
+        {currentUser !== undefined &&
+          (currentUser !== null ? (
             <>
-              <Link to="/myaccount">{currentUser.data.name}</Link>
-              <button onClick={logoutHandler}>Logout</button>
+              <Link to="/myaccount">{currentUser.name}</Link>
+              <button onClick={handleLogout}>Logout</button>
               <Link to="/myarticles">My Articles</Link>
             </>
           ) : (
@@ -50,11 +50,11 @@ export function Header() {
           ))}
       </nav>
       <nav className={styles.categories}>
-        {categories.isInitialized && (
+        {categories !== undefined && (
           <>
             <Link to="/articles">All</Link>
             <Link to="/articles?category=">Uncategorized</Link>
-            {categories.data.map(({ name: category }) => (
+            {categories.map(({ name: category }) => (
               <Link key={category} to={`/articles?category=${category}`}>
                 {category}
               </Link>
@@ -64,4 +64,4 @@ export function Header() {
       </nav>
     </header>
   );
-}
+};

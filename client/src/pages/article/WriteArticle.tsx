@@ -1,9 +1,9 @@
-import { useContext, useMemo } from "react";
+import { FC, useContext, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { ArticleEditor } from "../../components/ArticleEditor";
 import { CategoryContext } from "../../contexts/category-context";
 
-export function WriteArticle() {
+export const WriteArticle: FC = () => {
   const [searchParams] = useSearchParams();
 
   const override: number | undefined = useMemo(() => {
@@ -21,15 +21,18 @@ export function WriteArticle() {
   }, [searchParams]);
 
   const categories = useContext(CategoryContext);
+  const categoryNames = useMemo(() => {
+    if (categories === undefined) {
+      return undefined;
+    }
+    return categories.map((category) => category.name);
+  }, [categories]);
 
   return (
     <>
-      {categories.isInitialized && (
+      {categoryNames !== undefined && (
         <>
-          <ArticleEditor
-            mode="edit"
-            categories={categories.data.map((category) => category.name)}
-          />
+          <ArticleEditor mode="edit" categories={categoryNames} />
         </>
       )}
       {/* <button
@@ -77,4 +80,4 @@ export function WriteArticle() {
       </button> */}
     </>
   );
-}
+};

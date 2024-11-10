@@ -8,7 +8,7 @@ export async function getUser(username: string): Promise<PublicUser> {
   if (!response.ok) {
     return Promise.reject();
   }
-  return (await response.json()) as PublicUser;
+  return await response.json();
 }
 
 export async function patchUser(data: {

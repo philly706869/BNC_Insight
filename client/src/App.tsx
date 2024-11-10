@@ -1,5 +1,8 @@
+import "normalize.css";
+import "./styles/global.scss";
+
 import { createTheme, ThemeProvider } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import {
   CategoryContext,
@@ -23,34 +26,25 @@ import { User } from "./pages/User";
 import { getCurrentUser } from "./services/auth-service";
 import { getCategories } from "./services/category-service";
 
-import "normalize.css";
-import "./styles/global.scss";
+const muiTheme = createTheme({
+  typography: { button: { textTransform: "none" } },
+});
 
-export function App() {
-  const [currentUser, setCurrentUser] = useState<CurrentUserContextData>({
-    isInitialized: false,
-  });
-  const [category, setCategory] = useState<CategoryContextData>({
-    isInitialized: false,
-  });
-
-  const theme = useMemo(
-    () => createTheme({ typography: { button: { textTransform: "none" } } }),
-    []
-  );
+export const App: FC = () => {
+  const [currentUser, setCurrentUser] =
+    useState<CurrentUserContextData>(undefined);
+  const [category, setCategory] = useState<CategoryContextData>(undefined);
 
   useEffect(() => {
-    getCurrentUser()
-      .then((currentUser) =>
-        setCurrentUser({ isInitialized: true, data: currentUser })
-      )
-      .catch(() => {
-        setCurrentUser({ isInitialized: true, data: null });
-      });
+    (async () => {
+      const currentUser = await getCurrentUser();
+      setCurrentUser(currentUser);
+    })();
 
-    getCategories().then((category) =>
-      setCategory({ isInitialized: true, data: category })
-    );
+    (async () => {
+      const categories = await getCategories();
+      setCategory(categories);
+    })();
   }, []);
 
   return (
@@ -58,7 +52,7 @@ export function App() {
       <CurrentUserContext.Provider value={currentUser}>
         <CategoryContext.Provider value={category}>
           {/* mui 테마 설정 */}
-          <ThemeProvider theme={theme}>
+          <ThemeProvider theme={muiTheme}>
             <BrowserRouter>
               <Routes>
                 <Route element={<Layout />}>
@@ -80,4 +74,4 @@ export function App() {
       </CurrentUserContext.Provider>
     </>
   );
-}
+};

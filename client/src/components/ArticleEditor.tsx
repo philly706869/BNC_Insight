@@ -1,49 +1,110 @@
+import "cropperjs/dist/cropper.css";
+
 import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import {
   ChangeEvent,
   ComponentProps,
+  FC,
   MouseEvent,
   ReactNode,
   useCallback,
+  useRef,
   useState,
 } from "react";
+import { ReactCropperElement } from "react-cropper";
 import { postImage } from "../services/image-service";
 import { TextFieldChangeEvent } from "../types/mui";
 import { GeneralTextField } from "./GeneralTextField";
 import { RichTextEditor } from "./RichTextEditor";
-
-type Props<Category extends string> = {
-  mode: "edit" | "read";
-  categories: Category[];
-  onSubmit?: (data: { category: Category }) => void;
-  submitButtonLabel?: ReactNode;
-};
 
 type Thumbnail = {
   url: string;
   caption: string;
 };
 
-export function ArticleEditor<Category extends string>(props: Props<Category>) {
-  const [category, setCategory] = useState<Category | "">("");
+type ThumbnailInputProps = {
+  url?: string | null;
+  caption?: string;
+  captionHelperText?: ReactNode;
+  captionError?: boolean;
+  onUrlChange?: (value: string | null) => void;
+  onCaptionChange?: (value: string) => void;
+};
+
+const ThumbnailInput: FC<ThumbnailInputProps> = (props) => {
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
+  const [thumbnailCaption, setThumbnailCaption] = useState<string>("");
+  const [selected, setSelected] = useState();
+
+  const handleThumbnailCaptionChange = useCallback(
+    ({ target }: TextFieldChangeEvent) => {
+      setThumbnailCaption(target.value);
+    },
+    []
+  );
+
+  const handleThumbnailRemove = useCallback(() => {
+    setThumbnailUrl(null);
+  }, []);
+
+  return (
+    <>
+      {thumbnailUrl !== null ? (
+        <>
+          <img alt="thumbnail" src={thumbnailUrl} />
+          <GeneralTextField
+            label="Thumbnail Caption"
+            value={thumbnailCaption}
+            onChange={handleThumbnailCaptionChange}
+            helperText={props.captionHelperText}
+            error={props.captionError}
+          />
+          <button onClick={handleThumbnailRemove}>Remove thumbnail</button>
+        </>
+      ) : (
+        <>
+          <button>Set Thumbnail</button>
+          <input type="file" accept=".jpeg,.jpg,.png,.webp" hidden />
+        </>
+      )}
+    </>
+  );
+};
+
+const richTextEditorConfig: ComponentProps<
+  typeof RichTextEditor
+>["initialConfig"] = {
+  namespace: "ArticleEditor",
+  onError(error) {},
+};
+
+type Props = {
+  mode: "edit" | "read";
+  categories: string[];
+  onSubmit?: (data: { category: string }) => void;
+  submitButtonLabel?: ReactNode;
+};
+
+export const ArticleEditor: FC<Props> = (props) => {
+  const [category, setCategory] = useState<string>("");
   const [thumbnail, setThumbnail] = useState<Thumbnail | null>(null);
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
 
-  const [thumbnailCaptionMessage, setThumnailCaptionMessage] = useState<
-    string | null
-  >(null);
   const [titleMessage, setTitleMessage] = useState<string | null>(null);
   const [subtitleMessage, setSubtitleMessage] = useState<string | null>(null);
 
-  const formSubmitHandler = useCallback(
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cropperRef = useRef<ReactCropperElement>(null);
+
+  const handleSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
     },
     []
   );
 
-  const categoryChangeHandler = useCallback(
+  const handleCategoryChange = useCallback(
     (event: MouseEvent<HTMLElement>, value: any) => {
       if (value !== null) {
         setCategory(value);
@@ -52,26 +113,10 @@ export function ArticleEditor<Category extends string>(props: Props<Category>) {
     []
   );
 
-  const thumbnailCaptionChangeHandler = useCallback(
-    ({ target }: TextFieldChangeEvent) => {
-      setThumbnail((thumbnail) =>
-        thumbnail !== null
-          ? { url: thumbnail.url, caption: target.value }
-          : null
-      );
-      setThumnailCaptionMessage(null);
-    },
-    []
-  );
-
-  const removeThumbnailHandler = useCallback(() => {
-    setThumbnail(null);
-  }, []);
-
-  const uploadThumbnailHandler = useCallback(
+  const handleThumbnailUpload = useCallback(
     async ({ target }: ChangeEvent<HTMLInputElement>) => {
       if (target.files === null) {
-        return null;
+        return;
       }
       const file = target.files[0];
       target.files = null;
@@ -90,12 +135,16 @@ export function ArticleEditor<Category extends string>(props: Props<Category>) {
     []
   );
 
-  const titleChangeHandler = useCallback(({ target }: TextFieldChangeEvent) => {
+  const handleThumbnailSet = useCallback(() => {
+    fileInputRef.current!.click();
+  }, []);
+
+  const handleTitleChange = useCallback(({ target }: TextFieldChangeEvent) => {
     setTitle(target.value);
     setTitleMessage(null);
   }, []);
 
-  const subtitleChangeHandler = useCallback(
+  const handleSubtitleChange = useCallback(
     ({ target }: TextFieldChangeEvent) => {
       setSubtitle(target.value);
       setSubtitleMessage(null);
@@ -103,19 +152,12 @@ export function ArticleEditor<Category extends string>(props: Props<Category>) {
     []
   );
 
-  const richTextEditorConfig: ComponentProps<
-    typeof RichTextEditor
-  >["initialConfig"] = {
-    namespace: "ArticleEditor",
-    onError(error) {},
-  };
-
   return (
     <>
-      <form onSubmit={formSubmitHandler}>
+      <form onSubmit={handleSubmit}>
         <ToggleButtonGroup
           value={category}
-          onChange={categoryChangeHandler}
+          onChange={handleCategoryChange}
           exclusive
         >
           <ToggleButton value={""}>Uncategorized</ToggleButton>
@@ -125,34 +167,18 @@ export function ArticleEditor<Category extends string>(props: Props<Category>) {
             </ToggleButton>
           ))}
         </ToggleButtonGroup>
-        {thumbnail !== null ? (
-          <>
-            <img alt="thumbnail" src={thumbnail.url} />
-            <GeneralTextField
-              label="Thumbnail Caption"
-              value={thumbnail.caption}
-              onChange={thumbnailCaptionChangeHandler}
-              helperText={thumbnailCaptionMessage}
-              error={thumbnailCaptionMessage !== null}
-            />
-            <button onClick={removeThumbnailHandler}>Remove thumbnail</button>
-          </>
-        ) : (
-          <>
-            <input type="file" onChange={uploadThumbnailHandler} />
-          </>
-        )}
+        <ThumbnailInput />
         <GeneralTextField
           label="Title"
           value={title}
-          onChange={titleChangeHandler}
+          onChange={handleTitleChange}
           helperText={titleMessage}
           error={titleMessage !== null}
         />
         <GeneralTextField
           label="Subtitle"
           value={subtitle}
-          onChange={subtitleChangeHandler}
+          onChange={handleSubtitleChange}
           helperText={subtitleMessage}
           error={subtitleMessage !== null}
         />
@@ -165,4 +191,4 @@ export function ArticleEditor<Category extends string>(props: Props<Category>) {
       </form>
     </>
   );
-}
+};

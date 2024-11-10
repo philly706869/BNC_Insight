@@ -8,5 +8,5 @@ export async function postImage(file: File): Promise<string> {
   if (!response.ok) {
     return Promise.reject();
   }
-  return (await response.json()).url as string;
+  return (await response.json()).url;
 }

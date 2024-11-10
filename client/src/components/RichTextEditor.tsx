@@ -2,7 +2,7 @@ import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import { ComponentProps } from "react";
+import { ComponentProps, FC } from "react";
 
 type Props = {
   mode: "edit" | "read";
@@ -10,7 +10,7 @@ type Props = {
   placeholder: ComponentProps<typeof RichTextPlugin>["placeholder"];
 };
 
-export function RichTextEditor(props: Props) {
+export const RichTextEditor: FC<Props> = (props) => {
   const placeholder = (() => {
     const mode = props.mode;
     switch (mode) {
@@ -33,4 +33,4 @@ export function RichTextEditor(props: Props) {
       </LexicalComposer>
     </>
   );
-}
+};

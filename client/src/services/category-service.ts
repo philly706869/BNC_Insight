@@ -9,7 +9,7 @@ export async function getCategories(): Promise<Category[]> {
   if (!response.ok) {
     return Promise.reject();
   }
-  return (await response.json()) as Category[];
+  return await response.json();
 }
 
 export async function postCategory(name: string): Promise<void> {

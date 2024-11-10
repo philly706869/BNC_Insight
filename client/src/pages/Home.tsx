@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { ContentLessArticle, getArticles } from "../services/article-service";
 
 import styles from "../styles/Home.module.scss";
 
-function Article({
-  className,
-  article,
-}: {
+type ArticleProps = {
   className?: string;
   article: ContentLessArticle | undefined;
-}) {
+};
+
+const Article: FC<ArticleProps> = (props) => {
+  const { className, article } = props;
+
   return (
     <article className={className}>
       {article && (
@@ -27,21 +28,23 @@ function Article({
       )}
     </article>
   );
-}
+};
 
-export function Home() {
-  const [articles, setArticles] = useState<ContentLessArticle[] | null>(null);
+export const Home: FC = () => {
+  type Articles = ContentLessArticle[] | undefined;
+  const [articles, setArticles] = useState<Articles>(undefined);
 
   useEffect(() => {
-    getArticles({ limit: 4, offset: 0 }).then(({ items: articles }) => {
-      setArticles(articles);
-    });
+    (async () => {
+      const articles = await getArticles({ limit: 4, offset: 0 });
+      setArticles(articles.items);
+    })();
   }, []);
 
   return (
     <>
       <div className={styles.articles}>
-        {articles !== null && (
+        {articles !== undefined && (
           <>
             <Article className={styles.main} article={articles.at(0)} />
             <Article className={styles.sub1} article={articles.at(1)} />
@@ -52,4 +55,4 @@ export function Home() {
       </div>
     </>
   );
-}
+};

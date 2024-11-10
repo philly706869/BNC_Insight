@@ -22,7 +22,7 @@ export async function getArticle(uid: number): Promise<Article> {
   if (!response.ok) {
     return Promise.reject();
   }
-  return (await response.json()) as Article;
+  return await response.json();
 }
 
 export async function getArticles(params: {
@@ -69,7 +69,7 @@ export async function postArticle(
   if (!response.ok) {
     return Promise.reject(await response.json());
   }
-  return (await response.json()) as { uid: number };
+  return await response.json();
 }
 
 export async function patchArticle(

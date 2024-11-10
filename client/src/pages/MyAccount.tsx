@@ -1,3 +1,5 @@
-export function MyAccount() {
+import { FC } from "react";
+
+export const MyAccount: FC = () => {
   return <></>;
-}
+};

@@ -1,10 +1,10 @@
-import { FormEvent, useCallback, useState } from "react";
+import { FC, FormEvent, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GeneralTextField } from "../components/GeneralTextField";
 import { signup, verifyAuthToken } from "../services/auth-service";
 import { TextFieldChangeEvent } from "../types/mui";
 
-export function Signup() {
+export const Signup: FC = () => {
   const navigate = useNavigate();
 
   const [token, setToken] = useState("");
@@ -15,10 +15,9 @@ export function Signup() {
   const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [nameMessage, setNameMessage] = useState<string | null>(null);
-
   const [hasToken, setHasToken] = useState<boolean>(false);
 
-  const authTokenSubmitHandler = useCallback(
+  const handleAuthTokenSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       const valid = await verifyAuthToken(token);
@@ -31,7 +30,7 @@ export function Signup() {
     [token]
   );
 
-  const authTokenChangeHandler = useCallback(
+  const handleAuthTokenChange = useCallback(
     ({ target }: TextFieldChangeEvent) => {
       setToken(target.value);
       setTokenMessage(null);
@@ -39,7 +38,7 @@ export function Signup() {
     []
   );
 
-  const credentialSubmitHandler = useCallback(
+  const handleCredentialsSubmit = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       try {
@@ -68,7 +67,7 @@ export function Signup() {
     [name, password, token, username, navigate]
   );
 
-  const usernameChangeHandler = useCallback(
+  const handleUsernameChange = useCallback(
     ({ target }: TextFieldChangeEvent) => {
       setUsername(target.value);
       setUsernameMessage(null);
@@ -76,7 +75,7 @@ export function Signup() {
     []
   );
 
-  const passwordChangeHandler = useCallback(
+  const handlePasswordChange = useCallback(
     ({ target }: TextFieldChangeEvent) => {
       setPassword(target.value);
       setPasswordMessage(null);
@@ -84,7 +83,7 @@ export function Signup() {
     []
   );
 
-  const nameChangeHandler = useCallback(({ target }: TextFieldChangeEvent) => {
+  const handleNameChange = useCallback(({ target }: TextFieldChangeEvent) => {
     setName(target.value);
     setNameMessage(null);
   }, []);
@@ -93,11 +92,11 @@ export function Signup() {
     <>
       <h1>Sign Up</h1>
       {!hasToken ? (
-        <form onSubmit={authTokenSubmitHandler}>
+        <form onSubmit={handleAuthTokenSubmit}>
           <GeneralTextField
             label="Auth Token"
             value={token}
-            onChange={authTokenChangeHandler}
+            onChange={handleAuthTokenChange}
             helperText={tokenMessage ?? ""}
             error={tokenMessage !== null}
             autoFocus
@@ -105,11 +104,11 @@ export function Signup() {
           <button type="submit">Next</button>
         </form>
       ) : (
-        <form onSubmit={credentialSubmitHandler}>
+        <form onSubmit={handleCredentialsSubmit}>
           <GeneralTextField
             label="Username"
             value={username}
-            onChange={usernameChangeHandler}
+            onChange={handleUsernameChange}
             helperText={usernameMessage ?? ""}
             error={usernameMessage !== null}
             autoFocus
@@ -117,14 +116,14 @@ export function Signup() {
           <GeneralTextField
             label="Password"
             value={password}
-            onChange={passwordChangeHandler}
+            onChange={handlePasswordChange}
             helperText={passwordMessage ?? ""}
             error={passwordMessage !== null}
           />
           <GeneralTextField
             label="Name"
             value={name}
-            onChange={nameChangeHandler}
+            onChange={handleNameChange}
             helperText={nameMessage ?? ""}
             error={nameMessage !== null}
           />
@@ -133,4 +132,4 @@ export function Signup() {
       )}
     </>
   );
-}
+};

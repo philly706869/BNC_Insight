@@ -1,9 +1,10 @@
+import styles from "./styles/Layout.module.scss";
+
+import { FC } from "react";
 import { Outlet } from "react-router-dom";
 import { Header } from "./components/Header";
 
-import styles from "./styles/Layout.module.scss";
-
-export function Layout() {
+export const Layout: FC = () => {
   return (
     <>
       <div className={styles.body}>
@@ -18,4 +19,4 @@ export function Layout() {
       </div>
     </>
   );
-}
+};

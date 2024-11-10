@@ -18,25 +18,12 @@ export async function verifyAuthToken(value: string): Promise<boolean> {
   return response.ok;
 }
 
-export async function verifyUsername(value: string): Promise<boolean> {
-  const response = await fetch("/api/auth/verify-username", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      value,
-    }),
-  });
-  return response.ok;
-}
-
-export async function getCurrentUser(): Promise<ProtectedUser> {
+export async function getCurrentUser(): Promise<ProtectedUser | null> {
   const response = await fetch("/api/auth/me");
   if (!response.ok) {
     return Promise.reject();
   }
-  return (await response.json()) as ProtectedUser;
+  return await response.json();
 }
 
 export async function signup(

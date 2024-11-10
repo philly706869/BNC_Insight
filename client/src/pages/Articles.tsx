@@ -1,14 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { ContentLessArticle, getArticles } from "../services/article-service";
 
-export function Articles() {
+export const Articles: FC = () => {
   const [searchParams] = useSearchParams();
 
-  const category: string | null = useMemo(
-    () => searchParams.get("category"),
-    [searchParams]
-  );
+  const category: string | null = useMemo(() => {
+    return searchParams.get("category");
+  }, [searchParams]);
 
   const page: number = useMemo(() => {
     const param = searchParams.get("page");
@@ -32,24 +31,27 @@ export function Articles() {
   >({ state: "UNSET" });
 
   useEffect(() => {
-    if (isNaN(page)) {
-      return;
-    }
+    (async () => {
+      if (isNaN(page)) {
+        return;
+      }
 
-    getArticles({
-      category: category,
-      limit: 30,
-      offset: 30 * (page - 1),
-    })
-      .then((data) => {
+      try {
+        const articles = await getArticles({
+          category: category,
+          limit: 30,
+          offset: 30 * (page - 1),
+        });
         setArticles({
           state: "SET",
-          data: data,
+          data: articles,
         });
-      })
-      .catch(() => {
-        setArticles({ state: "ERROR" });
-      });
+      } catch {
+        setArticles({
+          state: "ERROR",
+        });
+      }
+    })();
   }, [page, category]);
 
   return (
@@ -64,7 +66,7 @@ export function Articles() {
             <ol>
               {articles.data.items.map((article) => (
                 <>
-                  <li>
+                  <li key={article.uid}>
                     <img alt="Thumbnail" src={article.thumbnail.url} />
                     <h1>{article.title}</h1>
                     <h2>{article.subtitle}</h2>
@@ -79,4 +81,4 @@ export function Articles() {
       )}
     </>
   );
-}
+};
