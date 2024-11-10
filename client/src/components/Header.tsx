@@ -1,7 +1,7 @@
 import { useCallback, useContext, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { CategoryContext } from "../contexts/CategoryContext";
-import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import { CategoryContext } from "../contexts/category-context";
+import { CurrentUserContext } from "../contexts/current-user-context";
 import { signout } from "../services/auth-service";
 
 import fonts from "../styles/fonts.module.scss";

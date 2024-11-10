@@ -1,7 +1,7 @@
 import { useContext, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { ArticleEditor } from "../../components/ArticleEditor";
-import { CategoryContext } from "../../contexts/CategoryContext";
+import { CategoryContext } from "../../contexts/category-context";
 
 export function WriteArticle() {
   const [searchParams] = useSearchParams();

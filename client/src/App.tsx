@@ -4,11 +4,11 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import {
   CategoryContext,
   CategoryContextData,
-} from "./contexts/CategoryContext";
+} from "./contexts/category-context";
 import {
   CurrentUserContext,
   CurrentUserContextData,
-} from "./contexts/CurrentUserContext";
+} from "./contexts/current-user-context";
 import { Layout } from "./Layout";
 import { ViewArticle } from "./pages/article/ViewArticle";
 import { WriteArticle } from "./pages/article/WriteArticle";
