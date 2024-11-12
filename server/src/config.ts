@@ -1,8 +1,15 @@
 import path from "path";
-import sharp from "sharp";
+import { FormatEnum, Metadata, Sharp } from "sharp";
+import { v4 as uuidv4 } from "uuid";
 import validator, { IsURLOptions } from "validator";
+import { InvalidImageSizeError } from "./errors/service-errors";
 import { BCRYPT_MAX_BYTE_LENGTH } from "./utils/bcrypt-constants";
 import { StringConstraint, stringConstraints } from "./utils/constraint";
+
+type ImageProcessor = (
+  sharp: Sharp,
+  metadata: Metadata
+) => Promise<{ name: string; data: Sharp }>;
 
 export type Config = {
   readonly authToken: {
@@ -34,19 +41,17 @@ export type Config = {
   readonly thumbnail: {
     readonly tempPath: string;
     readonly path: string;
-    readonly width: number;
-    readonly height: number;
     readonly maxBytes: number;
-    readonly supportedFormats: string[];
-    readonly saveFormat: keyof sharp.FormatEnum;
+    readonly supportedFormats: (keyof FormatEnum)[];
+    readonly imageProcessor: ImageProcessor;
   };
 
   readonly image: {
     readonly tempPath: string;
     readonly path: string;
     readonly maxBytes: number;
-    readonly supportedFormats: string[];
-    readonly saveFormat: keyof sharp.FormatEnum;
+    readonly supportedFormats: (keyof FormatEnum)[];
+    readonly imageProcessor: ImageProcessor;
   };
 };
 
@@ -196,18 +201,34 @@ export const config = {
   thumbnail: {
     tempPath: path.resolve("./uploads/tmp"),
     path: path.resolve("./uplaods/thumbnails"),
-    width: 1280,
-    height: 720,
     maxBytes: 4 * 1024 * 1024 /* 4MB */,
-    supportedFormats: ["jpeg", "png", "webp"],
-    saveFormat: "jpeg",
+    supportedFormats: ["webp"],
+    async imageProcessor(sharp, metadata) {
+      if (metadata.width !== 1280 || metadata.height !== 720) {
+        return Promise.reject(new InvalidImageSizeError());
+      }
+
+      const name = `${uuidv4()}.webp`;
+      const data = sharp.webp({
+        lossless: true,
+        force: true,
+      });
+      return { name, data };
+    },
   },
 
   image: {
     tempPath: path.resolve("./uploads/tmp"),
     path: path.resolve("./uploads/images"),
     maxBytes: 4 * 1024 * 1024 /* 4MB */,
-    supportedFormats: ["jpeg", "png", "webp"],
-    saveFormat: "jpeg",
+    supportedFormats: ["webp"],
+    async imageProcessor(sharp) {
+      const name = `${uuidv4()}.webp`;
+      const data = sharp.webp({
+        lossless: true,
+        force: true,
+      });
+      return { name, data };
+    },
   },
 } as const satisfies Config;

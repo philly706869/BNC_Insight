@@ -6,7 +6,6 @@ import {
 import fs from "fs/promises";
 import path from "path";
 import sharp from "sharp";
-import { v4 as uuidv4 } from "uuid";
 
 export class ImageService {
   public constructor() {}
@@ -25,21 +24,20 @@ export class ImageService {
   }
 
   public async post(imagePath: string): Promise<string> {
+    const conf = config.image;
     const image = sharp(imagePath);
     const metadata = await image.metadata();
     const format = metadata.format;
-    const conf = config.image;
-    const supportedFormats = config.image.supportedFormats;
     if (
       format === undefined ||
-      !(supportedFormats as string[]).includes(format)
+      !(conf.supportedFormats as string[]).includes(format)
     ) {
       return Promise.reject(new UnsupportedImageFormatError());
     }
-    const saveFormat = conf.saveFormat;
-    const name = `${uuidv4()}.${saveFormat}`;
+    const processor = conf.imageProcessor;
+    const { name, data: processed } = await processor(image);
     const dest = path.resolve(config.image.path, name);
-    await image.toFormat(saveFormat).toFile(dest);
+    await processed.toFile(dest);
     return name;
   }
 }

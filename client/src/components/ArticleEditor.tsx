@@ -11,9 +11,10 @@ import {
   useRef,
   useState,
 } from "react";
-import { ReactCropperElement } from "react-cropper";
+import ReactCropper, { ReactCropperElement } from "react-cropper";
 import { postImage } from "../services/image-service";
 import { TextFieldChangeEvent } from "../types/mui";
+import { blobToDataUrl } from "../utils/blob-to-data-url";
 import { GeneralTextField } from "./GeneralTextField";
 import { RichTextEditor } from "./RichTextEditor";
 
@@ -34,7 +35,12 @@ type ThumbnailInputProps = {
 const ThumbnailInput: FC<ThumbnailInputProps> = (props) => {
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
   const [thumbnailCaption, setThumbnailCaption] = useState<string>("");
-  const [selected, setSelected] = useState();
+  const [selectedThumbnail, setSelectedThumbnail] = useState<string | null>(
+    null
+  );
+  const [cropper, setCropper] = useState<Cropper>();
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleThumbnailCaptionChange = useCallback(
     ({ target }: TextFieldChangeEvent) => {
@@ -46,6 +52,53 @@ const ThumbnailInput: FC<ThumbnailInputProps> = (props) => {
   const handleThumbnailRemove = useCallback(() => {
     setThumbnailUrl(null);
   }, []);
+
+  const handleThumbnailSet = useCallback(() => {
+    fileInputRef.current!.click();
+  }, []);
+
+  const handleFileChange = useCallback(
+    async ({ target }: ChangeEvent<HTMLInputElement>) => {
+      const files = target.files;
+      if (files === null) {
+        return;
+      }
+
+      const file = files[0];
+      target.files = null;
+      target.value = "";
+      if (!file) {
+        return;
+      }
+
+      const dataUrl = await blobToDataUrl(file, "image/webp", 1);
+      setSelectedThumbnail(dataUrl);
+    },
+    []
+  );
+
+  const handleCropInitialize = useCallback((instance: Cropper) => {
+    setCropper(instance);
+  }, []);
+
+  const handleCrop = useCallback(async () => {
+    if (cropper === undefined) {
+      return;
+    }
+    const canvas = cropper.getCroppedCanvas({ width: 1280, height: 720 });
+    const blob = await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob(
+        (blob) => {
+          if (blob === null) {
+            return reject();
+          }
+          return resolve(blob);
+        },
+        "image/webp",
+        1
+      );
+    });
+  }, [cropper]);
 
   return (
     <>
@@ -63,8 +116,29 @@ const ThumbnailInput: FC<ThumbnailInputProps> = (props) => {
         </>
       ) : (
         <>
-          <button>Set Thumbnail</button>
-          <input type="file" accept=".jpeg,.jpg,.png,.webp" hidden />
+          <button onClick={handleThumbnailSet}>Set Thumbnail</button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/*"
+            hidden
+          />
+          {selectedThumbnail !== null && (
+            <>
+              <ReactCropper
+                onInitialized={handleCropInitialize}
+                src={selectedThumbnail}
+                viewMode={1}
+                dragMode="move"
+                cropBoxMovable={false}
+                cropBoxResizable={false}
+                aspectRatio={16 / 9}
+                initialAspectRatio={16 / 9}
+              />
+              <button onClick={handleCrop}>Crop</button>
+            </>
+          )}
         </>
       )}
     </>
