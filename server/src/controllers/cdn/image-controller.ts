@@ -78,10 +78,9 @@ export class ImageController {
       await new Promise<void>((resolve, reject) => {
         this.upload(req, res, (error) => {
           if (error) {
-            reject(error);
-            return;
+            return reject(error);
           }
-          resolve();
+          return resolve();
         });
       });
     } catch (error) {
