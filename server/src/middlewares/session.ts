@@ -1,6 +1,12 @@
-import { env } from "@/env";
+import { env } from "@env";
 import MySQLStore from "express-mysql-session";
 import Session from "express-session";
+
+declare module "express-session" {
+  interface SessionData {
+    userUid: number;
+  }
+}
 
 export const session = Session({
   secret: env.SERVER_SESSION_SECRET,

@@ -1,18 +1,18 @@
-import { config } from "@/config";
-import { Database } from "@/database/database";
-import { authTokenTable } from "@/database/tables/auth-token-table";
-import { userTable } from "@/database/tables/user-table";
-import { ProtectedUserDTO } from "@/dto/protected-user-dto";
+import { config } from "@config";
+import { Database } from "@database/database";
+import { authTokenTable } from "@database/tables/auth-token-table";
+import { userTable } from "@database/tables/user-table";
+import { ProtectedUserDTO } from "@dto/protected-user-dto";
 import {
   IncorrectPasswordError,
   InvalidAuthTokenError,
   InvalidUsernameError,
   UsernameAlreadyTakenError,
   UserNotFoundError,
-} from "@/errors/service-errors";
-import { logger } from "@/utils/logger";
-import { AuthTokenValue } from "@/value-objects/auth-token-values";
-import { UserValue } from "@/value-objects/user-values";
+} from "@errors/service-errors";
+import { logger } from "@utils/logger";
+import { AuthTokenValue } from "@value-objects/auth-token-values";
+import { UserValue } from "@value-objects/user-values";
 import { compare, hash } from "bcrypt";
 import { eq, sql } from "drizzle-orm";
 import { Session, SessionData } from "express-session";

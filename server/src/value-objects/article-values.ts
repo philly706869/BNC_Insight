@@ -1,6 +1,7 @@
-import { config } from "@/config";
-import { env } from "@/env";
-import { ValueObjectVerifyResult } from "@/types/value-object-verify-result";
+import { config } from "@config";
+import { env } from "@env";
+import { ValueObjectVerifyResult } from "@value-objects/verify-result";
+
 import { z } from "zod";
 
 export namespace ArticleValue {

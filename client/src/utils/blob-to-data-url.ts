@@ -1,7 +1,7 @@
 export async function blobToDataUrl(
   blob: Blob,
-  type: string,
-  quality: number
+  type?: string,
+  quality?: number
 ): Promise<string> {
   return await new Promise<string>((resolve, reject) => {
     const reader = new FileReader();

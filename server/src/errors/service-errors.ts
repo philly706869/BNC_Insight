@@ -1,5 +1,5 @@
+import { ResponsibleError } from "@errors/responsible-error";
 import { StatusCodes } from "http-status-codes";
-import { ResponsibleError } from "./responsible-error";
 
 export class ServiceError extends ResponsibleError {
   public constructor(statusCode: number, errorCode: string, message: string) {

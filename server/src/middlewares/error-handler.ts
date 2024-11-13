@@ -1,5 +1,5 @@
-import { InternalError } from "@/errors/controller-error";
-import { logger } from "@/utils/logger";
+import { InternalError } from "@errors/controller-error";
+import { logger } from "@utils/logger";
 import { ErrorRequestHandler } from "express";
 
 export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {

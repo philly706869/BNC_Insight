@@ -1,17 +1,17 @@
-import { config } from "@/config";
-import { env } from "@/env";
+import { config } from "@config";
+import { env } from "@env";
 import {
   FileTooLargeError,
   UnsupportedFileError,
-} from "@/errors/controller-error";
-import { authorize } from "@/middlewares/authorize";
+} from "@errors/controller-error";
+import { authorize } from "@middlewares/authorize";
+import { ImageService } from "@services/cdn/image-service";
 import { NextFunction, Request, Response } from "express";
 import fs from "fs/promises";
 import { StatusCodes } from "http-status-codes";
 import multer, { MulterError } from "multer";
 import path from "path";
 import { z } from "zod";
-import { ImageService } from "../services/image-service";
 
 export class ImageController {
   public constructor(private readonly service: ImageService) {}

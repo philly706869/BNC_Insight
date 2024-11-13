@@ -1,5 +1,5 @@
-import { ClassToObject } from "@/types/utils";
-import { ContentlessArticleDTO } from "./contentless-article-dto";
+import { ContentlessArticleDTO } from "@dto/contentless-article-dto";
+import { ClassToObject } from "@util-types";
 
 export type ArticleDTOProps = ClassToObject<ArticleDTO>;
 

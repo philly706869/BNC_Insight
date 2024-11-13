@@ -1,8 +1,8 @@
-import { config } from "@/config";
+import { config } from "@config";
 import {
   ImageNotFoundError,
   UnsupportedImageFormatError,
-} from "@/errors/service-errors";
+} from "@errors/service-errors";
 import fs from "fs/promises";
 import path from "path";
 import sharp from "sharp";

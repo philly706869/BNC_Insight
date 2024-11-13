@@ -1,4 +1,4 @@
-import { UnauthorizedRequestError } from "@/errors/controller-error";
+import { UnauthorizedRequestError } from "@errors/controller-error";
 import { NextFunction, Request, RequestHandler, Response } from "express";
 
 export const authorize: RequestHandler = (

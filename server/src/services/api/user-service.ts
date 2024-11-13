@@ -1,8 +1,8 @@
-import { Database } from "@/database/database";
-import { userTable } from "@/database/tables/user-table";
-import { PublicUserDTO } from "@/dto/public-user-dto";
-import { UserNotFoundError } from "@/errors/service-errors";
-import { UserValue } from "@/value-objects/user-values";
+import { Database } from "@database/database";
+import { userTable } from "@database/tables/user-table";
+import { PublicUserDTO } from "@dto/public-user-dto";
+import { UserNotFoundError } from "@errors/service-errors";
+import { UserValue } from "@value-objects/user-values";
 import { eq } from "drizzle-orm";
 
 export class UserService {

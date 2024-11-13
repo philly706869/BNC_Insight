@@ -1,8 +1,8 @@
+import { express } from "@express";
+import { logger } from "@utils/logger";
 import fs from "fs/promises";
 import http from "http";
 import { exit } from "process";
-import { express } from "./express";
-import { logger } from "./utils/logger";
 
 try {
   const { env } = await import("@/env");

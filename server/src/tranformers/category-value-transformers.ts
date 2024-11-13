@@ -1,4 +1,4 @@
-import { CategoryValue } from "@/value-objects/category-values";
+import { CategoryValue } from "@value-objects/category-values";
 import { z } from "zod";
 
 export namespace CategoryValueTransformer {

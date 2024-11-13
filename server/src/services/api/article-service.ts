@@ -1,18 +1,18 @@
-import { config } from "@/config";
-import { Database } from "@/database/database";
-import { articleTable } from "@/database/tables/article-table";
-import { userTable } from "@/database/tables/user-table";
-import { ArticleDTO } from "@/dto/article-dto";
-import { ContentlessArticleDTO } from "@/dto/contentless-article-dto";
-import { PublicUserDTO } from "@/dto/public-user-dto";
+import { config } from "@config";
+import { Database } from "@database/database";
+import { articleTable } from "@database/tables/article-table";
+import { userTable } from "@database/tables/user-table";
+import { ArticleDTO } from "@dto/article-dto";
+import { ContentlessArticleDTO } from "@dto/contentless-article-dto";
+import { PublicUserDTO } from "@dto/public-user-dto";
 import {
   ArticleNotFoundError,
   QueryLimitOutOfBoundsError,
   QueryOffsetOutOfBoundsError,
   UserNotFoundError,
-} from "@/errors/service-errors";
-import { ArticleValue } from "@/value-objects/article-values";
-import { CategoryValue } from "@/value-objects/category-values";
+} from "@errors/service-errors";
+import { ArticleValue } from "@value-objects/article-values";
+import { CategoryValue } from "@value-objects/category-values";
 import { and, count, desc, eq, isNull, SQL } from "drizzle-orm";
 
 export class ArticleService {

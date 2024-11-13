@@ -1,5 +1,5 @@
-import { ClassToObject } from "@/types/utils";
-import { PublicUserDTO } from "./public-user-dto";
+import { PublicUserDTO } from "@dto/public-user-dto";
+import { ClassToObject } from "@util-types";
 
 export type ContentlessArticleDTOProps = ClassToObject<ContentlessArticleDTO>;
 

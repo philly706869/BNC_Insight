@@ -53,10 +53,6 @@ const ThumbnailInput: FC<ThumbnailInputProps> = (props) => {
     setThumbnailUrl(null);
   }, []);
 
-  const handleThumbnailSet = useCallback(() => {
-    fileInputRef.current!.click();
-  }, []);
-
   const handleFileChange = useCallback(
     async ({ target }: ChangeEvent<HTMLInputElement>) => {
       const files = target.files;
@@ -71,11 +67,15 @@ const ThumbnailInput: FC<ThumbnailInputProps> = (props) => {
         return;
       }
 
-      const dataUrl = await blobToDataUrl(file, "image/webp", 1);
+      const dataUrl = await blobToDataUrl(file);
       setSelectedThumbnail(dataUrl);
     },
     []
   );
+
+  const handleThumbnailSet = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
 
   const handleCropInitialize = useCallback((instance: Cropper) => {
     setCropper(instance);
@@ -98,6 +98,9 @@ const ThumbnailInput: FC<ThumbnailInputProps> = (props) => {
         1
       );
     });
+
+    setThumbnailUrl(URL.createObjectURL(blob));
+    setSelectedThumbnail(null);
   }, [cropper]);
 
   return (
@@ -116,7 +119,6 @@ const ThumbnailInput: FC<ThumbnailInputProps> = (props) => {
         </>
       ) : (
         <>
-          <button onClick={handleThumbnailSet}>Set Thumbnail</button>
           <input
             type="file"
             ref={fileInputRef}
@@ -124,6 +126,7 @@ const ThumbnailInput: FC<ThumbnailInputProps> = (props) => {
             accept="image/*"
             hidden
           />
+          <button onClick={handleThumbnailSet}>Set Thumbnail</button>
           {selectedThumbnail !== null && (
             <>
               <ReactCropper

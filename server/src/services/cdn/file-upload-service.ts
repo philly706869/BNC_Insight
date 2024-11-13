@@ -1,14 +1,18 @@
-import { config } from "@/config";
+import { config } from "@config";
 import {
   ImageNotFoundError,
   UnsupportedImageFormatError,
-} from "@/errors/service-errors";
+} from "@errors/service-errors";
 import fs from "fs/promises";
 import path from "path";
 import sharp from "sharp";
 
-export class ImageService {
-  public constructor() {}
+export type FileUploadServiceOptions = {};
+
+export class FileUploadService {
+  public constructor(options?: FileUploadServiceOptions) {
+    const defaultOption: FileUploadServiceOptions = {};
+  }
 
   public async get(name: string): Promise<string> {
     try {

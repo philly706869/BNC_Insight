@@ -1,4 +1,4 @@
-import { ResponsibleError } from "@/errors/responsible-error";
+import { ResponsibleError } from "@errors/responsible-error";
 import { ErrorRequestHandler } from "express";
 
 export const responsibleErrorHandler: ErrorRequestHandler = (

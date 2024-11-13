@@ -1,4 +1,4 @@
-import { PickProps } from "@/types/utils";
+import { PickProps } from "@util-types";
 
 export function bound<Target, Prop extends PickProps<Target, Function>>(
   target: Target,

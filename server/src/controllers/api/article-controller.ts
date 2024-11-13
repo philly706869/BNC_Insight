@@ -1,14 +1,14 @@
 import {
   InvalidBodyFormatError,
   InvalidQueryFormatError,
-} from "@/errors/controller-error";
-import { authorize } from "@/middlewares/authorize";
-import { ArticleValueTransformer } from "@/tranformers/article-value-transformers";
-import { CategoryValueTransformer } from "@/tranformers/category-value-transformers";
+} from "@errors/controller-error";
+import { authorize } from "@middlewares/authorize";
+import { ArticleService } from "@services/api/article-service";
+import { ArticleValueTransformer } from "@tranformers/article-value-transformers";
+import { CategoryValueTransformer } from "@tranformers/category-value-transformers";
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { z } from "zod";
-import { ArticleService } from "../services/article-service";
 
 export class ArticleController {
   public constructor(private readonly articleService: ArticleService) {}

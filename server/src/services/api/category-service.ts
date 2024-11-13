@@ -1,13 +1,13 @@
-import { Database } from "@/database/database";
-import { categoryTable } from "@/database/tables/category-table";
-import { userTable } from "@/database/tables/user-table";
-import { CategoryDTO } from "@/dto/category-dto";
+import { Database } from "@database/database";
+import { categoryTable } from "@database/tables/category-table";
+import { userTable } from "@database/tables/user-table";
+import { CategoryDTO } from "@dto/category-dto";
 import {
   CategoryNotFoundError,
   PermissionDeniedError,
   UserNotFoundError,
-} from "@/errors/service-errors";
-import { CategoryValue } from "@/value-objects/category-values";
+} from "@errors/service-errors";
+import { CategoryValue } from "@value-objects/category-values";
 import { asc, eq } from "drizzle-orm";
 
 export class CategoryService {

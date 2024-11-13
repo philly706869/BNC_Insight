@@ -1,5 +1,5 @@
-import { config } from "@/config";
-import { createdAt } from "@/utils/timestamp-columns";
+import { config } from "@config";
+import { createdAt } from "@utils/timestamp-columns";
 import { boolean, mysqlTable, varchar } from "drizzle-orm/mysql-core";
 
 const conf = config.authToken;

@@ -1,4 +1,4 @@
-import { ClassToObject } from "@/types/utils";
+import { ClassToObject } from "@util-types";
 
 export type CategoryDTOProps = ClassToObject<CategoryDTO>;
 

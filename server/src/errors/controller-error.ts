@@ -1,7 +1,7 @@
-import { extractIssue } from "@/utils/extract-issue";
+import { ResponsibleError } from "@errors/responsible-error";
+import { extractIssue } from "@utils/extract-issue";
 import { StatusCodes } from "http-status-codes";
 import { z } from "zod";
-import { ResponsibleError } from "./responsible-error";
 
 export class ControllerError extends ResponsibleError {
   public constructor(statusCode: number, errorCode: string, message: string) {

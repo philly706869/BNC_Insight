@@ -1,5 +1,5 @@
-import { config } from "@/config";
-import { ValueObjectVerifyResult } from "@/types/value-object-verify-result";
+import { config } from "@config";
+import { ValueObjectVerifyResult } from "@value-objects/verify-result";
 
 export namespace AuthTokenValue {
   const conf = config.authToken;

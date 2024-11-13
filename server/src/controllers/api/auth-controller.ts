@@ -1,10 +1,10 @@
-import { InvalidBodyFormatError } from "@/errors/controller-error";
-import { authorize } from "@/middlewares/authorize";
-import { UserValueTransformer } from "@/tranformers/user-value-transformers";
+import { InvalidBodyFormatError } from "@errors/controller-error";
+import { authorize } from "@middlewares/authorize";
+import { AuthService } from "@services/api/auth-service";
+import { UserValueTransformer } from "@tranformers/user-value-transformers";
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { z } from "zod";
-import { AuthService } from "../services/auth-service";
 
 export class AuthController {
   public constructor(private readonly authService: AuthService) {}

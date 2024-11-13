@@ -1,7 +1,7 @@
-import { ResourceNotFoundError } from "@/errors/router-error";
-import { responsibleErrorHandler } from "@/middlewares/responsible-error-handler";
+import { ResourceNotFoundError } from "@errors/router-error";
+import { responsibleErrorHandler } from "@middlewares/responsible-error-handler";
+import { imageRouter } from "@routers/cdn/image-router";
 import { Router } from "express";
-import { imageRouter } from "./image-router";
 
 export const cdnRouter = Router();
 cdnRouter.use("/images", imageRouter);

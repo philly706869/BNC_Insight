@@ -1,6 +1,6 @@
-export async function postImage(file: File): Promise<string> {
+export async function postImage(blob: Blob): Promise<string> {
   const data = new FormData();
-  data.append("image", file);
+  data.append("image", blob);
   const response = await fetch("/cdn/images", {
     method: "POST",
     body: data,

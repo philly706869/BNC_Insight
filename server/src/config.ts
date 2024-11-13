@@ -1,10 +1,10 @@
+import { InvalidImageSizeError } from "@errors/service-errors";
+import { BCRYPT_MAX_BYTE_LENGTH } from "@utils/bcrypt-constants";
+import { StringConstraint, stringConstraints } from "@utils/constraint";
 import path from "path";
 import { FormatEnum, Metadata, Sharp } from "sharp";
 import { v4 as uuidv4 } from "uuid";
 import validator, { IsURLOptions } from "validator";
-import { InvalidImageSizeError } from "./errors/service-errors";
-import { BCRYPT_MAX_BYTE_LENGTH } from "./utils/bcrypt-constants";
-import { StringConstraint, stringConstraints } from "./utils/constraint";
 
 type ImageProcessor = (
   sharp: Sharp,

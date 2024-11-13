@@ -1,4 +1,4 @@
-import { AuthTokenValue } from "@/value-objects/auth-token-values";
+import { AuthTokenValue } from "@value-objects/auth-token-values";
 import { z } from "zod";
 
 export namespace AuthTokenValueTransformer {

@@ -1,10 +1,10 @@
-import { ImageService } from "@/cdn/services/image-service";
-import { TooManyRequestError } from "@/errors/controller-error";
-import { bound } from "@/utils/bound";
-import { safeAsyncHandler as safe } from "@/utils/safe-async-handler";
+import { ImageController } from "@controllers/cdn/image-controller";
+import { TooManyRequestError } from "@errors/controller-error";
+import { ImageService } from "@services/cdn/image-service";
+import { bound } from "@utils/bound";
+import { safeAsyncHandler as safe } from "@utils/safe-async-handler";
 import { Router } from "express";
 import { rateLimit } from "express-rate-limit";
-import { ImageController } from "../controllers/image-controller";
 
 export const imageRouter = Router();
 const service = new ImageService();
