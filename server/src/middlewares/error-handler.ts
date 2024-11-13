@@ -13,5 +13,6 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
     logger.error(error);
   }
 
-  next(new InternalError());
+  const internalError = new InternalError();
+  internalError.response(res);
 };
