@@ -1,34 +1,35 @@
 import path from "path";
 import { createLogger, format, transports } from "winston";
-import winstonDRF from "winston-daily-rotate-file";
+import WinstonDailyRotateFile from "winston-daily-rotate-file";
 
-const logDir = path.resolve("./logs/");
+const logPath = path.resolve("./logs/");
+const errorLogPath = path.resolve("./logs/error/");
 
 export const logger = createLogger({
   format: format.combine(
-    format.timestamp({ format: `YYYY-MM-DD HH:mm:ss` }),
+    format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
     format.printf(
       ({ timestamp, level, message }) => `[${timestamp}]-[${level}]: ${message}`
     )
   ),
   transports: [
     new transports.Console({
-      level: `silly`,
+      level: "silly",
       format: format.colorize({ all: true }),
     }),
-    new winstonDRF({
-      level: `silly`,
-      datePattern: `YYYY-MM-DD`,
-      dirname: logDir,
-      filename: `%DATE%.log`,
+    new WinstonDailyRotateFile({
+      level: "silly",
+      datePattern: "YYYY-MM-DD",
+      dirname: logPath,
+      filename: "%DATE%.log",
       maxFiles: 365,
       zippedArchive: true,
     }),
-    new winstonDRF({
-      level: `error`,
-      datePattern: `YYYY-MM-DD`,
-      dirname: path.resolve(logDir, `error`),
-      filename: `%DATE%.error.log`,
+    new WinstonDailyRotateFile({
+      level: "error",
+      datePattern: "YYYY-MM-DD",
+      dirname: errorLogPath,
+      filename: "%DATE%.error.log",
       maxFiles: 365,
       zippedArchive: true,
     }),

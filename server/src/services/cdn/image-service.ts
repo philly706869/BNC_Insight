@@ -6,15 +6,13 @@ import fs from "fs/promises";
 import path from "path";
 import sharp, { FormatEnum, Metadata, Sharp } from "sharp";
 
-export type ImageProcessor = (
-  sharp: Sharp,
-  metadata: Metadata
-) => Promise<{ name: string; data: Sharp }>;
-
 export type ImageServiceOptions = {
   readonly uploadPath: string;
   readonly supportedFormats: (keyof FormatEnum)[];
-  readonly imageProcessor: ImageProcessor;
+  readonly imageProcessor: (
+    sharp: Sharp,
+    metadata: Metadata
+  ) => Promise<{ name: string; data: Sharp }>;
 };
 
 export class ImageService {
