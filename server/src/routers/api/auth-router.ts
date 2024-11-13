@@ -1,3 +1,4 @@
+import { config } from "@config";
 import { AuthController } from "@controllers/api/auth-controller";
 import { database } from "@database/database";
 import { AuthService } from "@services/api/auth-service";
@@ -6,7 +7,9 @@ import { safeAsyncHandler as safe } from "@utils/safe-async-handler";
 import { Router } from "express";
 
 export const authRouter = Router();
-const service = new AuthService(database);
+const service = new AuthService(database, {
+  passwordHashRounds: config.user.passwordHashRounds,
+});
 const controller = new AuthController(service);
 authRouter.post(
   "/verify-auth-token",

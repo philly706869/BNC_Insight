@@ -1,15 +1,11 @@
 import { InvalidImageSizeError } from "@errors/service-errors";
+import { ArticleServiceOptions } from "@services/api/article-service";
+import { ImageServiceOptions } from "@services/cdn/image-service";
 import { BCRYPT_MAX_BYTE_LENGTH } from "@utils/bcrypt-constants";
 import { StringConstraint, stringConstraints } from "@utils/constraint";
 import path from "path";
-import { FormatEnum, Metadata, Sharp } from "sharp";
 import { v4 as uuidv4 } from "uuid";
 import validator, { IsURLOptions } from "validator";
-
-type ImageProcessor = (
-  sharp: Sharp,
-  metadata: Metadata
-) => Promise<{ name: string; data: Sharp }>;
 
 export type Config = {
   readonly authToken: {
@@ -29,30 +25,26 @@ export type Config = {
 
   readonly article: {
     readonly defaultQueryLimit: number;
-    readonly maxQueryLimit: number;
-    readonly defaultThumbnailUrl: string;
     readonly thumbnailUrlConstraints: StringConstraint;
     readonly thumbnailCaptionConstraints: StringConstraint;
     readonly titleConstraints: StringConstraint;
     readonly subtitleConstraints: StringConstraint;
     readonly contentDeltaConstraints: StringConstraint;
-  };
+  } & ArticleServiceOptions;
 
   readonly thumbnail: {
     readonly tempPath: string;
-    readonly path: string;
     readonly maxBytes: number;
-    readonly supportedFormats: (keyof FormatEnum)[];
-    readonly imageProcessor: ImageProcessor;
-  };
+    readonly rateLimit: number;
+    readonly rateWindow: number;
+  } & ImageServiceOptions;
 
   readonly image: {
     readonly tempPath: string;
-    readonly path: string;
     readonly maxBytes: number;
-    readonly supportedFormats: (keyof FormatEnum)[];
-    readonly imageProcessor: ImageProcessor;
-  };
+    readonly rateLimit: number;
+    readonly rateWindow: number;
+  } & ImageServiceOptions;
 };
 
 export const config = {
@@ -142,7 +134,7 @@ export const config = {
   article: {
     defaultQueryLimit: 30,
     maxQueryLimit: 30,
-    defaultThumbnailUrl: "",
+    defaultThumbnailURL: new URL("about:blank"),
     thumbnailUrlConstraints: stringConstraints([
       {
         max: 2048,
@@ -200,8 +192,10 @@ export const config = {
 
   thumbnail: {
     tempPath: path.resolve("./uploads/tmp"),
-    path: path.resolve("./uplaods/thumbnails"),
-    maxBytes: 4 * 1024 * 1024 /* 4MB */,
+    uploadPath: path.resolve("./uplaods/thumbnails"),
+    maxBytes: 4 * 1024 * 1024 /* =4MB */,
+    rateLimit: 10,
+    rateWindow: 60 * 1000 /* =1min */,
     supportedFormats: ["webp"],
     async imageProcessor(sharp, metadata) {
       if (metadata.width !== 1280 || metadata.height !== 720) {
@@ -219,8 +213,10 @@ export const config = {
 
   image: {
     tempPath: path.resolve("./uploads/tmp"),
-    path: path.resolve("./uploads/images"),
-    maxBytes: 4 * 1024 * 1024 /* 4MB */,
+    uploadPath: path.resolve("./uploads/images"),
+    maxBytes: 4 * 1024 * 1024 /* =4MB */,
+    rateLimit: 10,
+    rateWindow: 60 * 1000 /* =1min */,
     supportedFormats: ["webp"],
     async imageProcessor(sharp) {
       const name = `${uuidv4()}.webp`;

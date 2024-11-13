@@ -1,16 +1,23 @@
-import { express } from "@express";
 import { logger } from "@utils/logger";
 import fs from "fs/promises";
 import http from "http";
 import { exit } from "process";
 
 try {
-  const { env } = await import("@/env");
-  const { config } = await import("@/config");
+  const { env } = await import("@env");
+  const { config } = await import("@config");
+  const { express } = await import("@express");
 
   logger.info("Checking directories...");
-  await fs.mkdir(config.image.tempPath, { recursive: true });
-  await fs.mkdir(config.image.path, { recursive: true });
+  const requiredPaths = [
+    config.image.tempPath,
+    config.image.uploadPath,
+    config.thumbnail.tempPath,
+    config.thumbnail.uploadPath,
+  ];
+  for (const requiredPath of requiredPaths) {
+    await fs.mkdir(requiredPath, { recursive: true });
+  }
   logger.info("Completed checking directories");
 
   logger.info("Connecting database...");

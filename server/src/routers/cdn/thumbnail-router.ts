@@ -9,8 +9,8 @@ import { Router } from "express";
 import { rateLimit } from "express-rate-limit";
 import mime from "mime";
 
-export const imageRouter = Router();
-const conf = config.image;
+export const thumbnailRouter = Router();
+const conf = config.thumbnail;
 const service = new ImageService(conf);
 const controller = new ImageController(service, {
   ...conf,
@@ -20,7 +20,7 @@ const controller = new ImageController(service, {
   urlOrigin: env.SERVER_URL.origin,
 });
 
-imageRouter.get("/:name", safe(bound(controller, "get")));
+thumbnailRouter.get("/:name", safe(bound(controller, "get")));
 
 const rateLimiter = rateLimit({
   windowMs: conf.rateWindow,
@@ -30,4 +30,4 @@ const rateLimiter = rateLimit({
   },
 });
 
-imageRouter.post("/", rateLimiter, safe(bound(controller, "post")));
+thumbnailRouter.post("/", rateLimiter, safe(bound(controller, "post")));

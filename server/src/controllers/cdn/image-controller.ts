@@ -1,5 +1,3 @@
-import { config } from "@config";
-import { env } from "@env";
 import {
   FileTooLargeError,
   UnsupportedFileError,
@@ -9,12 +7,41 @@ import { ImageService } from "@services/cdn/image-service";
 import { NextFunction, Request, Response } from "express";
 import fs from "fs/promises";
 import { StatusCodes } from "http-status-codes";
-import multer, { MulterError } from "multer";
+import { isMatch } from "micromatch";
+import multer, { Multer, MulterError } from "multer";
 import path from "path";
 import { z } from "zod";
 
+export type ImageControllerOptions = {
+  readonly tempPath: string;
+  readonly maxBytes: number;
+  readonly supportedMIMETypes: string[];
+  readonly urlOrigin: string;
+};
+
 export class ImageController {
-  public constructor(private readonly service: ImageService) {}
+  private readonly maxBytes: ImageControllerOptions["maxBytes"];
+  private readonly urlOrigin: ImageControllerOptions["urlOrigin"];
+  private readonly upload: ReturnType<Multer["single"]>;
+
+  public constructor(
+    private readonly service: ImageService,
+    options: ImageControllerOptions
+  ) {
+    this.maxBytes = options.maxBytes;
+    this.urlOrigin = options.urlOrigin;
+    this.upload = multer({
+      dest: path.resolve(options.tempPath),
+      limits: { fileSize: this.maxBytes },
+      fileFilter(req, file, callback) {
+        if (isMatch(file.mimetype, options.supportedMIMETypes)) {
+          callback(null, true);
+        } else {
+          callback(null, false);
+        }
+      },
+    }).single("image");
+  }
 
   private static readonly paramsSchema = z.object({
     name: z.string(),
@@ -37,20 +64,6 @@ export class ImageController {
     res.status(StatusCodes.OK).sendFile(filePath);
   }
 
-  private static readonly upload = multer({
-    dest: path.resolve(config.image.tempPath),
-    limits: { fileSize: config.image.maxBytes },
-    fileFilter(req, file, callback) {
-      for (const format of config.image.supportedFormats) {
-        if (file.mimetype.endsWith(format)) {
-          callback(null, true);
-          return;
-        }
-      }
-      callback(null, false);
-    },
-  }).single("image");
-
   public async post(
     req: Request,
     res: Response,
@@ -63,7 +76,7 @@ export class ImageController {
 
     try {
       await new Promise<void>((resolve, reject) => {
-        ImageController.upload(req, res, (error) => {
+        this.upload(req, res, (error) => {
           if (error) {
             reject(error);
             return;
@@ -78,7 +91,7 @@ export class ImageController {
       if (error.code === "LIMIT_FILE_SIZE") {
         next(
           new FileTooLargeError(
-            `File cannot bigger than ${config.image.maxBytes} bytes`
+            `File cannot bigger than ${this.maxBytes} bytes`
           )
         );
         return;
@@ -95,7 +108,7 @@ export class ImageController {
     const imagePath = path.resolve(file.destination, file.filename);
     try {
       const name = await this.service.post(imagePath);
-      const url = `${env.SERVER_URL.origin}${req.originalUrl}/${name}`;
+      const url = `${this.urlOrigin}${req.originalUrl}/${name}`;
       res.status(StatusCodes.CREATED).json({ url });
     } finally {
       await fs.rm(imagePath);

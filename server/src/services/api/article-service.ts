@@ -1,4 +1,3 @@
-import { config } from "@config";
 import { Database } from "@database/database";
 import { articleTable } from "@database/tables/article-table";
 import { userTable } from "@database/tables/user-table";
@@ -15,8 +14,22 @@ import { ArticleValue } from "@value-objects/article-values";
 import { CategoryValue } from "@value-objects/category-values";
 import { and, count, desc, eq, isNull, SQL } from "drizzle-orm";
 
+export type ArticleServiceOptions = {
+  maxQueryLimit: number;
+  defaultThumbnailURL: URL;
+};
+
 export class ArticleService {
-  public constructor(private readonly database: Database) {}
+  private readonly maxQueryLimit: ArticleServiceOptions["maxQueryLimit"];
+  private readonly defaultThumbnailURL: ArticleServiceOptions["defaultThumbnailURL"];
+
+  public constructor(
+    private readonly database: Database,
+    options: ArticleServiceOptions
+  ) {
+    this.maxQueryLimit = options.maxQueryLimit;
+    this.defaultThumbnailURL = options.defaultThumbnailURL;
+  }
 
   public async getOne(uid: number): Promise<ArticleDTO> {
     const article = (
@@ -71,10 +84,10 @@ export class ArticleService {
     const limit = await (async () => {
       const limit = query.limit;
       if (limit === undefined) {
-        return config.article.maxQueryLimit;
+        return this.maxQueryLimit;
       }
       const min = 1;
-      const max = config.article.maxQueryLimit;
+      const max = this.maxQueryLimit;
       if (limit < min || limit > max) {
         return Promise.reject(
           new QueryLimitOutOfBoundsError(
@@ -204,8 +217,7 @@ export class ArticleService {
         .values({
           uploaderUid,
           categoryName: categoryName?.value ?? null,
-          thumbnailUrl:
-            thumbnail?.url.value ?? config.article.defaultThumbnailUrl,
+          thumbnailUrl: thumbnail?.url.value ?? this.defaultThumbnailURL.href,
           thumbnailCaption: thumbnail?.caption.value ?? "",
           title: title.value,
           subtitle: subtitle.value,

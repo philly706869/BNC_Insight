@@ -1,4 +1,3 @@
-import { config } from "@config";
 import { Database } from "@database/database";
 import { authTokenTable } from "@database/tables/auth-token-table";
 import { userTable } from "@database/tables/user-table";
@@ -17,8 +16,19 @@ import { compare, hash } from "bcrypt";
 import { eq, sql } from "drizzle-orm";
 import { Session, SessionData } from "express-session";
 
+export type AuthServiceOptions = {
+  readonly passwordHashRounds: number;
+};
+
 export class AuthService {
-  public constructor(private readonly database: Database) {}
+  private readonly passwordHashRounds: AuthServiceOptions["passwordHashRounds"];
+
+  public constructor(
+    private readonly database: Database,
+    options: AuthServiceOptions
+  ) {
+    this.passwordHashRounds = options.passwordHashRounds;
+  }
 
   public async verifyAuthToken(value: string): Promise<boolean> {
     const tokenVerifyResult = AuthTokenValue.Token.verify(value);
@@ -117,10 +127,7 @@ export class AuthService {
             .values({
               username: credentials.username.value,
               passwordHash: Buffer.from(
-                await hash(
-                  credentials.password.value,
-                  config.user.passwordHashRounds
-                )
+                await hash(credentials.password.value, this.passwordHashRounds)
               ),
               name: credentials.name.value,
               isAdmin: authToken.isAdminToken,
@@ -216,7 +223,7 @@ export class AuthService {
         .update(userTable)
         .set({
           passwordHash: Buffer.from(
-            await hash(newPassword.value, config.user.passwordHashRounds)
+            await hash(newPassword.value, this.passwordHashRounds)
           ),
         })
         .where(eq(userTable.uid, uid))
