@@ -192,7 +192,7 @@ export const config = {
 
   thumbnail: {
     tempPath: path.resolve("./uploads/tmp"),
-    uploadPath: path.resolve("./uplaods/thumbnails"),
+    uploadPath: path.resolve("./uploads/thumbnails"),
     maxBytes: 4 * 1024 * 1024 /* =4MB */,
     rateLimit: 10,
     rateWindow: 60 * 1000 /* =1min */,

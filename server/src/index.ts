@@ -1,3 +1,4 @@
+import { config } from "@config";
 import { logger } from "@utils/logger";
 import fs from "fs/promises";
 import http from "http";
@@ -5,8 +6,6 @@ import { exit } from "process";
 
 try {
   const { env } = await import("@env");
-  const { config } = await import("@config");
-  const { express } = await import("@express");
 
   logger.info("Checking directories...");
   const requiredPaths = [
@@ -21,7 +20,7 @@ try {
   logger.info("Completed checking directories");
 
   logger.info("Connecting database...");
-  await import("./database/database");
+  await import("@database/database");
   logger.info("Completed connecting database");
 
   logger.info("Starting express server...");
@@ -39,9 +38,16 @@ try {
     }
     return raw;
   })();
+  const { express } = await import("@express");
   const server = http.createServer(express);
-  await new Promise<void>((resolve) => server.listen(port, () => resolve()));
-  logger.info(`Completed starting express server (port: ${port})`);
+  await new Promise<void>((resolve) => {
+    server.listen(port, () => {
+      return resolve();
+    });
+  });
+  logger.info(
+    `Completed starting express server (origin: \`${env.SERVER_URL.origin}\`)`
+  );
 } catch (error) {
   logger.error(error);
   exit(1);

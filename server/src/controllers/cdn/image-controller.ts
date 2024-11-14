@@ -7,7 +7,7 @@ import { ImageService } from "@services/cdn/image-service";
 import { NextFunction, Request, Response } from "express";
 import fs from "fs/promises";
 import { StatusCodes } from "http-status-codes";
-import { isMatch } from "micromatch";
+import micromatch from "micromatch";
 import multer, { Multer, MulterError } from "multer";
 import path from "path";
 import { z } from "zod";
@@ -34,7 +34,7 @@ export class ImageController {
       dest: path.resolve(options.tempPath),
       limits: { fileSize: this.maxBytes },
       fileFilter(req, file, callback) {
-        if (isMatch(file.mimetype, options.supportedMIMETypes)) {
+        if (micromatch.isMatch(file.mimetype, options.supportedMIMETypes)) {
           callback(null, true);
         } else {
           callback(null, false);

@@ -3,7 +3,6 @@ import "cropperjs/dist/cropper.css";
 import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import {
   ChangeEvent,
-  ComponentProps,
   FC,
   MouseEvent,
   ReactNode,
@@ -16,7 +15,7 @@ import { postImage } from "../services/image-service";
 import { TextFieldChangeEvent } from "../types/mui";
 import { blobToDataUrl } from "../utils/blob-to-data-url";
 import { GeneralTextField } from "./GeneralTextField";
-import { RichTextEditor } from "./RichTextEditor";
+import { RichTextEditor } from "./lexical/RichTextEditor";
 
 type Thumbnail = {
   url: string;
@@ -148,13 +147,6 @@ const ThumbnailInput: FC<ThumbnailInputProps> = (props) => {
   );
 };
 
-const richTextEditorConfig: ComponentProps<
-  typeof RichTextEditor
->["initialConfig"] = {
-  namespace: "ArticleEditor",
-  onError(error) {},
-};
-
 type Props = {
   mode: "edit" | "read";
   categories: string[];
@@ -261,7 +253,7 @@ export const ArticleEditor: FC<Props> = (props) => {
         />
         <RichTextEditor
           mode={"edit"}
-          initialConfig={richTextEditorConfig}
+          namespace="ArticleEditor"
           placeholder={<span>Write article body here</span>}
         />
         <button type="submit">{props.submitButtonLabel ?? "Submit"}</button>
