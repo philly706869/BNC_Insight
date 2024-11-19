@@ -1,6 +1,7 @@
 import fonts from "../styles/fonts.module.scss";
 import styles from "../styles/Header.module.scss";
 
+import classNames from "classnames";
 import { FC, useCallback, useContext, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CategoryContext } from "../contexts/category-context";
@@ -28,7 +29,7 @@ export const Header: FC = () => {
   }, [navigate]);
 
   return (
-    <header className={`${styles.container} ${fonts.robotoSlab}`}>
+    <header className={classNames(styles.container, fonts.robotoSlab)}>
       <time className={styles.time} dateTime={dateTime}>
         {dateString}
       </time>

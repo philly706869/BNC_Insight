@@ -1,3 +1,4 @@
+import { ToolbarPlugin } from "@components/lexical/plugins/ToolbarPlugin";
 import { LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
 import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
@@ -12,7 +13,6 @@ import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { EditorThemeClasses, Klass, LexicalNode, ParagraphNode } from "lexical";
 import { ComponentProps, FC, useMemo } from "react";
-import { ToolbarPlugin } from "./ToolbarPlugin";
 
 const nodes: Klass<LexicalNode>[] = [
   ParagraphNode,
