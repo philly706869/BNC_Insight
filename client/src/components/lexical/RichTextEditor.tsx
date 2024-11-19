@@ -1,10 +1,13 @@
+import { LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
 import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
+import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { EditorThemeClasses, Klass, LexicalNode, ParagraphNode } from "lexical";
@@ -17,6 +20,7 @@ const nodes: Klass<LexicalNode>[] = [
   QuoteNode,
   ListNode,
   ListItemNode,
+  LinkNode,
 ];
 
 const theme: EditorThemeClasses = {
@@ -27,6 +31,7 @@ type Props = {
   mode: "edit" | "read";
   namespace: string;
   placeholder: ComponentProps<typeof RichTextPlugin>["placeholder"];
+  onChange?: ComponentProps<typeof OnChangePlugin>["onChange"];
 };
 
 export const RichTextEditor: FC<Props> = (props) => {
@@ -55,14 +60,21 @@ export const RichTextEditor: FC<Props> = (props) => {
     <>
       <LexicalComposer initialConfig={initialConfig}>
         <ToolbarPlugin />
-        <ListPlugin />
-        <CheckListPlugin />
-        <HistoryPlugin />
         <RichTextPlugin
           contentEditable={<ContentEditable />}
           ErrorBoundary={LexicalErrorBoundary}
           placeholder={placeholder}
-        ></RichTextPlugin>
+        />
+        <HistoryPlugin />
+        <ListPlugin />
+        <CheckListPlugin />
+        <LinkPlugin />
+        {props.onChange && (
+          <OnChangePlugin
+            onChange={props.onChange}
+            ignoreSelectionChange={true}
+          />
+        )}
       </LexicalComposer>
     </>
   );

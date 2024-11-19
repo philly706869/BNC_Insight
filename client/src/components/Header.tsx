@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { CategoryContext } from "../contexts/category-context";
 import { CurrentUserContext } from "../contexts/current-user-context";
 import { signout } from "../services/auth-service";
+import { Logo } from "./Logo";
 
 export const Header: FC = () => {
   const currentUser = useContext(CurrentUserContext);
@@ -31,8 +32,8 @@ export const Header: FC = () => {
       <time className={styles.time} dateTime={dateTime}>
         {dateString}
       </time>
-      <Link className={`${styles.logo} ${fonts.cormorant}`} to="/">
-        BNC_Insight
+      <Link className={styles.logo} to="/">
+        <Logo className={styles.logoImage} />
       </Link>
       <nav className={styles.user}>
         {currentUser !== undefined &&

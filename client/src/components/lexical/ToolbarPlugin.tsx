@@ -1,7 +1,9 @@
 import {
+  $isListNode,
   INSERT_CHECK_LIST_COMMAND,
   INSERT_ORDERED_LIST_COMMAND,
   INSERT_UNORDERED_LIST_COMMAND,
+  ListNode,
 } from "@lexical/list";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
@@ -10,6 +12,7 @@ import {
   $isHeadingNode,
 } from "@lexical/rich-text";
 import { $setBlocksType } from "@lexical/selection";
+import { $getNearestNodeOfType } from "@lexical/utils";
 import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import {
   $createParagraphNode,
@@ -89,9 +92,7 @@ export const ToolbarPlugin: FC = () => {
     return editor.registerUpdateListener(({ editorState }) => {
       editorState.read(() => {
         const selection = $getSelection();
-        if (!$isRangeSelection(selection)) {
-          return;
-        }
+        if (!$isRangeSelection(selection)) return;
 
         const anchorNode = selection.anchor.getNode();
         const targetNode =
@@ -102,6 +103,24 @@ export const ToolbarPlugin: FC = () => {
         if ($isHeadingNode(targetNode)) {
           const tag = targetNode.getTag();
           setBlockType(tag);
+        } else if ($isListNode(targetNode)) {
+          const parentList = $getNearestNodeOfType(anchorNode, ListNode);
+          const listType = parentList
+            ? parentList.getListType()
+            : targetNode.getListType();
+
+          switch (listType) {
+            case "number":
+              setBlockType("numberedList");
+              return;
+            case "bullet":
+              setBlockType("bulletedList");
+              return;
+            case "check":
+              setBlockType("checkList");
+              return;
+          }
+          listType satisfies never;
         } else {
           const nodeType = targetNode.getType();
           if (nodeType in supportedBlockType) {
