@@ -1,8 +1,8 @@
 import "cropperjs/dist/cropper.css";
 
 import { ToggleButton, ToggleButtonGroup } from "@mui/material";
+import Quill from "quill";
 import {
-  ChangeEvent,
   FC,
   MouseEvent,
   ReactNode,
@@ -10,141 +10,63 @@ import {
   useRef,
   useState,
 } from "react";
-import ReactCropper, { ReactCropperElement } from "react-cropper";
-import { postImage } from "../services/image-service";
+import { postArticle } from "../services/article-service";
 import { TextFieldChangeEvent } from "../types/mui";
-import { blobToDataUrl } from "../utils/blob-to-data-url";
 import { GeneralTextField } from "./GeneralTextField";
-import { RichTextEditor } from "./lexical/RichTextEditor";
+import { QuillEditor } from "./QuillEditor";
+import { Thumbnail, ThumbnailInput } from "./ThumbnailInput";
 
-type Thumbnail = {
-  url: string;
-  caption: string;
-};
-
-type ThumbnailInputProps = {
-  url?: string | null;
-  caption?: string;
-  captionHelperText?: ReactNode;
-  captionError?: boolean;
-  onUrlChange?: (value: string | null) => void;
-  onCaptionChange?: (value: string) => void;
-};
-
-const ThumbnailInput: FC<ThumbnailInputProps> = (props) => {
-  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
-  const [thumbnailCaption, setThumbnailCaption] = useState<string>("");
-  const [selectedThumbnail, setSelectedThumbnail] = useState<string | null>(
-    null
-  );
-  const [cropper, setCropper] = useState<Cropper>();
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleThumbnailCaptionChange = useCallback(
-    ({ target }: TextFieldChangeEvent) => {
-      setThumbnailCaption(target.value);
-    },
-    []
-  );
-
-  const handleThumbnailRemove = useCallback(() => {
-    setThumbnailUrl(null);
-  }, []);
-
-  const handleFileChange = useCallback(
-    async ({ target }: ChangeEvent<HTMLInputElement>) => {
-      const files = target.files;
-      if (files === null) {
-        return;
-      }
-
-      const file = files[0];
-      target.files = null;
-      target.value = "";
-      if (!file) {
-        return;
-      }
-
-      const dataUrl = await blobToDataUrl(file);
-      setSelectedThumbnail(dataUrl);
-    },
-    []
-  );
-
-  const handleThumbnailSet = useCallback(() => {
-    fileInputRef.current?.click();
-  }, []);
-
-  const handleCropInitialize = useCallback((instance: Cropper) => {
-    setCropper(instance);
-  }, []);
-
-  const handleCrop = useCallback(async () => {
-    if (cropper === undefined) {
-      return;
+function quillImageHandler(this: any) {
+  const { tooltip } = this.quill.theme;
+  const { save: originalSave, hide: originalHide } = tooltip;
+  tooltip.save = function () {
+    const range = this.quill.getSelection(true);
+    const value = this.textbox.value;
+    if (value) {
+      this.quill.insertEmbed(range.index, `image`, value, `user`);
     }
-    const canvas = cropper.getCroppedCanvas({ width: 1280, height: 720 });
-    const blob = await new Promise<Blob>((resolve, reject) => {
-      canvas.toBlob(
-        (blob) => {
-          if (blob === null) {
-            return reject();
-          }
-          return resolve(blob);
-        },
-        "image/webp",
-        1
-      );
-    });
+  };
+  tooltip.hide = function () {
+    this.save = originalSave;
+    this.hide = originalHide;
+    this.hide();
+  };
+  tooltip.edit(`image`);
+  tooltip.textbox.placeholder = `Embed URL`;
+}
 
-    setThumbnailUrl(URL.createObjectURL(blob));
-    setSelectedThumbnail(null);
-  }, [cropper]);
-
-  return (
-    <>
-      {thumbnailUrl !== null ? (
-        <>
-          <img alt="thumbnail" src={thumbnailUrl} />
-          <GeneralTextField
-            label="Thumbnail Caption"
-            value={thumbnailCaption}
-            onChange={handleThumbnailCaptionChange}
-            helperText={props.captionHelperText}
-            error={props.captionError}
-          />
-          <button onClick={handleThumbnailRemove}>Remove thumbnail</button>
-        </>
-      ) : (
-        <>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            accept="image/*"
-            hidden
-          />
-          <button onClick={handleThumbnailSet}>Set Thumbnail</button>
-          {selectedThumbnail !== null && (
-            <>
-              <ReactCropper
-                onInitialized={handleCropInitialize}
-                src={selectedThumbnail}
-                viewMode={1}
-                dragMode="move"
-                cropBoxMovable={false}
-                cropBoxResizable={false}
-                aspectRatio={16 / 9}
-                initialAspectRatio={16 / 9}
-              />
-              <button onClick={handleCrop}>Crop</button>
-            </>
-          )}
-        </>
-      )}
-    </>
-  );
+const quillModules = {
+  toolbar: {
+    container: [
+      { font: [] },
+      { header: [false, 1, 2, 3, 4, 5, 6] },
+      { size: [`small`, false, `large`, `huge`, `10pt`] },
+      `bold`,
+      `italic`,
+      `underline`,
+      `strike`,
+      `blockquote`,
+      `code-block`,
+      `link`,
+      `image`,
+      `video`,
+      `formula`,
+      { list: `ordered` },
+      { list: `bullet` },
+      { list: `check` },
+      { script: `sub` },
+      { script: `super` },
+      { indent: `-1` },
+      { indent: `+1` },
+      { color: [] },
+      { background: [] },
+      { align: [] },
+      `clean`,
+    ],
+    handlers: {
+      image: quillImageHandler,
+    },
+  },
 };
 
 type Props = {
@@ -156,21 +78,34 @@ type Props = {
 
 export const ArticleEditor: FC<Props> = (props) => {
   const [category, setCategory] = useState<string>("");
-  const [thumbnail, setThumbnail] = useState<Thumbnail | null>(null);
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
 
+  const [thumbnailCaptionMessage, setThumbnailCaptionMessage] = useState<
+    string | null
+  >(null);
   const [titleMessage, setTitleMessage] = useState<string | null>(null);
   const [subtitleMessage, setSubtitleMessage] = useState<string | null>(null);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const cropperRef = useRef<ReactCropperElement>(null);
+  const thumbnailRef = useRef<Thumbnail>(null);
+  const quillRef = useRef<Quill>(null);
 
   const handleSubmit = useCallback(
-    (event: React.FormEvent<HTMLFormElement>) => {
+    async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
+      const thumbnail = thumbnailRef.current;
+      const quill = quillRef.current!;
+      const content = JSON.stringify(quill.getContents());
+      const payload = {
+        category,
+        title,
+        subtitle,
+        thumbnail,
+        content,
+      };
+      const { uid } = await postArticle(payload);
     },
-    []
+    [category, subtitle, title]
   );
 
   const handleCategoryChange = useCallback(
@@ -181,32 +116,6 @@ export const ArticleEditor: FC<Props> = (props) => {
     },
     []
   );
-
-  const handleThumbnailUpload = useCallback(
-    async ({ target }: ChangeEvent<HTMLInputElement>) => {
-      if (target.files === null) {
-        return;
-      }
-      const file = target.files[0];
-      target.files = null;
-      target.value = "";
-      if (!file) {
-        return;
-      }
-
-      try {
-        const url = await postImage(file);
-        setThumbnail({ url, caption: "" });
-      } catch {
-        alert("Failed to upload image");
-      }
-    },
-    []
-  );
-
-  const handleThumbnailSet = useCallback(() => {
-    fileInputRef.current!.click();
-  }, []);
 
   const handleTitleChange = useCallback(({ target }: TextFieldChangeEvent) => {
     setTitle(target.value);
@@ -236,7 +145,11 @@ export const ArticleEditor: FC<Props> = (props) => {
             </ToggleButton>
           ))}
         </ToggleButtonGroup>
-        <ThumbnailInput />
+        <ThumbnailInput
+          ref={thumbnailRef}
+          captionMessage={thumbnailCaptionMessage}
+          captionError={thumbnailCaptionMessage !== null}
+        />
         <GeneralTextField
           label="Title"
           value={title}
@@ -251,10 +164,12 @@ export const ArticleEditor: FC<Props> = (props) => {
           helperText={subtitleMessage}
           error={subtitleMessage !== null}
         />
-        <RichTextEditor
-          mode={"edit"}
-          namespace="ArticleEditor"
-          placeholder={<span>Write article body here</span>}
+        <QuillEditor
+          ref={quillRef}
+          theme="snow"
+          mode="write"
+          placeholder="Write article body here"
+          modules={quillModules}
         />
         <button type="submit">{props.submitButtonLabel ?? "Submit"}</button>
       </form>

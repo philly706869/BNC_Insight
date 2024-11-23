@@ -18,7 +18,9 @@ export const articleTable = mysqlTable("articles", {
     onDelete: "set null",
     onUpdate: "cascade",
   }),
-  thumbnailUrl: varchar({ length: conf.thumbnailUrlConstraints.max }).notNull(),
+  thumbnailName: varchar({
+    length: conf.thumbnailNameConstraints.max,
+  }).notNull(),
   thumbnailCaption: varchar({
     length: conf.thumbnailCaptionConstraints.max,
   }).notNull(),

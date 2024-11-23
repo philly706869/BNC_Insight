@@ -25,7 +25,7 @@ export type Config = {
 
   readonly article: {
     readonly defaultQueryLimit: number;
-    readonly thumbnailUrlConstraints: StringConstraint;
+    readonly thumbnailNameConstraints: StringConstraint;
     readonly thumbnailCaptionConstraints: StringConstraint;
     readonly titleConstraints: StringConstraint;
     readonly subtitleConstraints: StringConstraint;
@@ -135,7 +135,7 @@ export const config = {
     defaultQueryLimit: 30,
     maxQueryLimit: 30,
     defaultThumbnailURL: new URL("about:blank"),
-    thumbnailUrlConstraints: stringConstraints([
+    thumbnailNameConstraints: stringConstraints([
       {
         max: 2048,
         message: "Thumbnail url cannot be greater than 2048 characters",

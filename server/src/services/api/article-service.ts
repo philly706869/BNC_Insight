@@ -204,7 +204,7 @@ export class ArticleService {
     uploaderUid: number,
     categoryName: CategoryValue.Name | null,
     thumbnail: {
-      url: ArticleValue.ThumbnailUrl;
+      name: string;
       caption: ArticleValue.ThumbnailCaption;
     } | null,
     title: ArticleValue.Title,
@@ -217,7 +217,7 @@ export class ArticleService {
         .values({
           uploaderUid,
           categoryName: categoryName?.value ?? null,
-          thumbnailUrl: thumbnail?.url.value ?? this.defaultThumbnailURL.href,
+          thumbnailUrl: thumbnail?.name ?? this.defaultThumbnailURL.href,
           thumbnailCaption: thumbnail?.caption.value ?? "",
           title: title.value,
           subtitle: subtitle.value,
@@ -236,7 +236,7 @@ export class ArticleService {
     data: {
       categoryName?: CategoryValue.Name;
       thumbnail?: {
-        url: ArticleValue.ThumbnailUrl;
+        name: string;
         caption: ArticleValue.ThumbnailCaption;
       } | null;
       title?: ArticleValue.Title;
@@ -261,7 +261,7 @@ export class ArticleService {
       .update(articleTable)
       .set({
         categoryName: data.categoryName?.value,
-        thumbnailUrl: data.thumbnail?.url.value,
+        thumbnailUrl: data.thumbnail?.name,
         thumbnailCaption: data.thumbnail?.caption.value,
         title: data.title?.value,
         subtitle: data.subtitle?.value,

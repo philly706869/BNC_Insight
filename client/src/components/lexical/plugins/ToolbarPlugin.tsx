@@ -21,6 +21,7 @@ import {
   ElementNode,
 } from "lexical";
 import { FC, useCallback, useEffect, useState } from "react";
+import { INSERT_IMAGE_COMMAND } from "../nodes/ImageNode";
 
 const supportedBlockType = {
   paragraph: "Paragraph",
@@ -88,6 +89,14 @@ export const ToolbarPlugin: FC = () => {
     [blockType, editor]
   );
 
+  const handleInsertImage = useCallback(() => {
+    const src = prompt("enter image url") ?? "";
+    editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
+      src: src,
+      alt: "test",
+    });
+  }, [editor]);
+
   useEffect(() => {
     return editor.registerUpdateListener(({ editorState }) => {
       editorState.read(() => {
@@ -142,6 +151,7 @@ export const ToolbarPlugin: FC = () => {
           </MenuItem>
         ))}
       </Select>
+      <button onClick={handleInsertImage}>Image</button>
     </div>
   );
 };

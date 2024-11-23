@@ -46,25 +46,19 @@ export async function getArticles(params: {
   return await response.json();
 }
 
-export async function postArticle(
-  category: string | null,
-  thumbnail: { url: string; caption: string } | null,
-  title: string,
-  subtitle: string,
-  content: string
-): Promise<{ uid: number }> {
+export async function postArticle(article: {
+  category: string | null;
+  thumbnail: { url: string; caption: string } | null;
+  title: string;
+  subtitle: string;
+  content: string;
+}): Promise<{ uid: number }> {
   const response = await fetch("/api/articles", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      category,
-      thumbnail,
-      title,
-      subtitle,
-      content,
-    }),
+    body: JSON.stringify(article),
   });
   if (!response.ok) {
     return Promise.reject(await response.json());
