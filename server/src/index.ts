@@ -24,20 +24,7 @@ try {
   logger.info("Completed connecting database");
 
   logger.info("Starting express server...");
-  const port: number = (() => {
-    const raw = parseInt(env.SERVER_URL.port);
-    if (isNaN(raw)) {
-      const protocol = env.SERVER_URL.protocol;
-      switch (protocol) {
-        case "http:":
-          return 80;
-        case "https:":
-          return 443;
-      }
-      protocol satisfies never;
-    }
-    return raw;
-  })();
+  const port = env.SERVER_PORT;
   const { express } = await import("@express");
   const server = http.createServer(express);
   await new Promise<void>((resolve) => {
@@ -46,7 +33,7 @@ try {
     });
   });
   logger.info(
-    `Completed starting express server (origin: \`${env.SERVER_URL.origin}\`)`
+    `Completed starting express server (origin: \`${env.SERVER_URL.origin}\`, port: ${port})`
   );
 } catch (error) {
   logger.error(error);

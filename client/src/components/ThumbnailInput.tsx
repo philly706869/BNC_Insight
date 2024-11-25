@@ -14,6 +14,7 @@ import { GeneralTextField } from "./GeneralTextField";
 
 export type Thumbnail = {
   url: string;
+  name: string;
   caption: string;
 };
 
@@ -26,6 +27,7 @@ export const ThumbnailInput = forwardRef<Thumbnail | null, Props>(
   (props, ref) => {
     const { captionMessage, captionError = false } = props;
     const [url, setUrl] = useState<string | null>(null);
+    const [name, setName] = useState<string | null>(null);
     const [caption, setCaption] = useState<string>("");
     const [selected, setSelected] = useState<string | null>(null);
     const [cropper, setCropper] = useState<Cropper>();
@@ -35,14 +37,15 @@ export const ThumbnailInput = forwardRef<Thumbnail | null, Props>(
     useImperativeHandle<Thumbnail | null, Thumbnail | null>(
       ref,
       () => {
-        return url !== null
+        return url !== null && name !== null
           ? {
               url: url,
+              name: name,
               caption: caption,
             }
           : null;
       },
-      [url, caption]
+      [url, name, caption]
     );
 
     const handleThumbnailCaptionChange = useCallback(
@@ -102,8 +105,9 @@ export const ThumbnailInput = forwardRef<Thumbnail | null, Props>(
         );
       });
 
-      const url = await postThumbnail(blob);
+      const { url, name } = await postThumbnail(blob);
       setUrl(url);
+      setName(name);
       setSelected(null);
     }, [cropper]);
 

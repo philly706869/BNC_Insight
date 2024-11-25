@@ -4,12 +4,14 @@ import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import Quill from "quill";
 import {
   FC,
+  FormEvent,
   MouseEvent,
   ReactNode,
   useCallback,
   useRef,
   useState,
 } from "react";
+import { useNavigate } from "react-router-dom";
 import { postArticle } from "../services/article-service";
 import { TextFieldChangeEvent } from "../types/mui";
 import { GeneralTextField } from "./GeneralTextField";
@@ -77,6 +79,8 @@ type Props = {
 };
 
 export const ArticleEditor: FC<Props> = (props) => {
+  const navigate = useNavigate();
+
   const [category, setCategory] = useState<string>("");
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
@@ -90,23 +94,64 @@ export const ArticleEditor: FC<Props> = (props) => {
   const thumbnailRef = useRef<Thumbnail>(null);
   const quillRef = useRef<Quill>(null);
 
-  const handleSubmit = useCallback(
-    async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      const thumbnail = thumbnailRef.current;
-      const quill = quillRef.current!;
-      const content = JSON.stringify(quill.getContents());
-      const payload = {
-        category,
-        title,
-        subtitle,
-        thumbnail,
-        content,
-      };
+  const handleFormSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+  }, []);
+
+  const handleSubmitButtonClick = useCallback(async () => {
+    const thumbnail = thumbnailRef.current;
+    const quill = quillRef.current!;
+    const content = JSON.stringify(quill.getContents());
+    const payload = {
+      category: category.length > 0 ? category : null,
+      title,
+      subtitle,
+      thumbnail:
+        thumbnail !== null
+          ? {
+              name: thumbnail.name,
+              caption: thumbnail.caption,
+            }
+          : null,
+      content,
+    };
+    try {
       const { uid } = await postArticle(payload);
-    },
-    [category, subtitle, title]
-  );
+      navigate(`/article/${uid}`);
+    } catch (error: any) {
+      const details = error.details;
+      if (details) {
+        const categoryError = details?.fieldErrors?.category?.errorMessage;
+        if (typeof categoryError === "string") {
+          alert("Category does not exist. Please reload the page.");
+          return;
+        }
+        const titleError = details?.fieldErrors?.title?.errorMessage;
+        console.log(titleError);
+        if (typeof titleError === "string") {
+          setTitleMessage(titleError);
+          return;
+        }
+        const subtitleError = details?.fieldErrors?.subtitle?.errorMessage;
+        if (typeof subtitleError === "string") {
+          setSubtitleMessage(subtitleError);
+          return;
+        }
+        const captionError =
+          details?.fieldErrors?.thumbnail?.fieldErrors?.caption?.errorMessage;
+        if (typeof captionError === "string") {
+          setThumbnailCaptionMessage(captionError);
+          return;
+        }
+        const contentError = details?.fieldError?.content?.errorMessage;
+        if (typeof contentError === "string") {
+          alert(contentError);
+          return;
+        }
+      }
+      alert("Unknown error occured while posting article");
+    }
+  }, [navigate, category, subtitle, title]);
 
   const handleCategoryChange = useCallback(
     (event: MouseEvent<HTMLElement>, value: any) => {
@@ -132,7 +177,7 @@ export const ArticleEditor: FC<Props> = (props) => {
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleFormSubmit}>
         <ToggleButtonGroup
           value={category}
           onChange={handleCategoryChange}
@@ -171,7 +216,9 @@ export const ArticleEditor: FC<Props> = (props) => {
           placeholder="Write article body here"
           modules={quillModules}
         />
-        <button type="submit">{props.submitButtonLabel ?? "Submit"}</button>
+        <button type="submit" onClick={handleSubmitButtonClick}>
+          {props.submitButtonLabel ?? "Submit"}
+        </button>
       </form>
     </>
   );

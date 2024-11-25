@@ -46,22 +46,25 @@ export const Signup: FC = () => {
         navigate("/");
         navigate(0);
       } catch (error: any) {
-        if (error.details) {
-          for (const issue of error.details as {
-            path: string[];
-            message: string;
-          }[]) {
-            if (issue.path.includes("username")) {
-              setUsernameMessage(issue.message);
-            } else if (issue.path.includes("password")) {
-              setPasswordMessage(issue.message);
-            } else if (issue.path.includes("name")) {
-              setNameMessage(issue.message);
-            }
+        const details = error.details;
+        if (details) {
+          const usernameError = details?.fieldErrors?.username?.errorMessage;
+          if (typeof usernameError === "string") {
+            setUsernameMessage(usernameError);
+            return;
           }
-        } else {
-          alert("Unknown error occured while signing up");
+          const passwordError = details?.fieldErrors?.password?.errorMessage;
+          if (typeof passwordError === "string") {
+            setPasswordMessage(passwordError);
+            return;
+          }
+          const nameError = details?.fieldErrors?.name?.errorMessage;
+          if (typeof nameError === "string") {
+            setNameMessage(nameError);
+            return;
+          }
         }
+        alert("Unknown error occured while signing up");
       }
     },
     [name, password, token, username, navigate]
