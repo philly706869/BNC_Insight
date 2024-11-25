@@ -1,4 +1,6 @@
-export async function postThumbnail(blob: Blob): Promise<string> {
+export async function postThumbnail(
+  blob: Blob
+): Promise<{ url: string; name: string }> {
   const data = new FormData();
   data.append("image", blob);
   const response = await fetch("/cdn/thumbnails", {
@@ -8,5 +10,5 @@ export async function postThumbnail(blob: Blob): Promise<string> {
   if (!response.ok) {
     return Promise.reject();
   }
-  return (await response.json()).url;
+  return await response.json();
 }

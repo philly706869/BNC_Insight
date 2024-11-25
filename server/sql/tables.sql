@@ -24,7 +24,7 @@ CREATE TABLE `articles` (
   `uid` SMALLINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   `uploader_uid` SMALLINT UNSIGNED,
   `category_name` VARCHAR(16),
-  `thumbnail_url` VARCHAR(2048) NOT NULL,
+  `thumbnail_name` VARCHAR(255) NOT NULL,
   `thumbnail_caption` VARCHAR(64) NOT NULL,
   `title` VARCHAR(64) NOT NULL,
   `subtitle` VARCHAR(128) NOT NULL,

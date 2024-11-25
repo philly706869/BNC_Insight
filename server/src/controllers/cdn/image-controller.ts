@@ -4,6 +4,7 @@ import {
 } from "@errors/controller-error";
 import { authorize } from "@middlewares/authorize";
 import { ImageService } from "@services/cdn/image-service";
+import { logger } from "@utils/logger";
 import { NextFunction, Request, Response } from "express";
 import fs from "fs/promises";
 import { StatusCodes } from "http-status-codes";
@@ -16,12 +17,12 @@ export type ImageControllerOptions = {
   readonly tempPath: string;
   readonly maxBytes: number;
   readonly supportedMIMETypes: string[];
-  readonly urlOrigin: string;
+  readonly baseUrl: URL;
 };
 
 export class ImageController {
   private readonly maxBytes: ImageControllerOptions["maxBytes"];
-  private readonly urlOrigin: ImageControllerOptions["urlOrigin"];
+  private readonly baseUrl: ImageControllerOptions["baseUrl"];
   private readonly upload: ReturnType<Multer["single"]>;
 
   public constructor(
@@ -29,7 +30,7 @@ export class ImageController {
     options: ImageControllerOptions
   ) {
     this.maxBytes = options.maxBytes;
-    this.urlOrigin = options.urlOrigin;
+    this.baseUrl = options.baseUrl;
     this.upload = multer({
       dest: path.resolve(options.tempPath),
       limits: { fileSize: this.maxBytes },
@@ -102,15 +103,27 @@ export class ImageController {
       return Promise.reject(error);
     }
 
-    const file = req.file!;
+    const file = req.file;
+
+    if (file === undefined) {
+      next(new UnsupportedFileError());
+      return;
+    }
 
     const imagePath = path.resolve(file.destination, file.filename);
     try {
       const name = await this.service.post(imagePath);
-      const url = `${this.urlOrigin}${req.originalUrl}/${name}`;
-      res.status(StatusCodes.CREATED).json({ url });
+      const url = new URL(name, this.baseUrl);
+      res.status(StatusCodes.CREATED).json({ url: url.href, name });
     } finally {
-      await fs.rm(imagePath);
+      try {
+        await fs.rm(imagePath, {
+          retryDelay: 300,
+          maxRetries: 3,
+        });
+      } catch (error) {
+        logger.warn(`Temp file deletion failed: ${imagePath}`);
+      }
     }
   }
 }

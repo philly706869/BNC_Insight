@@ -6,6 +6,8 @@ import fs from "fs/promises";
 import path from "path";
 import sharp, { FormatEnum, Metadata, Sharp } from "sharp";
 
+sharp.cache(false);
+
 export type ImageServiceOptions = {
   readonly uploadPath: string;
   readonly supportedFormats: (keyof FormatEnum)[];
@@ -28,7 +30,8 @@ export class ImageService {
 
   public async get(name: string): Promise<string> {
     try {
-      const imagePath = path.resolve(this.uploadPath, name);
+      const basename = path.basename(name); // 경로 조작 방지
+      const imagePath = path.resolve(this.uploadPath, basename);
       const stat = await fs.stat(imagePath);
       if (!stat.isFile()) {
         return Promise.reject(new ImageNotFoundError());
@@ -41,18 +44,26 @@ export class ImageService {
 
   public async post(imagePath: string): Promise<string> {
     const image = sharp(imagePath);
-    const metadata = await image.metadata();
-    const format = metadata.format;
-    if (
-      format === undefined ||
-      !(this.supportedFormats as string[]).includes(format)
-    ) {
-      return Promise.reject(new UnsupportedImageFormatError());
+    try {
+      const metadata = await image.metadata();
+      const format = metadata.format;
+      if (
+        format === undefined ||
+        !(this.supportedFormats as string[]).includes(format)
+      ) {
+        return Promise.reject(new UnsupportedImageFormatError());
+      }
+      const processor = this.imageProcessor;
+      const { name, data: processed } = await processor(image, metadata);
+      try {
+        const dest = path.resolve(this.uploadPath, name);
+        await processed.toFile(dest);
+        return name;
+      } finally {
+        processed.destroy();
+      }
+    } finally {
+      image.destroy();
     }
-    const processor = this.imageProcessor;
-    const { name, data: processed } = await processor(image, metadata);
-    const dest = path.resolve(this.uploadPath, name);
-    await processed.toFile(dest);
-    return name;
   }
 }

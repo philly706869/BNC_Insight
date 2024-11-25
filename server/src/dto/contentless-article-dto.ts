@@ -9,6 +9,7 @@ export class ContentlessArticleDTO {
   public readonly category: string | null;
   public readonly thumbnail: {
     readonly url: string;
+    readonly name: string;
     readonly caption: string;
   };
   public readonly title: string;
@@ -22,6 +23,7 @@ export class ContentlessArticleDTO {
     this.category = props.category;
     this.thumbnail = {
       url: props.thumbnail.url,
+      name: props.thumbnail.name,
       caption: props.thumbnail.caption,
     };
     this.title = props.title;

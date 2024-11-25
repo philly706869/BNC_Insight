@@ -5,7 +5,6 @@ import { BCRYPT_MAX_BYTE_LENGTH } from "@utils/bcrypt-constants";
 import { StringConstraint, stringConstraints } from "@utils/constraint";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
-import validator, { IsURLOptions } from "validator";
 
 export type Config = {
   readonly authToken: {
@@ -25,12 +24,13 @@ export type Config = {
 
   readonly article: {
     readonly defaultQueryLimit: number;
+    readonly defaultThumbnailName: string;
     readonly thumbnailNameConstraints: StringConstraint;
     readonly thumbnailCaptionConstraints: StringConstraint;
     readonly titleConstraints: StringConstraint;
     readonly subtitleConstraints: StringConstraint;
     readonly contentDeltaConstraints: StringConstraint;
-  } & ArticleServiceOptions;
+  } & Omit<ArticleServiceOptions, "defaultThumbnailName" | "thumbnailBaseUrl">;
 
   readonly thumbnail: {
     readonly tempPath: string;
@@ -134,18 +134,21 @@ export const config = {
   article: {
     defaultQueryLimit: 30,
     maxQueryLimit: 30,
-    defaultThumbnailURL: new URL("about:blank"),
+    defaultThumbnailName: "about:blank",
     thumbnailNameConstraints: stringConstraints([
       {
-        max: 2048,
-        message: "Thumbnail url cannot be greater than 2048 characters",
+        max: 255,
+        message: "Thumbnail name cannot be greater than 255 characters",
       },
       {
-        validator: (() => {
-          const options: IsURLOptions = { protocols: ["http", "https"] };
-          return (value) => validator.isURL(value, options);
-        })(),
-        message: "Thumbnail url is not valid",
+        validator: (value) => {
+          const basename = path.basename(value);
+          if (basename !== value) {
+            return false;
+          }
+          return true;
+        },
+        message: "Thumbnail name is not valid",
       },
     ]),
     thumbnailCaptionConstraints: stringConstraints([
@@ -198,7 +201,10 @@ export const config = {
     rateWindow: 60 * 1000 /* =1min */,
     supportedFormats: ["webp"],
     async imageProcessor(sharp, metadata) {
-      if (metadata.width !== 1280 || metadata.height !== 720) {
+      const width = 1280;
+      const height = 720;
+
+      if (metadata.width !== width || metadata.height !== height) {
         return Promise.reject(new InvalidImageSizeError());
       }
 

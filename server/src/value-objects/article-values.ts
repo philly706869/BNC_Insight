@@ -7,6 +7,22 @@ import { z } from "zod";
 export namespace ArticleValue {
   const conf = config.article;
 
+  export class ThumbnailName {
+    private constructor(public readonly value: string) {}
+
+    public static verify(
+      value: string
+    ): ValueObjectVerifyResult<ThumbnailName> {
+      const { success, message } = conf.thumbnailNameConstraints.check(value);
+      return success
+        ? {
+            success,
+            data: new ThumbnailName(value),
+          }
+        : { success, message };
+    }
+  }
+
   export class ThumbnailCaption {
     private constructor(public readonly value: string) {}
 

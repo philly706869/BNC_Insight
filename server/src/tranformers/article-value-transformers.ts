@@ -2,11 +2,11 @@ import { ArticleValue } from "@value-objects/article-values";
 import { z } from "zod";
 
 export namespace ArticleValueTransformer {
-  export const thumbnailUrl = (
+  export const thumbnailName = (
     arg: string,
     ctx: z.RefinementCtx
-  ): ArticleValue.ThumbnailUrl => {
-    const verifyResult = ArticleValue.ThumbnailUrl.verify(arg);
+  ): ArticleValue.ThumbnailName => {
+    const verifyResult = ArticleValue.ThumbnailName.verify(arg);
     if (!verifyResult.success) {
       ctx.addIssue({ code: "custom", message: verifyResult.message });
       return z.NEVER;

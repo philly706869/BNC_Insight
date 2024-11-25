@@ -7,6 +7,7 @@ export type Article = {
   category: string | null;
   thumbnail: {
     url: string;
+    name: string;
     caption: string;
   };
   title: string;
@@ -48,7 +49,7 @@ export async function getArticles(params: {
 
 export async function postArticle(article: {
   category: string | null;
-  thumbnail: { url: string; caption: string } | null;
+  thumbnail: { name: string; caption: string } | null;
   title: string;
   subtitle: string;
   content: string;
@@ -70,6 +71,7 @@ export async function patchArticle(
   uid: number,
   data: {
     category?: string;
+    thumbnail?: { name: string; caption: string } | null;
     title?: string;
     subtitle?: string;
     content?: string;
@@ -82,6 +84,7 @@ export async function patchArticle(
     },
     body: JSON.stringify({
       category: data.category,
+      thumbnail: data.thumbnail,
       title: data.title,
       subtitle: data.subtitle,
       content: data.content,

@@ -72,7 +72,7 @@ export class ArticleController {
     category: z.string().transform(CategoryValueTransformer.name).nullable(),
     thumbnail: z
       .object({
-        url: z.string().transform(ArticleValueTransformer.thumbnailUrl),
+        name: z.string().transform(ArticleValueTransformer.thumbnailName),
         caption: z.string().transform(ArticleValueTransformer.thumbnailCaption),
       })
       .nullable(),
@@ -118,7 +118,7 @@ export class ArticleController {
       .optional(),
     thumbnail: z
       .object({
-        url: z.string().transform(ArticleValueTransformer.thumbnailUrl),
+        name: z.string().transform(ArticleValueTransformer.thumbnailName),
         caption: z.string().transform(ArticleValueTransformer.thumbnailCaption),
       })
       .nullable()

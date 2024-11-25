@@ -16,19 +16,21 @@ import { and, count, desc, eq, isNull, SQL } from "drizzle-orm";
 
 export type ArticleServiceOptions = {
   maxQueryLimit: number;
-  defaultThumbnailURL: URL;
+  defaultThumbnailName: string;
+  thumbnailBaseUrl: URL;
 };
 
 export class ArticleService {
   private readonly maxQueryLimit: ArticleServiceOptions["maxQueryLimit"];
-  private readonly defaultThumbnailURL: ArticleServiceOptions["defaultThumbnailURL"];
-
+  private readonly defaultThumbnailName: ArticleServiceOptions["defaultThumbnailName"];
+  private readonly thumbnailBaseUrl: ArticleServiceOptions["thumbnailBaseUrl"];
   public constructor(
     private readonly database: Database,
     options: ArticleServiceOptions
   ) {
     this.maxQueryLimit = options.maxQueryLimit;
-    this.defaultThumbnailURL = options.defaultThumbnailURL;
+    this.defaultThumbnailName = options.defaultThumbnailName;
+    this.thumbnailBaseUrl = options.thumbnailBaseUrl;
   }
 
   public async getOne(uid: number): Promise<ArticleDTO> {
@@ -39,7 +41,7 @@ export class ArticleService {
           uploaderUsername: userTable.username,
           uploaderName: userTable.name,
           category: articleTable.categoryName,
-          thumbnailUrl: articleTable.thumbnailUrl,
+          thumbnailName: articleTable.thumbnailName,
           thumbnailCaption: articleTable.thumbnailCaption,
           title: articleTable.title,
           subtitle: articleTable.subtitle,
@@ -67,7 +69,8 @@ export class ArticleService {
             })
           : null,
       thumbnail: {
-        url: article.thumbnailUrl,
+        url: new URL(article.thumbnailName, this.thumbnailBaseUrl).href,
+        name: article.thumbnailName,
         caption: article.thumbnailCaption,
       },
       createdAt: article.createdAt.toISOString(),
@@ -153,7 +156,7 @@ export class ArticleService {
         uploaderUsername: userTable.username,
         uploaderName: userTable.name,
         category: articleTable.categoryName,
-        thumbnailUrl: articleTable.thumbnailUrl,
+        thumbnailName: articleTable.thumbnailName,
         thumbnailCaption: articleTable.thumbnailCaption,
         title: articleTable.title,
         subtitle: articleTable.subtitle,
@@ -190,7 +193,8 @@ export class ArticleService {
                   })
                 : null,
             thumbnail: {
-              url: article.thumbnailUrl,
+              url: new URL(article.thumbnailName, this.thumbnailBaseUrl).href,
+              name: article.thumbnailName,
               caption: article.thumbnailCaption,
             },
             createdAt: article.createdAt.toISOString(),
@@ -204,7 +208,7 @@ export class ArticleService {
     uploaderUid: number,
     categoryName: CategoryValue.Name | null,
     thumbnail: {
-      name: string;
+      name: ArticleValue.ThumbnailName;
       caption: ArticleValue.ThumbnailCaption;
     } | null,
     title: ArticleValue.Title,
@@ -217,7 +221,7 @@ export class ArticleService {
         .values({
           uploaderUid,
           categoryName: categoryName?.value ?? null,
-          thumbnailUrl: thumbnail?.name ?? this.defaultThumbnailURL.href,
+          thumbnailName: thumbnail?.name.value ?? this.defaultThumbnailName,
           thumbnailCaption: thumbnail?.caption.value ?? "",
           title: title.value,
           subtitle: subtitle.value,
@@ -236,7 +240,7 @@ export class ArticleService {
     data: {
       categoryName?: CategoryValue.Name;
       thumbnail?: {
-        name: string;
+        name: ArticleValue.ThumbnailName;
         caption: ArticleValue.ThumbnailCaption;
       } | null;
       title?: ArticleValue.Title;
@@ -261,7 +265,7 @@ export class ArticleService {
       .update(articleTable)
       .set({
         categoryName: data.categoryName?.value,
-        thumbnailUrl: data.thumbnail?.name,
+        thumbnailName: data.thumbnail?.name.value,
         thumbnailCaption: data.thumbnail?.caption.value,
         title: data.title?.value,
         subtitle: data.subtitle?.value,

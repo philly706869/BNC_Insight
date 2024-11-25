@@ -17,7 +17,7 @@ const controller = new ImageController(service, {
   supportedMIMETypes: conf.supportedFormats
     .map((format) => mime.getType(format))
     .filter(Boolean) as string[],
-  urlOrigin: env.SERVER_URL.origin,
+  baseUrl: new URL("/cdn/images/", env.SERVER_URL),
 });
 
 imageRouter.get("/:name", safe(bound(controller, "get")));
