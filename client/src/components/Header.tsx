@@ -1,7 +1,5 @@
-import fonts from "../styles/fonts.module.scss";
 import styles from "../styles/Header.module.scss";
 
-import classNames from "classnames";
 import { FC, useCallback, useContext, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CategoryContext } from "../contexts/category-context";
@@ -22,48 +20,54 @@ export const Header: FC = () => {
     return [dateTime, dateString];
   }, []);
 
-  const handleLogout = useCallback(async () => {
+  const handleSignout = useCallback(async () => {
     await signout();
     navigate("/");
     navigate(0);
   }, [navigate]);
 
   return (
-    <header className={classNames(styles.container, fonts.robotoSlab)}>
-      <time className={styles.time} dateTime={dateTime}>
-        {dateString}
-      </time>
-      <Link className={styles.logo} to="/">
-        <Logo className={styles.logoImage} />
-      </Link>
-      <nav className={styles.user}>
-        {currentUser !== undefined &&
-          (currentUser !== null ? (
-            <>
-              <Link to="/myaccount">{currentUser.name}</Link>
-              <button onClick={handleLogout}>Logout</button>
-              <Link to="/myarticles">My Articles</Link>
-            </>
-          ) : (
-            <>
-              <Link to="/signup">Sign up</Link>
-              <Link to="/signin">Sign in</Link>
-            </>
-          ))}
-      </nav>
-      <nav className={styles.categories}>
-        {categories !== undefined && (
-          <>
-            <Link to="/articles">All</Link>
-            <Link to="/articles?category=">Uncategorized</Link>
-            {categories.map(({ name: category }) => (
-              <Link key={category} to={`/articles?category=${category}`}>
-                {category}
-              </Link>
+    <header className={styles.container}>
+      <section className={styles["first-row"]}>
+        <Link className={styles["logo"]} to="/">
+          <Logo />
+        </Link>
+        <nav className={styles["user-navigation"]}>
+          {currentUser !== undefined &&
+            (currentUser !== null ? (
+              <>
+                <Link to="/myaccount">{currentUser.name}</Link>
+                <button onClick={handleSignout}>Sign out</button>
+                <Link to="/myarticles">My Articles</Link>
+              </>
+            ) : (
+              <>
+                <Link to="/signup">Sign up</Link>
+                <Link to="/signin">Sign in</Link>
+              </>
             ))}
-          </>
-        )}
-      </nav>
+        </nav>
+      </section>
+      <section className={styles["second-row"]}>
+        <time className={styles["time-display"]} dateTime={dateTime}>
+          {dateString}
+        </time>
+      </section>
+      <section className={styles["third-row"]}>
+        <nav className={styles["category-navigation"]}>
+          {categories !== undefined && (
+            <>
+              <Link to="/articles">All</Link>
+              <Link to="/articles?category=">Uncategorized</Link>
+              {categories.map(({ name: category }) => (
+                <Link key={category} to={`/articles?category=${category}`}>
+                  {category}
+                </Link>
+              ))}
+            </>
+          )}
+        </nav>
+      </section>
     </header>
   );
 };

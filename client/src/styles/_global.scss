@@ -1,0 +1,10 @@
+@import "_colors";
+
+body {
+  color: var(--text-color);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

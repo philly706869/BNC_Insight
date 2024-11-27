@@ -2,20 +2,23 @@
 @import url("https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300..700;1,300..700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap");
 
-.inter {
+@mixin default() {
   font-style: normal;
-  font-family: "Inter", system-ui;
+  font-family: system-ui;
   font-optical-sizing: auto;
 }
 
-.cormorant {
-  font-style: normal;
-  font-family: "Cormorant", system-ui;
-  font-optical-sizing: auto;
+@mixin inter() {
+  @include default();
+  font-family: "Inter";
 }
 
-.robotoSlab {
-  font-style: normal;
-  font-family: "Roboto Slab", system-ui;
-  font-optical-sizing: auto;
+@mixin cormorant() {
+  @include default();
+  font-family: "Cormorant";
+}
+
+@mixin roboto-slab() {
+  @include default();
+  font-family: "Roboto Slab";
 }

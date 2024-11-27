@@ -1,5 +1,5 @@
 import "normalize.css";
-import "./styles/global.scss";
+import "./styles/_global.scss";
 
 import { createTheme, ThemeProvider } from "@mui/material";
 import { FC, useEffect, useState } from "react";

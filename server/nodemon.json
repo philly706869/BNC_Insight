@@ -1,4 +1,0 @@
-{
-  "watch": ["src", "config.yaml", ".env.development"],
-  "ext": "ts"
-}

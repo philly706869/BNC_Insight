@@ -7,9 +7,9 @@ import { Header } from "./components/Header";
 export const Layout: FC = () => {
   return (
     <>
-      <div className={styles.body}>
+      <div className={styles.container}>
         <div className={styles.decoline}></div>
-        <div className={styles.container}>
+        <div className={styles["children-container"]}>
           <Header />
           <div className={styles.content}>
             <Outlet />

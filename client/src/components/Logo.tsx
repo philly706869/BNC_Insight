@@ -1,7 +1,7 @@
 import { FC } from "react";
+import { ReactComponent as CHNLogo } from "../assets/CHN.svg";
+import styles from "../styles/Logo.module.scss";
 
-type Props = JSX.IntrinsicElements["img"];
-
-export const Logo: FC<Props> = (props) => {
-  return <img src="/logo.png" alt="logo" {...props} />;
+export const Logo: FC = () => {
+  return <CHNLogo className={styles.logo} />;
 };
