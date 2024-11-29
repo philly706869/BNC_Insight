@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { ReactComponent as CHNLogo } from "../assets/CHN.svg";
+import { ReactComponent as CHNLogo } from "../assets/favicon.svg";
 import styles from "../styles/Logo.module.scss";
 
 export const Logo: FC = () => {

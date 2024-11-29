@@ -3,13 +3,14 @@
     "disableSolutionSearching": true,
     "target": "ESNext",
     "lib": ["ESNext"],
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "module": "Preserve",
+    "moduleResolution": "bundler",
     "moduleDetection": "force",
     "resolveJsonModule": true,
     "paths": {
       "@*": ["./src/*"]
     },
+    "outDir": "./dist",
     "allowJs": false,
     "isolatedModules": true,
     "esModuleInterop": true,

@@ -3,7 +3,7 @@ import { FC } from "react";
 export const NotFound: FC = () => {
   return (
     <>
-      <h1>Page Not Found</h1>
+      <h2>Page Not Found</h2>
     </>
   );
 };

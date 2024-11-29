@@ -1,24 +1,26 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300..700;1,300..700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap");
 
-@mixin default() {
+@mixin font($font-family) {
   font-style: normal;
-  font-family: system-ui;
+  font-family: $font-family, serif, system-ui;
   font-optical-sizing: auto;
 }
 
 @mixin inter() {
-  @include default();
-  font-family: "Inter";
+  @include font("Inter");
 }
 
 @mixin cormorant() {
-  @include default();
-  font-family: "Cormorant";
+  @include font("Cormorant");
 }
 
 @mixin roboto-slab() {
-  @include default();
-  font-family: "Roboto Slab";
+  @include font("Roboto Slab");
+}
+
+@mixin lexend() {
+  @include font("Lexend");
 }

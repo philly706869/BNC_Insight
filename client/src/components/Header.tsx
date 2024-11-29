@@ -28,10 +28,31 @@ export const Header: FC = () => {
 
   return (
     <header className={styles.container}>
-      <section className={styles["first-row"]}>
-        <Link className={styles["logo"]} to="/">
-          <Logo />
+      <div>
+        <time className={styles.time} dateTime={dateTime}>
+          {dateString}
+        </time>
+      </div>
+      <div className={styles.headline}>
+        <Link className={styles.logo} to="/">
+          <span>
+            <Logo />
+          </span>
+          <span>CHN</span>
         </Link>
+        <nav className={styles["category-navigation"]}>
+          {categories !== undefined && (
+            <>
+              <Link to="/articles">All</Link>
+              <Link to="/articles?category=">Uncategorized</Link>
+              {categories.map(({ name: category }) => (
+                <Link key={category} to={`/articles?category=${category}`}>
+                  {category}
+                </Link>
+              ))}
+            </>
+          )}
+        </nav>
         <nav className={styles["user-navigation"]}>
           {currentUser !== undefined &&
             (currentUser !== null ? (
@@ -47,27 +68,7 @@ export const Header: FC = () => {
               </>
             ))}
         </nav>
-      </section>
-      <section className={styles["second-row"]}>
-        <time className={styles["time-display"]} dateTime={dateTime}>
-          {dateString}
-        </time>
-      </section>
-      <section className={styles["third-row"]}>
-        <nav className={styles["category-navigation"]}>
-          {categories !== undefined && (
-            <>
-              <Link to="/articles">All</Link>
-              <Link to="/articles?category=">Uncategorized</Link>
-              {categories.map(({ name: category }) => (
-                <Link key={category} to={`/articles?category=${category}`}>
-                  {category}
-                </Link>
-              ))}
-            </>
-          )}
-        </nav>
-      </section>
+      </div>
     </header>
   );
 };
