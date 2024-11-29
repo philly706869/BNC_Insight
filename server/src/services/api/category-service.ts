@@ -28,8 +28,8 @@ export class CategoryService {
       (category) =>
         new CategoryDTO({
           name: category.name,
-          createdAt: category.createdAt.toISOString(),
-          updatedAt: category.updatedAt.toISOString(),
+          createdAt: category.createdAt.getTime(),
+          updatedAt: category.updatedAt.getTime(),
         })
     );
   }

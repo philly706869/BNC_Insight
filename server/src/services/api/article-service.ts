@@ -73,8 +73,8 @@ export class ArticleService {
         name: article.thumbnailName,
         caption: article.thumbnailCaption,
       },
-      createdAt: article.createdAt.toISOString(),
-      updatedAt: article.updatedAt.toISOString(),
+      createdAt: article.createdAt.getTime(),
+      updatedAt: article.updatedAt.getTime(),
     });
   }
 
@@ -197,8 +197,8 @@ export class ArticleService {
               name: article.thumbnailName,
               caption: article.thumbnailCaption,
             },
-            createdAt: article.createdAt.toISOString(),
-            updatedAt: article.updatedAt.toISOString(),
+            createdAt: article.createdAt.getTime(),
+            updatedAt: article.updatedAt.getTime(),
           })
       ),
     };

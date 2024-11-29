@@ -77,7 +77,7 @@ export class AuthService {
 
     return new ProtectedUserDTO({
       ...user,
-      createdAt: user.createdAt.toISOString(),
+      createdAt: user.createdAt.getTime(),
     });
   }
 

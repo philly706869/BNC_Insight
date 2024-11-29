@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, ReactNode, useEffect, useMemo, useState } from "react";
 import { ContentLessArticle, getArticles } from "../services/article-service";
 
 import styles from "../styles/Home.module.scss";
@@ -9,11 +9,29 @@ type ArticleProps = {
 
 const Article: FC<ArticleProps> = (props) => {
   const { article } = props;
-  const [dateTime, dateString] = useMemo(() => {
+  const [dateTime, dateString, dateTitle] = useMemo(() => {
     const date = new Date(article.createdAt);
     const dateTime = date.toISOString().split(`T`)[0];
-    const dateString = date.toDateString();
-    return [dateTime, dateString];
+    const dateString = (() => {
+      const today = new Date();
+      const articleDate = new Date(date);
+      today.setHours(0, 0, 0, 0);
+      articleDate.setHours(0, 0, 0, 0);
+      const timeDiff = today.getTime() - articleDate.getTime();
+      const dayDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+      switch (dayDiff) {
+        case 0:
+          const hourDiff = today.getHours() - articleDate.getHours();
+          if (hourDiff === 0) return "Just now";
+          return `${hourDiff} hours ago`;
+        case 1:
+          return "Yesterday";
+        default:
+          return date.toDateString();
+      }
+    })();
+    const dateTitle = date.toLocaleString();
+    return [dateTime, dateString, dateTitle];
   }, [article.createdAt]);
 
   return (
@@ -36,11 +54,16 @@ const Article: FC<ArticleProps> = (props) => {
       </a>
       <footer className={styles.footer}>
         <span>By {article.uploader?.name ?? "Deleted User"}</span>
-        <time dateTime={dateTime}>{dateString}</time>
+        <time dateTime={dateTime} title={dateTitle}>
+          {dateString}
+        </time>
       </footer>
     </article>
   );
 };
+
+const ARTICLE_LIMIT = 5;
+const MAIN_ARTICLE_AMOUNT = 2;
 
 export const Home: FC = () => {
   type Articles = Awaited<ReturnType<typeof getArticles>> | undefined;
@@ -48,14 +71,14 @@ export const Home: FC = () => {
   const [mainArticles, subArticles] = useMemo(() => {
     if (articles === undefined) return [[], []];
     const items = articles.items;
-    const mainArticles = items.slice(0, 2);
-    const subArticles = items.slice(2);
+    const mainArticles = items.slice(0, MAIN_ARTICLE_AMOUNT);
+    const subArticles = items.slice(MAIN_ARTICLE_AMOUNT);
     return [mainArticles, subArticles];
   }, [articles]);
 
   useEffect(() => {
     (async () => {
-      const articles = await getArticles({ limit: 4, offset: 0 });
+      const articles = await getArticles({ limit: ARTICLE_LIMIT, offset: 0 });
       setArticles(articles);
     })();
   }, []);
@@ -64,23 +87,47 @@ export const Home: FC = () => {
     <>
       <div className={styles["article-container"]}>
         <main>
-          {mainArticles
-            .map((article) => [
-              <hr className={styles["horizental-divider"]} />,
-              <Article article={article} />,
-            ])
-            .flat(1)
-            .slice(1)}
+          {(() => {
+            const nodes: ReactNode[] = [];
+            if (mainArticles.length > 0) {
+              const firstArticle = mainArticles[0];
+              nodes.push(
+                <Article key={firstArticle.uid} article={firstArticle} />
+              );
+              for (const article of mainArticles.slice(1)) {
+                nodes.push(
+                  <hr
+                    key={`hr${article.uid}`}
+                    className={styles["horizental-divider"]}
+                  />
+                );
+                nodes.push(<Article key={article.uid} article={article} />);
+              }
+            }
+            return nodes;
+          })()}
         </main>
         <hr className={styles["vertical-divider"]} />
         <aside>
-          {subArticles
-            .map((article) => [
-              <hr className={styles["horizental-divider"]} />,
-              <Article article={article} />,
-            ])
-            .flat(1)
-            .slice(1)}
+          {(() => {
+            const nodes: ReactNode[] = [];
+            if (subArticles.length > 0) {
+              const firstArticle = subArticles[0];
+              nodes.push(
+                <Article key={firstArticle.uid} article={firstArticle} />
+              );
+              for (const article of subArticles.slice(1)) {
+                nodes.push(
+                  <hr
+                    key={`hr${article.uid}`}
+                    className={styles["horizental-divider"]}
+                  />
+                );
+                nodes.push(<Article key={article.uid} article={article} />);
+              }
+            }
+            return nodes;
+          })()}
         </aside>
       </div>
     </>

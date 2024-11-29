@@ -14,8 +14,8 @@ export class ContentlessArticleDTO {
   };
   public readonly title: string;
   public readonly subtitle: string;
-  public readonly createdAt: string;
-  public readonly updatedAt: string;
+  public readonly createdAt: number;
+  public readonly updatedAt: number;
 
   public constructor(props: ContentlessArticleDTOProps) {
     this.uid = props.uid;
