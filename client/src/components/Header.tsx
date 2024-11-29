@@ -40,31 +40,52 @@ export const Header: FC = () => {
           </span>
           <span>CHN</span>
         </Link>
-        <nav className={styles["category-navigation"]}>
+        <nav className={styles["category-nav"]}>
           {categories !== undefined && (
             <>
-              <Link to="/articles">All</Link>
-              <Link to="/articles?category=">Uncategorized</Link>
+              <Link className={styles["nav-button"]} to="/articles">
+                All
+              </Link>
+              <Link className={styles["nav-button"]} to="/articles?category=">
+                Uncategorized
+              </Link>
               {categories.map(({ name: category }) => (
-                <Link key={category} to={`/articles?category=${category}`}>
+                <Link
+                  key={category}
+                  className={styles["nav-button"]}
+                  to={`/articles?category=${category}`}
+                >
                   {category}
                 </Link>
               ))}
             </>
           )}
         </nav>
-        <nav className={styles["user-navigation"]}>
+        <nav>
           {currentUser !== undefined &&
             (currentUser !== null ? (
               <>
-                <Link to="/myaccount">{currentUser.name}</Link>
-                <button onClick={handleSignout}>Sign out</button>
-                <Link to="/myarticles">My Articles</Link>
+                <Link className={styles["nav-button"]} to="/myaccount">
+                  {currentUser.name}
+                </Link>
+                <button
+                  className={styles["nav-button"]}
+                  onClick={handleSignout}
+                >
+                  Sign out
+                </button>
+                <Link className={styles["nav-button"]} to="/myarticles">
+                  My Articles
+                </Link>
               </>
             ) : (
               <>
-                <Link to="/signup">Sign up</Link>
-                <Link to="/signin">Sign in</Link>
+                <Link className={styles["nav-button"]} to="/signup">
+                  Sign up
+                </Link>
+                <Link className={styles["nav-button"]} to="/signin">
+                  Sign in
+                </Link>
               </>
             ))}
         </nav>

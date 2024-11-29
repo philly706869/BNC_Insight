@@ -153,7 +153,7 @@ export const config = {
     ]),
     thumbnailCaptionConstraints: stringConstraints([
       {
-        max: 64,
+        max: 256,
         message: "Thumbnail caption cannot be greater than 64 characters",
       },
       {
@@ -167,7 +167,7 @@ export const config = {
         message: "Title cannot be empty",
       },
       {
-        max: 64,
+        max: 256,
         message: "Title cannot be greater than 64 characters",
       },
       {
@@ -177,7 +177,7 @@ export const config = {
     ]),
     subtitleConstraints: stringConstraints([
       {
-        max: 128,
+        max: 512,
         message: "Subtitle cannot be greater than 128 characters",
       },
       {

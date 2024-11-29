@@ -1,57 +1,87 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { ContentLessArticle, getArticles } from "../services/article-service";
 
 import styles from "../styles/Home.module.scss";
 
 type ArticleProps = {
-  className?: string;
-  article: ContentLessArticle | undefined;
+  article: ContentLessArticle;
 };
 
 const Article: FC<ArticleProps> = (props) => {
-  const { className, article } = props;
+  const { article } = props;
+  const [dateTime, dateString] = useMemo(() => {
+    const date = new Date(article.createdAt);
+    const dateTime = date.toISOString().split(`T`)[0];
+    const dateString = date.toDateString();
+    return [dateTime, dateString];
+  }, [article.createdAt]);
 
   return (
-    <article className={className}>
-      {article && (
-        <>
-          <figure>
-            <img alt="Thumbnail" src={article.thumbnail.url}></img>
-          </figure>
-          <section>
-            <h2>{article.title}</h2>
-            {article.subtitle && <p>{article.subtitle}</p>}
-            <span>By {article.uploader?.name ?? "Deleted User"}</span>
-            <time>{new Date(article.createdAt).toDateString()}</time>
-          </section>
-        </>
-      )}
+    <article className={styles.article}>
+      <a className={styles["article-anchor"]} href={`/article/${article.uid}`}>
+        <figure className={styles.thumbnail}>
+          <img
+            alt={article.thumbnail.caption}
+            src={article.thumbnail.url}
+          ></img>
+        </figure>
+        <header>
+          <h2 className={styles.title}>{article.title}</h2>
+        </header>
+        <main>
+          {article.subtitle && (
+            <p className={styles.subtitle}>{article.subtitle}</p>
+          )}
+        </main>
+      </a>
+      <footer className={styles.footer}>
+        <span>By {article.uploader?.name ?? "Deleted User"}</span>
+        <time dateTime={dateTime}>{dateString}</time>
+      </footer>
     </article>
   );
 };
 
 export const Home: FC = () => {
-  type Articles = ContentLessArticle[] | undefined;
+  type Articles = Awaited<ReturnType<typeof getArticles>> | undefined;
   const [articles, setArticles] = useState<Articles>(undefined);
+  const [mainArticles, subArticles] = useMemo(() => {
+    if (articles === undefined) return [[], []];
+    const items = articles.items;
+    const mainArticles = items.slice(0, 2);
+    const subArticles = items.slice(2);
+    return [mainArticles, subArticles];
+  }, [articles]);
 
   useEffect(() => {
     (async () => {
       const articles = await getArticles({ limit: 4, offset: 0 });
-      setArticles(articles.items);
+      setArticles(articles);
     })();
   }, []);
 
   return (
     <>
-      <div className={styles.articles}>
-        {articles !== undefined && (
-          <>
-            <Article className={styles.main} article={articles.at(0)} />
-            <Article className={styles.sub1} article={articles.at(1)} />
-            <Article className={styles.sub2} article={articles.at(2)} />
-            <Article className={styles.sub3} article={articles.at(3)} />
-          </>
-        )}
+      <div className={styles["article-container"]}>
+        <main>
+          {mainArticles
+            .map((article) => [
+              <hr className={styles["horizental-divider"]} />,
+              <Article article={article} />,
+            ])
+            .flat(1)
+            .slice(1)}
+        </main>
+        <hr className={styles["vertical-divider"]} />
+        <aside>
+          {subArticles
+            .map((article) => [
+              <hr className={styles["horizental-divider"]} />,
+              <Article article={article} />,
+            ])
+            .flat(1)
+            .slice(1)}
+        </aside>
       </div>
     </>
   );

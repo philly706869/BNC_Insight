@@ -1,6 +1,6 @@
 :root {
   --primary-color: #0924a9;
-  --secondary-color: #4a68ff;
+  --secondary-color: color-mix(in srgb, var(--text-color) 60%, transparent);
   --tertiary-color: #d6d6d6;
   --accent-color: #ef4040;
   --background-color: #ffffff;
