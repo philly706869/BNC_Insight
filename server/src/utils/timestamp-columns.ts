@@ -3,9 +3,15 @@ import { timestamp } from "drizzle-orm/mysql-core";
 
 const currentTimestamp = sql`CURRENT_TIMESTAMP`;
 
-export const createdAt = timestamp().notNull().default(currentTimestamp);
+export const createdAt = timestamp({
+  mode: "string",
+})
+  .notNull()
+  .default(currentTimestamp);
 
-export const updatedAt = timestamp()
+export const updatedAt = timestamp({
+  mode: "string",
+})
   .notNull()
   .default(currentTimestamp)
   .$onUpdate(() => currentTimestamp);

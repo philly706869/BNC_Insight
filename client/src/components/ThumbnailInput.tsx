@@ -1,21 +1,30 @@
+import styles from "../styles/ThumbnailInput.module.scss";
+
 import {
   ChangeEvent,
+  Dispatch,
   forwardRef,
+  SetStateAction,
   useCallback,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
 } from "react";
-import ReactCropper from "react-cropper";
-import { postThumbnail } from "../services/thumbnail-service";
+import {
+  postThumbnail,
+  THUMBNAIL_SERVICE_URL,
+} from "../services/thumbnail-service";
 import { TextFieldChangeEvent } from "../types/mui";
 import { blobToDataUrl } from "../utils/blob-to-data-url";
+import { Cropper } from "./Cropper";
 import { GeneralTextField } from "./GeneralTextField";
 
-export type Thumbnail = {
-  url: string;
-  name: string;
+export type ThumbnailRef = {
+  name: string | null;
+  setName: Dispatch<SetStateAction<string | null>>;
   caption: string;
+  setCaption: Dispatch<SetStateAction<string>>;
 };
 
 type Props = {
@@ -23,97 +32,141 @@ type Props = {
   captionError?: boolean;
 };
 
-export const ThumbnailInput = forwardRef<Thumbnail | null, Props>(
-  (props, ref) => {
-    const { captionMessage, captionError = false } = props;
-    const [url, setUrl] = useState<string | null>(null);
-    const [name, setName] = useState<string | null>(null);
-    const [caption, setCaption] = useState<string>("");
-    const [selected, setSelected] = useState<string | null>(null);
-    const [cropper, setCropper] = useState<Cropper>();
+export const ThumbnailInput = forwardRef<ThumbnailRef, Props>((props, ref) => {
+  const { captionMessage, captionError = false } = props;
+  const [name, setName] = useState<string | null>(null);
+  const [caption, setCaption] = useState<string>("");
+  const [selected, setSelected] = useState<string | null>(null);
+  const [cropper, setCropper] = useState<Cropper>();
+  const url = useMemo(() => {
+    return name !== null ? `${THUMBNAIL_SERVICE_URL}/${name}` : null;
+  }, [name]);
 
-    const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-    useImperativeHandle<Thumbnail | null, Thumbnail | null>(
-      ref,
-      () => {
-        return url !== null && name !== null
-          ? {
-              url: url,
-              name: name,
-              caption: caption,
-            }
-          : null;
-      },
-      [url, name, caption]
-    );
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        name: name,
+        setName: setName,
+        caption: caption,
+        setCaption: setCaption,
+      };
+    },
+    [name, caption]
+  );
 
-    const handleThumbnailCaptionChange = useCallback(
-      ({ target }: TextFieldChangeEvent) => {
-        setCaption(target.value);
-      },
-      []
-    );
+  const handleThumbnailCaptionChange = useCallback(
+    ({ target }: TextFieldChangeEvent) => {
+      setCaption(target.value);
+    },
+    []
+  );
 
-    const handleThumbnailRemove = useCallback(() => {
-      setUrl(null);
-    }, []);
+  const handleThumbnailRemove = useCallback(() => {
+    setName(null);
+  }, []);
 
-    const handleFileChange = useCallback(
-      async ({ target }: ChangeEvent<HTMLInputElement>) => {
-        const files = target.files;
-        if (files === null) {
-          return;
-        }
-
-        const file = files[0];
-        target.files = null;
-        target.value = "";
-        if (!file) {
-          return;
-        }
-
-        const dataUrl = await blobToDataUrl(file);
-        setSelected(dataUrl);
-      },
-      []
-    );
-
-    const handleThumbnailSet = useCallback(() => {
-      fileInputRef.current?.click();
-    }, []);
-
-    const handleCropInitialize = useCallback((instance: Cropper) => {
-      setCropper(instance);
-    }, []);
-
-    const handleCrop = useCallback(async () => {
-      if (cropper === undefined) {
+  const handleFileChange = useCallback(
+    async ({ target }: ChangeEvent<HTMLInputElement>) => {
+      const files = target.files;
+      if (files === null) {
         return;
       }
-      const canvas = cropper.getCroppedCanvas({ width: 1280, height: 720 });
-      const blob = await new Promise<Blob>((resolve, reject) => {
-        canvas.toBlob(
-          (blob) => {
-            if (blob === null) {
-              return reject();
-            }
-            return resolve(blob);
-          },
-          "image/webp",
-          1
-        );
-      });
 
-      const { url, name } = await postThumbnail(blob);
-      setUrl(url);
-      setName(name);
-      setSelected(null);
-    }, [cropper]);
+      const file = files[0];
+      target.files = null;
+      target.value = "";
+      if (!file) {
+        return;
+      }
 
-    return (
-      <>
-        {url !== null ? (
+      const dataUrl = await blobToDataUrl(file);
+      setSelected(dataUrl);
+    },
+    []
+  );
+
+  const handleThumbnailSet = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleCropInitialize = useCallback((instance: Cropper) => {
+    setCropper(instance);
+  }, []);
+
+  const handleCropCancel = useCallback(() => {
+    setSelected(null);
+  }, []);
+
+  const handleCrop = useCallback(async () => {
+    if (cropper === undefined) {
+      return;
+    }
+    const canvas = cropper.getCroppedCanvas({ width: 1280, height: 720 });
+    const blob = await new Promise<Blob>((resolve, reject) => {
+      canvas.toBlob(
+        (blob) => {
+          if (blob === null) {
+            return reject();
+          }
+          return resolve(blob);
+        },
+        "image/webp",
+        1
+      );
+    });
+
+    const { name } = await postThumbnail(blob);
+    setName(name);
+    setSelected(null);
+  }, [cropper]);
+
+  return (
+    <>
+      <div className={styles.container}>
+        {url === null ? (
+          <>
+            {selected === null ? (
+              <>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept="image/*"
+                  hidden
+                />
+                <button className={styles.button} onClick={handleThumbnailSet}>
+                  Set Thumbnail
+                </button>
+              </>
+            ) : (
+              <>
+                <Cropper
+                  onInitialized={handleCropInitialize}
+                  src={selected}
+                  viewMode={1}
+                  dragMode="move"
+                  cropBoxMovable={false}
+                  cropBoxResizable={false}
+                  aspectRatio={16 / 9}
+                  initialAspectRatio={16 / 9}
+                  width="1200px"
+                  height="300px"
+                />
+                <nav className={styles["cropper-nav"]}>
+                  <button className={styles.button} onClick={handleCropCancel}>
+                    Cancel
+                  </button>
+                  <button className={styles.button} onClick={handleCrop}>
+                    Crop
+                  </button>
+                </nav>
+              </>
+            )}
+          </>
+        ) : (
           <>
             <img alt="thumbnail" src={url} />
             <GeneralTextField
@@ -123,36 +176,12 @@ export const ThumbnailInput = forwardRef<Thumbnail | null, Props>(
               helperText={captionMessage}
               error={captionError}
             />
-            <button onClick={handleThumbnailRemove}>Remove thumbnail</button>
-          </>
-        ) : (
-          <>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              accept="image/*"
-              hidden
-            />
-            <button onClick={handleThumbnailSet}>Set Thumbnail</button>
-            {selected !== null && (
-              <>
-                <ReactCropper
-                  onInitialized={handleCropInitialize}
-                  src={selected}
-                  viewMode={1}
-                  dragMode="move"
-                  cropBoxMovable={false}
-                  cropBoxResizable={false}
-                  aspectRatio={16 / 9}
-                  initialAspectRatio={16 / 9}
-                />
-                <button onClick={handleCrop}>Crop</button>
-              </>
-            )}
+            <button className={styles.button} onClick={handleThumbnailRemove}>
+              Remove thumbnail
+            </button>
           </>
         )}
-      </>
-    );
-  }
-);
+      </div>
+    </>
+  );
+});

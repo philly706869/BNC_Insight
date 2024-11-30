@@ -12,6 +12,7 @@ export type Article = {
   };
   title: string;
   subtitle: string;
+  content: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -70,7 +71,7 @@ export async function postArticle(article: {
 export async function patchArticle(
   uid: number,
   data: {
-    category?: string;
+    category?: string | null;
     thumbnail?: { name: string; caption: string } | null;
     title?: string;
     subtitle?: string;

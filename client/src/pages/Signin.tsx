@@ -1,3 +1,5 @@
+import styles from "../styles/SignInUp.module.scss";
+
 import { FC, FormEvent, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GeneralTextField } from "../components/GeneralTextField";
@@ -44,8 +46,8 @@ export const Signin: FC = () => {
 
   return (
     <>
-      <h1>Sign In</h1>
-      <form onSubmit={handleCredentialsSubmit}>
+      <h2 className={styles.title}>Sign In</h2>
+      <form className={styles.form} onSubmit={handleCredentialsSubmit}>
         <GeneralTextField
           label="Username"
           value={username}
@@ -62,7 +64,9 @@ export const Signin: FC = () => {
           helperText={passwordMessage ?? ""}
           error={passwordMessage !== null}
         />
-        <button type="submit">Sign In</button>
+        <button className={styles.submit} type="submit">
+          Sign In
+        </button>
       </form>
     </>
   );

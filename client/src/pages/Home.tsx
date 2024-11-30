@@ -2,6 +2,7 @@ import { FC, ReactNode, useEffect, useMemo, useState } from "react";
 import { ContentLessArticle, getArticles } from "../services/article-service";
 
 import styles from "../styles/Home.module.scss";
+import { getTimeData } from "../utils/get-time-data";
 
 type ArticleProps = {
   article: ContentLessArticle;
@@ -11,27 +12,7 @@ const Article: FC<ArticleProps> = (props) => {
   const { article } = props;
   const [dateTime, dateString, dateTitle] = useMemo(() => {
     const date = new Date(article.createdAt);
-    const dateTime = date.toISOString().split(`T`)[0];
-    const dateString = (() => {
-      const today = new Date();
-      const articleDate = new Date(date);
-      today.setHours(0, 0, 0, 0);
-      articleDate.setHours(0, 0, 0, 0);
-      const timeDiff = today.getTime() - articleDate.getTime();
-      const dayDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-      switch (dayDiff) {
-        case 0:
-          const hourDiff = today.getHours() - articleDate.getHours();
-          if (hourDiff === 0) return "Just now";
-          return `${hourDiff} hours ago`;
-        case 1:
-          return "Yesterday";
-        default:
-          return date.toDateString();
-      }
-    })();
-    const dateTitle = date.toLocaleString();
-    return [dateTime, dateString, dateTitle];
+    return getTimeData(date);
   }, [article.createdAt]);
 
   return (

@@ -1,3 +1,5 @@
+import styles from "../styles/SignInUp.module.scss";
+
 import { FC, FormEvent, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GeneralTextField } from "../components/GeneralTextField";
@@ -93,9 +95,9 @@ export const Signup: FC = () => {
 
   return (
     <>
-      <h1>Sign Up</h1>
+      <h2 className={styles.title}>Sign Up</h2>
       {!hasToken ? (
-        <form onSubmit={handleAuthTokenSubmit}>
+        <form className={styles.form} onSubmit={handleAuthTokenSubmit}>
           <GeneralTextField
             label="Auth Token"
             value={token}
@@ -104,10 +106,12 @@ export const Signup: FC = () => {
             error={tokenMessage !== null}
             autoFocus
           />
-          <button type="submit">Next</button>
+          <button className={styles.submit} type="submit">
+            Next
+          </button>
         </form>
       ) : (
-        <form onSubmit={handleCredentialsSubmit}>
+        <form className={styles.form} onSubmit={handleCredentialsSubmit}>
           <GeneralTextField
             label="Username"
             value={username}
@@ -130,7 +134,9 @@ export const Signup: FC = () => {
             helperText={nameMessage ?? ""}
             error={nameMessage !== null}
           />
-          <button type="submit">Sign Up</button>
+          <button className={styles.submit} type="submit">
+            Sign Up
+          </button>
         </form>
       )}
     </>

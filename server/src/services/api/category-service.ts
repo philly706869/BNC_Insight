@@ -7,6 +7,7 @@ import {
   PermissionDeniedError,
   UserNotFoundError,
 } from "@errors/service-errors";
+import { dateStringToISO } from "@utils/date-string-to-iso";
 import { CategoryValue } from "@value-objects/category-values";
 import { asc, eq } from "drizzle-orm";
 
@@ -27,9 +28,9 @@ export class CategoryService {
     return categories.map(
       (category) =>
         new CategoryDTO({
-          name: category.name,
-          createdAt: category.createdAt.getTime(),
-          updatedAt: category.updatedAt.getTime(),
+          ...category,
+          createdAt: dateStringToISO(category.createdAt),
+          updatedAt: dateStringToISO(category.updatedAt),
         })
     );
   }

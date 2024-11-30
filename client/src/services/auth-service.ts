@@ -1,3 +1,5 @@
+export const AUTH_SERVICE_URL = "/api/auth";
+
 export type ProtectedUser = {
   username: string;
   name: string;
@@ -6,7 +8,7 @@ export type ProtectedUser = {
 };
 
 export async function verifyAuthToken(value: string): Promise<boolean> {
-  const response = await fetch("/api/auth/verify-auth-token", {
+  const response = await fetch(`${AUTH_SERVICE_URL}/verify-auth-token`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -19,7 +21,7 @@ export async function verifyAuthToken(value: string): Promise<boolean> {
 }
 
 export async function getCurrentUser(): Promise<ProtectedUser | null> {
-  const response = await fetch("/api/auth/me");
+  const response = await fetch(`${AUTH_SERVICE_URL}/me`);
   if (!response.ok) {
     return Promise.reject();
   }
@@ -32,7 +34,7 @@ export async function signup(
   password: string,
   name: string
 ): Promise<void> {
-  const response = await fetch("/api/auth/signup", {
+  const response = await fetch(`${AUTH_SERVICE_URL}/signup`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -53,7 +55,7 @@ export async function signin(
   username: string,
   password: string
 ): Promise<void> {
-  const response = await fetch("/api/auth/signin", {
+  const response = await fetch(`${AUTH_SERVICE_URL}/signin`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -69,7 +71,7 @@ export async function signin(
 }
 
 export async function signout(): Promise<void> {
-  const response = await fetch("/api/auth/signout", {
+  const response = await fetch(`${AUTH_SERVICE_URL}/signout`, {
     method: "POST",
   });
   if (!response.ok) {
@@ -81,7 +83,7 @@ export async function updatePassword(
   currentPassword: string,
   newPassword: string
 ): Promise<void> {
-  const response = await fetch("/api/auth/update-password", {
+  const response = await fetch(`${AUTH_SERVICE_URL}/update-password`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

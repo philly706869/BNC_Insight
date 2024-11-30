@@ -1,8 +1,59 @@
-import { FC, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import styles from "../styles/Articles.module.scss";
+
+import { Pagination } from "@mui/material";
+import {
+  ChangeEvent,
+  FC,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { ContentLessArticle, getArticles } from "../services/article-service";
+import { getTimeData } from "../utils/get-time-data";
+
+type ArticleProps = {
+  article: ContentLessArticle;
+};
+
+const Article: FC<ArticleProps> = (props) => {
+  const { article } = props;
+  const [dateTime, dateString, dateTitle] = useMemo(() => {
+    const date = new Date(article.createdAt);
+    return getTimeData(date);
+  }, [article.createdAt]);
+
+  return (
+    <article className={styles.article}>
+      <a className={styles["article-anchor"]} href={`/article/${article.uid}`}>
+        <figure className={styles.thumbnail}>
+          <img alt="" src={article.thumbnail.url} />
+        </figure>
+        <section className={styles.content}>
+          <header>
+            <h2 className={styles.title}>{article.title}</h2>
+          </header>
+          <main className={styles.main}>
+            <p className={styles.subtitle}>{article.subtitle}</p>
+          </main>
+        </section>
+      </a>
+      <footer className={styles.footer}>
+        <span>By {article.uploader?.name ?? "Deleted User"}</span>
+        <time dateTime={dateTime} title={dateTitle}>
+          {dateString}
+        </time>
+      </footer>
+    </article>
+  );
+};
+
+const LIMIT = 10;
 
 export const Articles: FC = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   const category: string | null = useMemo(() => {
@@ -30,6 +81,19 @@ export const Articles: FC = () => {
       }
   >({ state: "UNSET" });
 
+  const handlePageChange = useCallback(
+    (event: ChangeEvent<unknown>, value: number) => {
+      navigate(
+        `/articles?` +
+          new URLSearchParams({
+            ...(category !== null && { category }),
+            page: value.toString(),
+          })
+      );
+    },
+    [navigate, category]
+  );
+
   useEffect(() => {
     (async () => {
       if (isNaN(page)) {
@@ -39,8 +103,8 @@ export const Articles: FC = () => {
       try {
         const articles = await getArticles({
           category: category,
-          limit: 30,
-          offset: 30 * (page - 1),
+          limit: LIMIT,
+          offset: LIMIT * (page - 1),
         });
         setArticles({
           state: "SET",
@@ -59,23 +123,37 @@ export const Articles: FC = () => {
       {articles.state === "SET" && (
         <>
           {articles.data.items.length === 0 ? (
-            <>
-              <h2>Article does not exists</h2>
-            </>
+            <h2 className={styles["no-article-title"]}>
+              Article does not exists
+            </h2>
           ) : (
-            <ol>
-              {articles.data.items.map((article) => (
-                <>
-                  <li key={article.uid}>
-                    <img alt="Thumbnail" src={article.thumbnail.url} />
-                    <h1>{article.title}</h1>
-                    <h2>{article.subtitle}</h2>
-                    <span>By {article.uploader?.name ?? "Deleted User"}</span>
-                    <time>{new Date(article.createdAt).toDateString()}</time>
-                  </li>
-                </>
-              ))}
-            </ol>
+            <>
+              <ol className={styles.articles}>
+                {(() => {
+                  const nodes: ReactNode[] = [];
+                  function getNode(article: ContentLessArticle) {
+                    return (
+                      <li key={article.uid}>
+                        <Article article={article} />
+                      </li>
+                    );
+                  }
+                  const items = articles.data.items;
+                  nodes.push(getNode(items[0]));
+                  for (const item of items.slice(1)) {
+                    nodes.push(
+                      <hr key={`hr${item.uid}`} className={styles.divider} />
+                    );
+                    nodes.push(getNode(item));
+                  }
+                  return nodes;
+                })()}
+              </ol>
+              <Pagination
+                count={Math.ceil(articles.data.total / LIMIT)}
+                onChange={handlePageChange}
+              />
+            </>
           )}
         </>
       )}

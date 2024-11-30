@@ -1,5 +1,5 @@
 import "normalize.css";
-import "./styles/_global.scss";
+import "./styles/global.scss";
 
 import { createTheme, ThemeProvider } from "@mui/material";
 import { FC, useEffect, useState } from "react";
@@ -28,6 +28,11 @@ import { getCategories } from "./services/category-service";
 
 const muiTheme = createTheme({
   typography: { button: { textTransform: "none" } },
+  shape: { borderRadius: 0 },
+  palette: {
+    primary: { main: "#0823a8" },
+    error: { main: "#ef4040" },
+  },
 });
 
 export const App: FC = () => {

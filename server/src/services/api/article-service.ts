@@ -10,6 +10,7 @@ import {
   QueryOffsetOutOfBoundsError,
   UserNotFoundError,
 } from "@errors/service-errors";
+import { dateStringToISO } from "@utils/date-string-to-iso";
 import { ArticleValue } from "@value-objects/article-values";
 import { CategoryValue } from "@value-objects/category-values";
 import { and, count, desc, eq, isNull, SQL } from "drizzle-orm";
@@ -73,8 +74,8 @@ export class ArticleService {
         name: article.thumbnailName,
         caption: article.thumbnailCaption,
       },
-      createdAt: article.createdAt.getTime(),
-      updatedAt: article.updatedAt.getTime(),
+      createdAt: dateStringToISO(article.createdAt),
+      updatedAt: dateStringToISO(article.updatedAt),
     });
   }
 
@@ -197,8 +198,8 @@ export class ArticleService {
               name: article.thumbnailName,
               caption: article.thumbnailCaption,
             },
-            createdAt: article.createdAt.getTime(),
-            updatedAt: article.updatedAt.getTime(),
+            createdAt: dateStringToISO(article.createdAt),
+            updatedAt: dateStringToISO(article.updatedAt),
           })
       ),
     };

@@ -1,3 +1,5 @@
+export const CATEGORY_SERVICE_URL = "/api/categories";
+
 export type Category = {
   name: string;
   createdAt: string;
@@ -5,7 +7,7 @@ export type Category = {
 };
 
 export async function getCategories(): Promise<Category[]> {
-  const response = await fetch("/api/categories");
+  const response = await fetch(CATEGORY_SERVICE_URL);
   if (!response.ok) {
     return Promise.reject();
   }
@@ -13,7 +15,7 @@ export async function getCategories(): Promise<Category[]> {
 }
 
 export async function postCategory(name: string): Promise<void> {
-  const response = await fetch("/api/categories", {
+  const response = await fetch(CATEGORY_SERVICE_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -31,7 +33,7 @@ export async function patchCategory(
   name: string,
   data: { name?: string }
 ): Promise<void> {
-  const response = await fetch(`/api/categories/${name}`, {
+  const response = await fetch(`${CATEGORY_SERVICE_URL}/${name}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -46,7 +48,9 @@ export async function patchCategory(
 }
 
 export async function deleteCategory(name: string): Promise<void> {
-  const response = await fetch(`/api/categories/${name}`, { method: "DELETE" });
+  const response = await fetch(`${CATEGORY_SERVICE_URL}/${name}`, {
+    method: "DELETE",
+  });
   if (!response.ok) {
     return Promise.reject();
   }

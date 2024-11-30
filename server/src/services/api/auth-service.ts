@@ -9,6 +9,7 @@ import {
   UsernameAlreadyTakenError,
   UserNotFoundError,
 } from "@errors/service-errors";
+import { dateStringToISO } from "@utils/date-string-to-iso";
 import { logger } from "@utils/logger";
 import { AuthTokenValue } from "@value-objects/auth-token-values";
 import { UserValue } from "@value-objects/user-values";
@@ -77,7 +78,7 @@ export class AuthService {
 
     return new ProtectedUserDTO({
       ...user,
-      createdAt: user.createdAt.getTime(),
+      createdAt: dateStringToISO(user.createdAt),
     });
   }
 
