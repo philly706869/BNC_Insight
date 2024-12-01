@@ -102,7 +102,7 @@ export const Articles: FC = () => {
 
       try {
         const articles = await getArticles({
-          category: category,
+          ...(category !== null && { category }),
           limit: LIMIT,
           offset: LIMIT * (page - 1),
         });
@@ -150,6 +150,7 @@ export const Articles: FC = () => {
                 })()}
               </ol>
               <Pagination
+                page={page}
                 count={Math.ceil(articles.data.total / LIMIT)}
                 onChange={handlePageChange}
               />

@@ -1,7 +1,17 @@
-import { FC, useEffect, useState } from "react";
+import styles from "../../styles/ViewArticle.module.scss";
+import "../../styles/ViewArticle.quill.scss";
+
+import Quill from "quill";
+import { FC, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import { QuillEditor } from "../../components/QuillEditor";
 import { Article, getArticle } from "../../services/article-service";
+import { getTimeData } from "../../utils/get-time-data";
 import { NotFound } from "../NotFound";
+
+const quillModules = {
+  toolbar: false,
+};
 
 export const ViewArticle: FC = () => {
   const params = useParams();
@@ -11,6 +21,8 @@ export const ViewArticle: FC = () => {
     | { state: "NOT_FOUND" }
     | { state: "SET"; data: Article };
   const [article, setArticle] = useState<ArticleState>({ state: "UNSET" });
+
+  const quillRef = useRef<Quill>(null);
 
   useEffect(() => {
     (async () => {
@@ -35,6 +47,16 @@ export const ViewArticle: FC = () => {
     })();
   }, [params]);
 
+  useEffect(() => {
+    if (quillRef.current === null) {
+      return;
+    }
+    if (article.state !== "SET") {
+      return;
+    }
+    quillRef.current.setContents(JSON.parse(article.data.content).ops);
+  }, [article]);
+
   switch (article.state) {
     case "UNSET":
       return <></>;
@@ -43,9 +65,38 @@ export const ViewArticle: FC = () => {
       return <NotFound />;
 
     case "SET":
+      const { data } = article;
+      const today = new Date();
+      const [dateTime, dateString, dateTitle] = getTimeData(today);
       return (
         <>
-          <h1>{article.data.title}</h1>
+          <article className={styles.article}>
+            <header className={styles.header}>
+              <section className={styles.headline}>
+                <h2 className={styles.title}>{data.title}</h2>
+                <h4 className={styles.subtitle}>{data.subtitle}</h4>
+                <footer className={styles.footer}>
+                  <span>By {data.uploader?.name ?? "Deleted User"}</span>
+                  <time dateTime={dateTime} title={dateTitle}>
+                    {dateString}
+                  </time>
+                </footer>
+              </section>
+              <hr className={styles.divider} />
+              <figure className={styles.thumbnail}>
+                <img src={data.thumbnail.url} alt="" />
+                <figcaption>{data.thumbnail.caption}</figcaption>
+              </figure>
+            </header>
+            <main>
+              <QuillEditor
+                ref={quillRef}
+                mode="read"
+                theme="snow"
+                modules={quillModules}
+              />
+            </main>
+          </article>
         </>
       );
   }

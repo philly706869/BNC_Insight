@@ -2,7 +2,9 @@ import styles from "../../styles/WriteArticle.module.scss";
 import "../../styles/WriteArticle.quill.scss";
 
 import { ToggleButton, ToggleButtonGroup } from "@mui/material";
-import Quill from "quill";
+import Quill, { Module } from "quill";
+import { BaseTooltip } from "quill/themes/base";
+import SnowTheme from "quill/themes/snow";
 import {
   FC,
   FormEvent,
@@ -23,25 +25,64 @@ import {
   patchArticle,
   postArticle,
 } from "../../services/article-service";
+import { postImage } from "../../services/image-service";
 import { TextFieldChangeEvent } from "../../types/mui";
+import { renderBlobToCanvas } from "../../utils/rander-blob-to-canvas";
 
-function quillImageHandler(this: any) {
-  const { tooltip } = this.quill.theme;
+function quillImageHandler(this: Module) {
+  const quill = this.quill;
+  const theme = quill.theme as SnowTheme;
+  const tooltip = theme.tooltip! as BaseTooltip;
   const { save: originalSave, hide: originalHide } = tooltip;
+  const textbox = tooltip.textbox!;
+  tooltip.edit(`image`);
+  textbox.placeholder = `Image URL`;
+  const container = tooltip.root;
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+  input.style.display = "block";
+  input.onchange = async (event: Event) => {
+    const file = input.files!.item(0);
+    input.files = null;
+    if (file === null) {
+      return;
+    }
+    try {
+      const canvas = await renderBlobToCanvas(file);
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob(
+          (blob) => {
+            if (blob === null) {
+              return reject();
+            }
+            return resolve(blob);
+          },
+          "image/webp",
+          1
+        );
+      });
+      const { url } = await postImage(blob);
+      const range = quill.getSelection(true);
+      quill.insertEmbed(range.index, `image`, url, `user`);
+    } catch {
+      alert("Failed to upload image");
+    }
+  };
+  container.appendChild(input);
   tooltip.save = function () {
-    const range = this.quill.getSelection(true);
-    const value = this.textbox.value;
+    const range = quill.getSelection(true);
+    const value = textbox.value;
     if (value) {
-      this.quill.insertEmbed(range.index, `image`, value, `user`);
+      quill.insertEmbed(range.index, `image`, value, `user`);
     }
   };
   tooltip.hide = function () {
-    this.save = originalSave;
-    this.hide = originalHide;
-    this.hide();
+    tooltip.save = originalSave;
+    tooltip.hide = originalHide;
+    container.removeChild(input);
+    tooltip.hide();
   };
-  tooltip.edit(`image`);
-  tooltip.textbox.placeholder = `Embed URL`;
 }
 
 const quillModules = {

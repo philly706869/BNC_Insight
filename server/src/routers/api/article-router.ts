@@ -11,6 +11,7 @@ export const articleRouter = Router();
 const service = new ArticleService(database, {
   ...config.article,
   thumbnailBaseUrl: new URL("/cdn/thumbnails/", env.SERVER_URL),
+  defaultThumbnailName: config.thumbnail.defaultName,
 });
 const controller = new ArticleController(service);
 articleRouter.get("/:id", safe(bound(controller, "getOne")));

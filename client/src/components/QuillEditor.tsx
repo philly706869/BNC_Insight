@@ -19,6 +19,7 @@ type Props = {
   mode: "read" | "write";
   modules?: QuillOptions["modules"];
   placeholder?: QuillOptions["placeholder"];
+  formats?: QuillOptions["formats"];
 };
 
 export const QuillEditor = forwardRef<Quill | null, Props>((props, ref) => {
@@ -38,12 +39,13 @@ export const QuillEditor = forwardRef<Quill | null, Props>((props, ref) => {
       theme: props.theme,
       modules: props.modules,
       placeholder: props.placeholder,
+      formats: props.formats,
     });
     setQuillInstance(quill);
     return () => {
       editorWrapper.remove();
     };
-  }, [props.theme, props.modules, props.placeholder]);
+  }, [props.theme, props.modules, props.placeholder, props.formats]);
 
   useImperativeHandle<Quill | null, Quill | null>(
     ref,

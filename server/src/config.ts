@@ -1,5 +1,4 @@
 import { InvalidImageSizeError } from "@errors/service-errors";
-import { ArticleServiceOptions } from "@services/api/article-service";
 import { ImageServiceOptions } from "@services/cdn/image-service";
 import { BCRYPT_MAX_BYTE_LENGTH } from "@utils/bcrypt-constants";
 import { StringConstraint, stringConstraints } from "@utils/constraint";
@@ -24,16 +23,17 @@ export type Config = {
 
   readonly article: {
     readonly defaultQueryLimit: number;
-    readonly defaultThumbnailName: string;
+    readonly maxQueryLimit: number;
     readonly thumbnailNameConstraints: StringConstraint;
     readonly thumbnailCaptionConstraints: StringConstraint;
     readonly titleConstraints: StringConstraint;
     readonly subtitleConstraints: StringConstraint;
     readonly contentDeltaConstraints: StringConstraint;
-  } & Omit<ArticleServiceOptions, "defaultThumbnailName" | "thumbnailBaseUrl">;
+  };
 
   readonly thumbnail: {
     readonly tempPath: string;
+    readonly defaultName: string;
     readonly maxBytes: number;
     readonly rateLimit: number;
     readonly rateWindow: number;
@@ -134,7 +134,6 @@ export const config = {
   article: {
     defaultQueryLimit: 30,
     maxQueryLimit: 30,
-    defaultThumbnailName: "about:blank",
     thumbnailNameConstraints: stringConstraints([
       {
         max: 255,
@@ -196,6 +195,7 @@ export const config = {
   thumbnail: {
     tempPath: path.resolve("./uploads/tmp"),
     uploadPath: path.resolve("./uploads/thumbnails"),
+    defaultName: "default.webp",
     maxBytes: 4 * 1024 * 1024 /* =4MB */,
     rateLimit: 10,
     rateWindow: 60 * 1000 /* =1min */,

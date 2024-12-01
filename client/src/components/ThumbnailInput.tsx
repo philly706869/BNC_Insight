@@ -16,7 +16,7 @@ import {
   THUMBNAIL_SERVICE_URL,
 } from "../services/thumbnail-service";
 import { TextFieldChangeEvent } from "../types/mui";
-import { blobToDataUrl } from "../utils/blob-to-data-url";
+import { renderBlobToCanvas } from "../utils/rander-blob-to-canvas";
 import { Cropper } from "./Cropper";
 import { GeneralTextField } from "./GeneralTextField";
 
@@ -82,7 +82,8 @@ export const ThumbnailInput = forwardRef<ThumbnailRef, Props>((props, ref) => {
         return;
       }
 
-      const dataUrl = await blobToDataUrl(file);
+      const canvas = await renderBlobToCanvas(file);
+      const dataUrl = canvas.toDataURL("image/webp", 1);
       setSelected(dataUrl);
     },
     []

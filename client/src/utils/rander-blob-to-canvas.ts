@@ -1,9 +1,9 @@
-export async function blobToDataUrl(
+export async function renderBlobToCanvas(
   blob: Blob,
   type?: string,
   quality?: number
-): Promise<string> {
-  return await new Promise<string>((resolve, reject) => {
+): Promise<HTMLCanvasElement> {
+  return await new Promise<HTMLCanvasElement>((resolve, reject) => {
     const reader = new FileReader();
     reader.addEventListener("load", () => {
       const image = new Image();
@@ -19,10 +19,8 @@ export async function blobToDataUrl(
           }
           context.drawImage(image, 0, 0, canvas.width, canvas.height);
 
-          const dataUrl = canvas.toDataURL(type, quality);
-          return resolve(dataUrl);
+          return resolve(canvas);
         } finally {
-          canvas.remove();
           image.remove();
         }
       });
