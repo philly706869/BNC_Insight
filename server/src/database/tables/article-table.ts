@@ -2,7 +2,7 @@ import { config } from "@config";
 import { categoryTable } from "@database/tables/category-table";
 import { userTable } from "@database/tables/user-table";
 import { createdAt, updatedAt } from "@utils/timestamp-columns";
-import { mysqlTable, smallint, varchar } from "drizzle-orm/mysql-core";
+import { mysqlTable, smallint, text, varchar } from "drizzle-orm/mysql-core";
 
 const conf = config.article;
 
@@ -26,7 +26,7 @@ export const articleTable = mysqlTable("articles", {
   }).notNull(),
   title: varchar({ length: conf.titleConstraints.max }).notNull(),
   subtitle: varchar({ length: conf.subtitleConstraints.max }).notNull(),
-  content: varchar({ length: conf.contentDeltaConstraints.max }).notNull(),
+  content: text().notNull(),
   createdAt,
   updatedAt,
 });

@@ -186,7 +186,7 @@ export const config = {
     ]),
     contentDeltaConstraints: stringConstraints([
       {
-        max: 10000,
+        max: 65535,
         message: "Content is too long",
       },
     ]),

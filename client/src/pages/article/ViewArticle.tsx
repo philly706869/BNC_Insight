@@ -66,7 +66,7 @@ export const ViewArticle: FC = () => {
 
     case "SET":
       const { data } = article;
-      const today = new Date();
+      const today = new Date(data.createdAt);
       const [dateTime, dateString, dateTitle] = getTimeData(today);
       return (
         <>
