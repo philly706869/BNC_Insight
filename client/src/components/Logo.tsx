@@ -1,7 +1,7 @@
-import { FC } from "react";
-import { ReactComponent as CHNLogo } from "../assets/favicon.svg";
 import styles from "../styles/Logo.module.scss";
 
+import { FC } from "react";
+
 export const Logo: FC = () => {
-  return <CHNLogo className={styles.logo} />;
+  return <span className={styles.logo}>BNC_Insight</span>;
 };

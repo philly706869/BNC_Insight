@@ -30,7 +30,7 @@ const muiTheme = createTheme({
   typography: { button: { textTransform: "none" } },
   shape: { borderRadius: 0 },
   palette: {
-    primary: { main: "#0823a8" },
+    primary: { main: "#d11e00" },
     error: { main: "#ef4040" },
   },
 });

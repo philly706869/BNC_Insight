@@ -29,68 +29,109 @@ export const Header: FC = () => {
 
   return (
     <header className={styles.container}>
-      <div>
-        <time className={styles.time} dateTime={dateTime}>
-          {dateString}
-        </time>
-      </div>
       <div className={styles.headline}>
-        <Link className={styles.logo} to="/">
-          <span>
+        <section>
+          <time className={styles.time} dateTime={dateTime}>
+            {dateString}
+          </time>
+        </section>
+        <section>
+          <Link className={styles.logo} to="/">
             <Logo />
-          </span>
-          <span>CHN</span>
-        </Link>
-        <nav className={styles["category-nav"]}>
-          {categories !== undefined && (
-            <>
-              <Link className={styles["nav-button"]} to="/articles">
-                All
-              </Link>
-              <Link className={styles["nav-button"]} to="/articles?category=">
-                Uncategorized
-              </Link>
-              {categories.map(({ name: category }) => (
-                <Link
-                  key={category}
-                  className={styles["nav-button"]}
-                  to={`/articles?category=${category}`}
-                >
-                  {category}
-                </Link>
+          </Link>
+        </section>
+        <section>
+          <nav>
+            {currentUser !== undefined &&
+              (currentUser !== null ? (
+                <>
+                  <Link className={styles["nav-button"]} to="/myaccount">
+                    {currentUser.name}
+                  </Link>
+                  <button
+                    className={styles["nav-button"]}
+                    onClick={handleSignout}
+                  >
+                    Sign out
+                  </button>
+                  <Link className={styles["nav-button"]} to="/myarticles">
+                    My Articles
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link className={styles["nav-button"]} to="/signup">
+                    Sign up
+                  </Link>
+                  <Link className={styles["nav-button"]} to="/signin">
+                    Sign in
+                  </Link>
+                </>
               ))}
-            </>
-          )}
-        </nav>
-        <nav>
-          {currentUser !== undefined &&
-            (currentUser !== null ? (
-              <>
-                <Link className={styles["nav-button"]} to="/myaccount">
-                  {currentUser.name}
-                </Link>
-                <button
-                  className={styles["nav-button"]}
-                  onClick={handleSignout}
-                >
-                  Sign out
-                </button>
-                <Link className={styles["nav-button"]} to="/myarticles">
-                  My Articles
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link className={styles["nav-button"]} to="/signup">
-                  Sign up
-                </Link>
-                <Link className={styles["nav-button"]} to="/signin">
-                  Sign in
-                </Link>
-              </>
-            ))}
-        </nav>
+          </nav>
+        </section>
       </div>
+      <nav className={styles["category-nav"]}>
+        {categories !== undefined && (
+          <>
+            <Link className={styles["nav-button"]} to="/articles">
+              All
+            </Link>
+            <Link className={styles["nav-button"]} to="/articles?category=">
+              Uncategorized
+            </Link>
+            {categories.map(({ name: category }) => (
+              <Link
+                key={category}
+                className={styles["nav-button"]}
+                to={`/articles?category=${category}`}
+              >
+                {category}
+              </Link>
+            ))}
+          </>
+        )}
+      </nav>
     </header>
   );
 };
+
+// return (
+//   <header className={`${styles.container} ${fonts.robotoSlab}`}>
+//     <time className={styles.time} dateTime={dateTime}>
+//       {dateString}
+//     </time>
+//     <Link className={`${styles.logo} ${fonts.cormorant}`} to="/">
+//       <Logo/>
+//     </Link>
+//     <nav className={styles.user}>
+//       {currentUser !== undefined &&
+//         (currentUser !== null ? (
+//           <>
+//             <Link to="/myaccount">{currentUser.name}</Link>
+//             <button onClick={handleLogout}>Logout</button>
+//             <Link to="/myarticles">My Articles</Link>
+//           </>
+//         ) : (
+//           <>
+//             <Link to="/signup">Sign up</Link>
+//             <Link to="/signin">Sign in</Link>
+//           </>
+//         ))}
+//     </nav>
+//     <nav className={styles.categories}>
+//       {categories !== undefined && (
+//         <>
+//           <Link to="/articles">All</Link>
+//           <Link to="/articles?category=">Uncategorized</Link>
+//           {categories.map(({ name: category }) => (
+//             <Link key={category} to={`/articles?category=${category}`}>
+//               {category}
+//             </Link>
+//           ))}
+//         </>
+//       )}
+//     </nav>
+//   </header>
+// );
+// };

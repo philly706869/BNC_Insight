@@ -9,8 +9,8 @@ export const Layout: FC = () => {
     <>
       <div className={styles.container}>
         <div className={styles.decoline}></div>
+        <Header />
         <div className={styles["children-container"]}>
-          <Header />
           <div className={styles.content}>
             <Outlet />
           </div>

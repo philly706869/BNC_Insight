@@ -4,41 +4,31 @@
   @include fonts.roboto-slab();
   display: flex;
   flex-direction: column;
-  gap: 0.5em;
-}
-
-.time {
-  display: block;
-  margin-left: auto;
-  width: max-content;
-  color: var(--secondary-color);
-  font-size: 0.8em;
+  gap: 1em;
 }
 
 .headline {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  & > section {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.time {
+  display: block;
+  width: max-content;
+  font-size: large;
 }
 
 .logo {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5em;
-  & > span {
-    display: inline-block;
-
-    &:nth-child(1) {
-      width: 3em;
-      height: 3em;
-    }
-
-    &:nth-child(2) {
-      @include fonts.lexend();
-      font-size: 3em;
-    }
-  }
+  display: block;
+  width: max-content;
 }
 
 .category-nav {
@@ -52,6 +42,7 @@
   align-content: center;
   padding: 0 1em;
   height: 2em;
+  font-size: large;
 
   &::after {
     position: absolute;
