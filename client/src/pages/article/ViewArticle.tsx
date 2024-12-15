@@ -6,7 +6,7 @@ import { FC, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { QuillEditor } from "../../components/QuillEditor";
 import { Article, getArticle } from "../../services/article-service";
-import { getTimeData } from "../../utils/get-time-data";
+import { getTimeData } from "../../utils/time";
 import { NotFound } from "../NotFound";
 
 const quillModules = {

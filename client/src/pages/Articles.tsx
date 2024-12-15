@@ -12,7 +12,7 @@ import {
 } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ContentLessArticle, getArticles } from "../services/article-service";
-import { getTimeData } from "../utils/get-time-data";
+import { getTimeData } from "../utils/time";
 
 type ArticleProps = {
   article: ContentLessArticle;

@@ -1,5 +1,9 @@
+export function getDateTime(date: Date): string {
+  return date.toISOString().split("T")[0];
+}
+
 export function getTimeData(date: Date): [string, string, string] {
-  const dateTime = date.toISOString().split(`T`)[0];
+  const dateTime = getDateTime(date);
   const dateString: string = (() => {
     const today = new Date();
     const articleDate = new Date(date);

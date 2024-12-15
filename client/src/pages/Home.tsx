@@ -2,7 +2,7 @@ import { FC, ReactNode, useEffect, useMemo, useState } from "react";
 import { ContentLessArticle, getArticles } from "../services/article-service";
 
 import styles from "../styles/Home.module.scss";
-import { getTimeData } from "../utils/get-time-data";
+import { getTimeData } from "../utils/time";
 
 type ArticleProps = {
   article: ContentLessArticle;

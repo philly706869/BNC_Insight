@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { CategoryContext } from "../contexts/category-context";
 import { CurrentUserContext } from "../contexts/current-user-context";
 import { signout } from "../services/auth-service";
+import { getDateTime } from "../utils/time";
 import { Logo } from "./Logo";
 
 export const Header: FC = () => {
@@ -15,7 +16,7 @@ export const Header: FC = () => {
 
   const [dateTime, dateString] = useMemo(() => {
     const date = new Date();
-    const dateTime = date.toISOString().split(`T`)[0];
+    const dateTime = getDateTime(date);
     const dateString = date.toDateString();
     return [dateTime, dateString];
   }, []);
