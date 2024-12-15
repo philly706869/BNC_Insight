@@ -36,7 +36,6 @@
 
 .title,
 .subtitle {
-  @include fonts.inter();
   margin: 0;
   word-break: break-all;
 }
