@@ -95,11 +95,11 @@ export const Signup: FC = () => {
 
   return (
     <>
-      <h2 className={styles.title}>회원가입</h2>
+      <h2 className={styles.title}>Sign Up</h2>
       {!hasToken ? (
         <form className={styles.form} onSubmit={handleAuthTokenSubmit}>
           <GeneralTextField
-            label="인증 토큰"
+            label="Auth Token"
             value={token}
             onChange={handleAuthTokenChange}
             helperText={tokenMessage ?? ""}
@@ -107,13 +107,13 @@ export const Signup: FC = () => {
             autoFocus
           />
           <button className={styles.submit} type="submit">
-            다음
+            Next
           </button>
         </form>
       ) : (
         <form className={styles.form} onSubmit={handleCredentialsSubmit}>
           <GeneralTextField
-            label="아이디"
+            label="Username"
             value={username}
             onChange={handleUsernameChange}
             helperText={usernameMessage ?? ""}
@@ -121,7 +121,7 @@ export const Signup: FC = () => {
             autoFocus
           />
           <GeneralTextField
-            label="비밀번호"
+            label="Password"
             type="password"
             value={password}
             onChange={handlePasswordChange}
@@ -129,14 +129,14 @@ export const Signup: FC = () => {
             error={passwordMessage !== null}
           />
           <GeneralTextField
-            label="표시 이름"
+            label="Name"
             value={name}
             onChange={handleNameChange}
             helperText={nameMessage ?? ""}
             error={nameMessage !== null}
           />
           <button className={styles.submit} type="submit">
-            가입
+            Sign Up
           </button>
         </form>
       )}

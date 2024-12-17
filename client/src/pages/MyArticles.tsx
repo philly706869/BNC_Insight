@@ -7,7 +7,7 @@ export const MyArticles: FC = () => {
   return (
     <>
       <Link className={styles["post-article-button"]} to="/article/write">
-        새 기사
+        Post Article
       </Link>
     </>
   );

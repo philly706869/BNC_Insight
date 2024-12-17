@@ -37,7 +37,6 @@
 }
 
 .nav-button {
-  @include fonts.malgun-gothic();
   display: inline-block;
   position: relative;
   align-content: center;
@@ -59,31 +58,5 @@
 
   &:hover::after {
     transform: scaleX(0.8);
-  }
-}
-
-@font-face {
-  font-style: normal;
-  font-weight: normal;
-  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/ChosunBg.woff")
-    format("woff");
-  font-family: "ChosunBg";
-}
-
-.caja-mark {
-  margin: 0 1em;
-
-  & > img {
-    display: block;
-    margin: 0 auto;
-    height: 2.5em;
-  }
-
-  & > figcaption {
-    margin-top: 0.5em;
-    color: #002157;
-    font-size: 0.5em;
-    font-family: "ChosunBg";
-    text-align: center;
   }
 }
