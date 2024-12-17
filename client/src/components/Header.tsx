@@ -36,19 +36,22 @@ export const Header: FC = () => {
       </div>
       <div className={styles.headline}>
         <Link className={styles.logo} to="/">
-          <span>
+          <div>
             <Logo />
-          </span>
-          <span>CHN</span>
+          </div>
+          <div>
+            <span>CHN</span>
+            <span>Cheonan Jungang High School News</span>
+          </div>
         </Link>
         <nav className={styles["category-nav"]}>
           {categories !== undefined && (
             <>
               <Link className={styles["nav-button"]} to="/articles">
-                All
+                전체
               </Link>
               <Link className={styles["nav-button"]} to="/articles?category=">
-                Uncategorized
+                카테고리 없음
               </Link>
               {categories.map(({ name: category }) => (
                 <Link
@@ -73,19 +76,19 @@ export const Header: FC = () => {
                   className={styles["nav-button"]}
                   onClick={handleSignout}
                 >
-                  Sign out
+                  로그아웃
                 </button>
                 <Link className={styles["nav-button"]} to="/myarticles">
-                  My Articles
+                  내 기사
                 </Link>
               </>
             ) : (
               <>
                 <Link className={styles["nav-button"]} to="/signup">
-                  Sign up
+                  회원가입
                 </Link>
                 <Link className={styles["nav-button"]} to="/signin">
-                  Sign in
+                  로그인
                 </Link>
               </>
             ))}

@@ -139,7 +139,7 @@ export const ThumbnailInput = forwardRef<ThumbnailRef, Props>((props, ref) => {
                   hidden
                 />
                 <button className={styles.button} onClick={handleThumbnailSet}>
-                  Set Thumbnail
+                  썸네일 설정
                 </button>
               </>
             ) : (
@@ -158,10 +158,10 @@ export const ThumbnailInput = forwardRef<ThumbnailRef, Props>((props, ref) => {
                 />
                 <nav className={styles["cropper-nav"]}>
                   <button className={styles.button} onClick={handleCropCancel}>
-                    Cancel
+                    취소
                   </button>
                   <button className={styles.button} onClick={handleCrop}>
-                    Crop
+                    자르기
                   </button>
                 </nav>
               </>
@@ -171,14 +171,14 @@ export const ThumbnailInput = forwardRef<ThumbnailRef, Props>((props, ref) => {
           <>
             <img alt="thumbnail" src={url} />
             <GeneralTextField
-              label="Thumbnail Caption"
+              label="썸네일 설명"
               value={caption}
               onChange={handleThumbnailCaptionChange}
               helperText={captionMessage}
               error={captionError}
             />
             <button className={styles.button} onClick={handleThumbnailRemove}>
-              Remove thumbnail
+              썸네일 삭제
             </button>
           </>
         )}

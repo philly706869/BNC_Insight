@@ -26,17 +26,28 @@
   justify-content: center;
   align-items: center;
   gap: 0.5em;
-  & > span {
+
+  & > div {
     display: inline-block;
 
     &:nth-child(1) {
-      width: 3em;
-      height: 3em;
+      width: 4em;
+      height: 4em;
     }
 
-    &:nth-child(2) {
+    &:nth-child(2) > span {
       @include fonts.lexend();
-      font-size: 3em;
+      display: block;
+      line-height: 1em;
+
+      &:nth-child(1) {
+        font-size: 3em;
+      }
+
+      &:nth-child(2) {
+        margin-left: 0.2em;
+        font-size: 1em;
+      }
     }
   }
 }
@@ -47,6 +58,7 @@
 }
 
 .nav-button {
+  @include fonts.malgun-gothic();
   display: inline-block;
   position: relative;
   align-content: center;
