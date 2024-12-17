@@ -34,7 +34,7 @@ const Article: FC<ArticleProps> = (props) => {
         </main>
       </a>
       <footer className={styles.footer}>
-        <span>By {article.uploader?.name ?? "Deleted User"}</span>
+        <span>{article.uploader?.name ?? "삭제된 유저"} 작성</span>
         <time dateTime={dateTime} title={dateTitle}>
           {dateString}
         </time>

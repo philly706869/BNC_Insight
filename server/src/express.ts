@@ -14,7 +14,10 @@ express.use("/api", apiRouter);
 express.use("/cdn", cdnRouter);
 
 if (NODE_ENV === "production") {
-  express.use(Express.static(env.STATIC_SERVE_PATH));
+  express.use(Express.static(env.STATIC_SERVE_PATH, { index: undefined }));
+  express.use("*", (req, res) => {
+    res.sendFile(env.INDEX_PATH);
+  });
 }
 
 express.use(errorHandler);

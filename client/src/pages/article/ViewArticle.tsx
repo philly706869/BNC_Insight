@@ -76,7 +76,7 @@ export const ViewArticle: FC = () => {
                 <h2 className={styles.title}>{data.title}</h2>
                 <h4 className={styles.subtitle}>{data.subtitle}</h4>
                 <footer className={styles.footer}>
-                  <span>By {data.uploader?.name ?? "Deleted User"}</span>
+                  <span>{data.uploader?.name ?? "삭제된 유저"} 작성</span>
                   <time dateTime={dateTime} title={dateTitle}>
                     {dateString}
                   </time>

@@ -66,7 +66,7 @@ function quillImageHandler(this: Module) {
       const range = quill.getSelection(true);
       quill.insertEmbed(range.index, `image`, url, `user`);
     } catch {
-      alert("Failed to upload image");
+      alert("이미지 업로드 실패");
     }
   };
   container.appendChild(input);
@@ -90,7 +90,7 @@ const quillModules = {
     container: [
       { font: [] },
       { header: [false, 1, 2, 3, 4, 5, 6] },
-      { size: [`small`, false, `large`, `huge`, `10pt`] },
+      { size: [`small`, false, `large`, `huge`] },
       `bold`,
       `italic`,
       `underline`,
@@ -198,7 +198,7 @@ export const WriteArticle: FC = () => {
       if (details) {
         const categoryError = details?.fieldErrors?.category?.errorMessage;
         if (typeof categoryError === "string") {
-          alert("Category does not exist. Please reload the page.");
+          alert("카테고리가 존재하지 않습니다. 페이지를 새로고침해주세요");
           return;
         }
         const titleError = details?.fieldErrors?.title?.errorMessage;
@@ -223,7 +223,7 @@ export const WriteArticle: FC = () => {
           return;
         }
       }
-      alert("Unknown error occured while posting article");
+      alert("알 수 없는 오류가 발생하였습니다");
     }
   }, [category, title, subtitle, override, navigate]);
 
@@ -263,7 +263,7 @@ export const WriteArticle: FC = () => {
             onChange={handleCategoryChange}
             exclusive
           >
-            <ToggleButton value={""}>Uncategorized</ToggleButton>
+            <ToggleButton value={""}>카테고리 없음</ToggleButton>
             {categories.map(({ name: category }) => (
               <ToggleButton key={category} value={category}>
                 {category}
@@ -275,14 +275,14 @@ export const WriteArticle: FC = () => {
         )}
 
         <GeneralTextField
-          label="Title"
+          label="제목"
           value={title}
           onChange={handleTitleChange}
           helperText={titleMessage}
           error={titleMessage !== null}
         />
         <GeneralTextField
-          label="Subtitle"
+          label="부제목"
           value={subtitle}
           onChange={handleSubtitleChange}
           helperText={subtitleMessage}
@@ -292,7 +292,7 @@ export const WriteArticle: FC = () => {
           ref={quillRef}
           theme="snow"
           mode="write"
-          placeholder="Write article body here"
+          placeholder="여기에 기사 본문 작성"
           modules={quillModules}
         />
         <button
@@ -300,7 +300,7 @@ export const WriteArticle: FC = () => {
           type="submit"
           onClick={handleSubmit}
         >
-          Submit
+          게시
         </button>
       </form>
     </>

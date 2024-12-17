@@ -10,20 +10,20 @@ export function getTimeData(date: Date): [string, string, string] {
     const timeDiff = today.getTime() - articleDate.getTime();
     const dayDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
     if (dayDiff > 2) {
-      return date.toDateString();
+      return date.toLocaleDateString("ko-KR");
     }
     if (dayDiff === 1) {
-      return "Yesterday";
+      return "어제";
     }
     const hourDiff = today.getHours() - articleDate.getHours();
     if (hourDiff !== 0) {
-      return `${hourDiff} hours ago`;
+      return `${hourDiff}시 전`;
     }
     const minuteDiff = today.getMinutes() - articleDate.getMinutes();
     if (minuteDiff !== 0) {
-      return `${minuteDiff} minutes ago`;
+      return `${minuteDiff}분 전`;
     }
-    return "Just now";
+    return "지금";
   })();
   const dateTitle = date.toLocaleString();
   return [dateTime, dateString, dateTitle];

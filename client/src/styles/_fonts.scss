@@ -5,8 +5,13 @@
 
 @mixin font($font-family) {
   font-style: normal;
-  font-family: $font-family, serif, Arial, Helvetica, sans-serif, system-ui;
+  font-family: $font-family, "Malgun Gothic", serif, Arial, Helvetica,
+    sans-serif, system-ui;
   font-optical-sizing: auto;
+}
+
+@mixin malgun-gothic() {
+  @include font("Malgun Gothic");
 }
 
 @mixin inter() {

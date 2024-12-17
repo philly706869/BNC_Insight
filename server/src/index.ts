@@ -1,11 +1,13 @@
 import { config } from "@config";
 import { logger } from "@utils/logger";
+import { NODE_ENV } from "@utils/node-env";
 import fs from "fs/promises";
 import http from "http";
 import { exit } from "process";
 
 try {
   const { env } = await import("@env");
+  logger.info(`Current NODE_ENV = ${NODE_ENV}`);
 
   logger.info("Checking directories...");
   const requiredPaths = [

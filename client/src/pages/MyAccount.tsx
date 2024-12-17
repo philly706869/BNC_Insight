@@ -3,8 +3,7 @@ import { FC } from "react";
 export const MyAccount: FC = () => {
   return (
     <>
-      <p>This page is not implemented yet.</p>
-      <p>Please check back later.</p>
+      <h2>알 수 없는 페이지입니다</h2>
     </>
   );
 };

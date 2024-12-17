@@ -46,10 +46,10 @@ export const Signin: FC = () => {
 
   return (
     <>
-      <h2 className={styles.title}>Sign In</h2>
+      <h2 className={styles.title}>로그인</h2>
       <form className={styles.form} onSubmit={handleCredentialsSubmit}>
         <GeneralTextField
-          label="Username"
+          label="아이디"
           value={username}
           onChange={handleUsernameChange}
           helperText={usernameMessage ?? ""}
@@ -57,7 +57,7 @@ export const Signin: FC = () => {
           autoFocus
         />
         <GeneralTextField
-          label="Password"
+          label="비밀번호"
           type="password"
           value={password}
           onChange={handlePasswordChange}
@@ -65,7 +65,7 @@ export const Signin: FC = () => {
           error={passwordMessage !== null}
         />
         <button className={styles.submit} type="submit">
-          Sign In
+          로그인
         </button>
       </form>
     </>
