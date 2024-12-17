@@ -1,5 +1,5 @@
 {
-  "name": "chn_client",
+  "name": "bnc_insight_client",
   "version": "1.0.1",
   "private": true,
   "proxy": "http://localhost:3001",
