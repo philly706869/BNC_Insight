@@ -93,6 +93,14 @@ export const Header: FC = () => {
               </>
             ))}
         </nav>
+        <figure className={styles["caja-mark"]}>
+          <img src="/caja-symbol.jpg" alt="천안중앙고심볼" />
+          <figcaption>
+            천안중앙
+            <br />
+            56대 학생회
+          </figcaption>
+        </figure>
       </div>
     </header>
   );
