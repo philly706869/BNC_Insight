@@ -105,7 +105,7 @@ export const Home: FC = () => {
     })();
     (async () => {
       const eventArticles = await getArticles({
-        category: "이벤트",
+        category: "Event",
         limit: 2,
         offset: 0,
       });
