@@ -43,6 +43,35 @@ const Article: FC<ArticleProps> = (props) => {
   );
 };
 
+type EventArticleProps = {
+  article: ContentLessArticle;
+};
+
+const EventArticle: FC<EventArticleProps> = (props) => {
+  const { article } = props;
+
+  return (
+    <article className={styles.article}>
+      <a className={styles["article-anchor"]} href={`/article/${article.uid}`}>
+        <figure className={styles.thumbnail}>
+          <img
+            alt={article.thumbnail.caption}
+            src={article.thumbnail.url}
+          ></img>
+        </figure>
+        <header>
+          <h2 className={styles.title}>{article.title}</h2>
+        </header>
+        <main>
+          {article.subtitle && (
+            <p className={styles.subtitle}>{article.subtitle}</p>
+          )}
+        </main>
+      </a>
+    </article>
+  );
+};
+
 const ARTICLE_LIMIT = 5;
 const MAIN_ARTICLE_AMOUNT = 2;
 
@@ -50,17 +79,37 @@ export const Home: FC = () => {
   type Articles = Awaited<ReturnType<typeof getArticles>> | undefined;
   const [articles, setArticles] = useState<Articles>(undefined);
   const [mainArticles, subArticles] = useMemo(() => {
-    if (articles === undefined) return [[], []];
+    if (articles === undefined) {
+      return [[], []];
+    }
     const items = articles.items;
     const mainArticles = items.slice(0, MAIN_ARTICLE_AMOUNT);
     const subArticles = items.slice(MAIN_ARTICLE_AMOUNT);
     return [mainArticles, subArticles];
   }, [articles]);
+  const [eventArticles, setEventArticles] = useState<Articles>(undefined);
+  const [leftEventArticle, rightEventArticle] = useMemo(() => {
+    if (eventArticles === undefined) {
+      return [undefined, undefined];
+    }
+    const items = eventArticles.items;
+    const leftEventArticle = items.at(1);
+    const rightEventArticle = items.at(0);
+    return [leftEventArticle, rightEventArticle];
+  }, [eventArticles]);
 
   useEffect(() => {
     (async () => {
       const articles = await getArticles({ limit: ARTICLE_LIMIT, offset: 0 });
       setArticles(articles);
+    })();
+    (async () => {
+      const eventArticles = await getArticles({
+        category: "이벤트",
+        limit: 2,
+        offset: 0,
+      });
+      setEventArticles(eventArticles);
     })();
   }, []);
 
@@ -109,6 +158,16 @@ export const Home: FC = () => {
             }
             return nodes;
           })()}
+        </aside>
+        <aside className={styles["left-event-panel"]}>
+          {leftEventArticle !== undefined && (
+            <EventArticle article={leftEventArticle} />
+          )}
+        </aside>
+        <aside className={styles["right-event-panel"]}>
+          {rightEventArticle !== undefined && (
+            <EventArticle article={rightEventArticle} />
+          )}
         </aside>
       </div>
     </>

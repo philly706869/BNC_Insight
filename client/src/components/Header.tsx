@@ -65,7 +65,7 @@ export const Header: FC = () => {
             </>
           )}
         </nav>
-        <nav>
+        <nav className={styles["user-nav"]}>
           {currentUser !== undefined &&
             (currentUser !== null ? (
               <>
