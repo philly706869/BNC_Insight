@@ -36,6 +36,10 @@
   width: max-content;
 }
 
+.user-nav {
+  flex-shrink: 0;
+}
+
 .nav-button {
   display: inline-block;
   position: relative;

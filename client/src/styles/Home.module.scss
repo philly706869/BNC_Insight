@@ -2,6 +2,7 @@
 
 .article-container {
   display: grid;
+  position: relative;
   grid-template-columns: 12fr 1px 8fr;
   gap: 0.5em;
   box-sizing: border-box;
@@ -79,4 +80,21 @@
     color: var(--secondary-color);
     font-size: 0.8em;
   }
+}
+
+@mixin event-panel() {
+  position: absolute;
+  width: 300px;
+}
+
+$event-panel-offset: 1em;
+
+.left-event-panel {
+  @include event-panel();
+  right: calc(100% + $event-panel-offset);
+}
+
+.right-event-panel {
+  @include event-panel();
+  left: calc(100% + $event-panel-offset);
 }
